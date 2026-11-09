@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "author": "Canyon Team",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -172.5, "left": 23.4, "attrs": {} },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": -140.8,
+      "left": -200.8,
+      "attrs": {}
+    },
+    { "type": "wokwi-ssd1306", "id": "oled1", "top": 237.1, "left": -26.9, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led_g",
+      "top": 102,
+      "left": -82.6,
+      "attrs": { "color": "green" }
+    },
+    { "type": "wokwi-led", "id": "led_r", "top": 102, "left": 157.4, "attrs": { "color": "red" } }
+  ],
+  "connections": [
+    [ "esp:GND.1", "dht1:GND", "black", [ "v0" ] ],
+    [ "esp:3V3", "dht1:VCC", "red", [ "v0" ] ],
+    [ "esp:15", "dht1:SDA", "green", [ "v0" ] ],
+    [ "esp:GND.1", "ldr1:GND", "black", [ "v0" ] ],
+    [ "esp:3V3", "ldr1:VCC", "red", [ "v0" ] ],
+    [ "esp:34", "ldr1:AO", "orange", [ "v0" ] ],
+    [ "esp:GND.1", "oled1:GND", "black", [ "v0" ] ],
+    [ "esp:3V3", "oled1:VCC", "red", [ "v0" ] ],
+    [ "esp:21", "oled1:SDA", "blue", [ "v0" ] ],
+    [ "esp:22", "oled1:SCL", "yellow", [ "v0" ] ],
+    [ "esp:2", "led_g:A", "green", [ "v0" ] ],
+    [ "esp:GND.1", "led_g:C", "black", [ "v0" ] ],
+    [ "esp:4", "led_r:A", "red", [ "v0" ] ],
+    [ "esp:GND.1", "led_r:C", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
