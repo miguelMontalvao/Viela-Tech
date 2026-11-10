@@ -60,7 +60,7 @@
 * **Objetivo:** Aplicação de Cálculo Diferencial e Integral na modelagem do microclima urbano.
 * **Modelagem:**
   * **Taxa de Variação Instantânea (Derivada):** $\frac{d(IVM)}{dt}$ para identificação de variação abrupta de risco.
-  * **Exposição Acumulada (Integral):** $\int_{t_0}^{t_1} IVM(t) \, dt$ para determinar a carga horária em zona de `PERIGO`.
+  * **Exposição Acumulada (Integral):** $\int_{t_0}^{t_1} IVM(t) \, dt$ para quantificar o indicador ambiental acumulado em `%·h`, com cálculo separado do tempo em zona de `PERIGO`.
 * **Entregáveis:** Script em Python (`/math/modelo_calculo.py`) e Relatório Técnico em PDF.
 
 ---
@@ -118,7 +118,16 @@ pip install requests
 python main.py
 ```
 
-### 2. Executar a Aplicação Web (React + Vite)
+### 2. Executar o Módulo de Matemática
+
+```bash
+python -m pip install -r math/requirements.txt
+python math/modelo_calculo.py
+```
+O script lê `python/relatorio.csv` ou usa uma simulação identificada de 24 horas quando o arquivo ainda não existe. Gera `math/grafico_microclima.png` e `math/Relatorio_Matematica.pdf`. Consulte [math/README.md](math/README.md) para os métodos e opções de execução.
+
+### 3. Executar a Aplicação Web (React + Vite)
+
 ```bash
 npm install
 npm run dev
