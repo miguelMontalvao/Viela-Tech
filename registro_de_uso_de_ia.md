@@ -10,6 +10,7 @@ Em conformidade com as diretrizes da FIAP para a Global Solution 2026.2, este do
 ##  1. Ferramentas Utilizadas
 
 * **Gemini 3 Flash (Google):** Utilizado para brainstorm de ideias de CitizenTech aplicadas ao Rio de Janeiro, estruturação do escopo epidemiológico de tuberculose na Rocinha, especificação de requisitos funcionais/não-funcionais, modelagem de regras de negócio e auxílio na correção de código MicroPython para ESP32.
+* **Codex (OpenAI):** Utilizado na implementação do módulo de Matemática, geração dos gráficos e do relatório técnico, além da verificação dos cálculos com testes automatizados.
 
 ---
 
@@ -26,6 +27,10 @@ Em conformidade com as diretrizes da FIAP para a Global Solution 2026.2, este do
 ### C. Resolução de Erros no MicroPython (Edge Computing)
 * **Prompt:** *"O circuito ESP32 no Wokwi com tela OLED SSD1306 apresentou o erro AttributeError: 'module' object has no attribute 'MONO_VLSB0'. Como corrigir no driver ssd1306.py?"*
 * **Resultado Obtido:** Ajuste da constante para `framebuf.MONO_VLSB`, corrigindo a inicialização da tela I2C no MicroPython.
+
+### D. Cálculo Diferencial e Integral do Microclima (Matemática)
+* **Prompt (versão resumida):** *"Crie o módulo `math/` em Python com NumPy, pandas, SciPy e Matplotlib. Leia `python/relatorio.csv` ou simule 24 horas de microclima usando `IVM(t) = 0,6 U(t) + 0,4 (100 − I(t))`. Calcule as derivadas do IVM e da umidade, a integral do IVM e o tempo na faixa PERIGO (IVM ≥ 70%). Gere `modelo_calculo.py`, `grafico_microclima.png` e um relatório PDF de 2 a 3 páginas com fórmulas, resultados, interpretação e identificação dos integrantes da turma 1ESSRA."*
+* **Resultado Obtido:** Módulo com leitura dos horários reais do CSV, simulação identificada, gráficos de derivadas e integrais e relatório de três páginas com os nomes e RMs da equipe. Os cálculos foram verificados por 12 testes automatizados. O relatório apresenta o IVM como indicador ambiental didático, sem validação clínica.
 
 ---
 
