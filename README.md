@@ -40,7 +40,7 @@
 * **Plataforma IoT:** ThingSpeak (Publicação de dados via API HTTP GET).
 * **Links da Disciplina:**
   *  **Simulação Wokwi:** `[https://wokwi.com/projects/480218232420257793]`
-  *  **Canal Público ThingSpeak:** `[https://thingspeak.mathworks.com/channels/3571901/edit]`
+  *  **Canal Público ThingSpeak:** `[https://thingspeak.mathworks.com/channels/3571901]`
 
 ---
 
