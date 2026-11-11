@@ -27,6 +27,10 @@ Em conformidade com as diretrizes da FIAP para a Global Solution 2026.2, este do
 * **Prompt:** *"O circuito ESP32 no Wokwi com tela OLED SSD1306 apresentou o erro AttributeError: 'module' object has no attribute 'MONO_VLSB0'. Como corrigir no driver ssd1306.py?"*
 * **Resultado Obtido:** Ajuste da constante para `framebuf.MONO_VLSB`, corrigindo a inicialização da tela I2C no MicroPython.
 
+### D. Integração com Banco de Dados e Suporte Offline (Front-end & Web Dev)
+- **Prompt:** *"Crie os arquivos src/services/supabaseClient.js e api.js para integrar o React ao Supabase, aplicando a prioridade por tempo de tosse e salvamento em LocalStorage para operação offline."*
+- **Resultado Obtido:** Geração da camada de integração com a base PostgreSQL, suporte à operação sem sinal de dados (RN-04) e rotina de sincronização automática ao reconectar.
+
 ---
 
 ##  3. Validação Humana e Aprendizado
