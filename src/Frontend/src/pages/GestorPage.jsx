@@ -12,6 +12,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useChamados } from '../hooks/useChamados';
 import { useMicroclima } from '../hooks/useMicroclima';
 import { resumirChamados } from '../domain/chamados';
+import { PAPEIS } from '../domain/perfis';
+import { MapaRocinha } from '../components/mapa/MapaRocinha';
 
 function Dashboard() {
   const { logout } = useAuth();
@@ -65,6 +67,10 @@ function Dashboard() {
             <BarChart titulo="Chamados por etapa" descricao="Onde cada triagem está no fluxo de atendimento." dados={resumo.porStatus} unidade={['chamado', 'chamados']} />
             <BarChart titulo="Triagens por setor" descricao="Setores com mais pedidos de visita." dados={resumo.porSetor.slice(0, 8)} />
           </div>
+        ) : null}
+
+        {temDados ? (
+          <MapaRocinha chamados={chamados} />
         ) : (
           !carregando && (
             <div className="card">
@@ -81,10 +87,7 @@ function Dashboard() {
 
 export default function GestorPage() {
   return (
-    <ProtectedRoute
-      titulo="Entrar no dashboard do gestor"
-      descricao="Área da coordenação de saúde. Use o mesmo acesso cadastrado no Supabase para a equipe."
-    >
+    <ProtectedRoute papeis={[PAPEIS.GESTOR]}>
       <Dashboard />
     </ProtectedRoute>
   );

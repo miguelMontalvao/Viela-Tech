@@ -12,9 +12,11 @@ import { useAuth } from '../hooks/useAuth';
 import { useChamados } from '../hooks/useChamados';
 import { ehUrgente } from '../domain/risco';
 import { estaFinalizado, filtrarChamados, idDoChamado } from '../domain/chamados';
+import { PAPEIS } from '../domain/perfis';
+import { Selo } from '../components/brand/Enfeites';
 
 function PainelACS() {
-  const { usuario, logout } = useAuth();
+  const { nome, usuario, logout } = useAuth();
   const {
     chamados, carregando, erro, online, sincronizando, pendentes, mensagem, limparMensagem,
     atualizandoId, recarregar, atualizarStatus, sincronizar,
@@ -38,13 +40,14 @@ function PainelACS() {
       <PageHeader
         eyebrow="Painel do agente comunitário"
         titulo="Fila de visitas"
+        selo={<Selo tom="verde">Bora pra rua</Selo>}
         acoes={
           <Button variante="fantasma" icone={LogOut} onClick={logout}>
             Sair
           </Button>
         }
       >
-        {usuario?.email ? `Olá, ${usuario.email}. ` : ''}Os casos de tosse há 21 dias ou mais aparecem primeiro.
+        {`Olá, ${nome ?? usuario?.email ?? 'agente'}. `}Os casos de tosse há 21 dias ou mais aparecem primeiro.
       </PageHeader>
 
       <div className="space-y-5">
@@ -103,10 +106,7 @@ function PainelACS() {
 
 export default function AcsPage() {
   return (
-    <ProtectedRoute
-      titulo="Entrar no Painel ACS"
-      descricao="Área dos Agentes Comunitários de Saúde. Depois do primeiro acesso, o painel continua funcionando mesmo sem sinal."
-    >
+    <ProtectedRoute papeis={[PAPEIS.ACS, PAPEIS.GESTOR]}>
       <PainelACS />
     </ProtectedRoute>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { CheckCircle2, CloudOff, MapPin, RotateCcw, Siren } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Alert } from '../ui/Alert';
@@ -21,7 +22,7 @@ function UnidadesDeSaude() {
 }
 
 /** Resultado mostrado depois do envio da triagem. */
-export function ResultadoTriagem({ resultado, aoNovaTriagem }) {
+export function ResultadoTriagem({ resultado, aoNovaTriagem, logado = false }) {
   const tituloRef = useRef(null);
 
   // Move o foco para o resultado: quem usa leitor de tela ouve a resposta na hora.
@@ -87,9 +88,22 @@ export function ResultadoTriagem({ resultado, aoNovaTriagem }) {
         descarta a tuberculose. Em caso de falta de ar forte ou tosse com sangue, procure atendimento imediatamente.
       </Alert>
 
-      <Button variante="secundaria" icone={RotateCcw} onClick={aoNovaTriagem}>
-        Fazer outra triagem
-      </Button>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        {logado && (
+          <Link
+            to="/minha-area"
+            className="inline-flex min-h-toque items-center justify-center rounded-xl bg-emerald-700 px-5 font-semibold text-white hover:bg-emerald-800 dark:bg-emerald-600 dark:text-slate-950"
+          >
+            Acompanhar na Minha área
+          </Link>
+        )}
+        <Button variante="secundaria" icone={RotateCcw} onClick={aoNovaTriagem}>
+          Fazer outra triagem
+        </Button>
+        <Link to="/mapa" className="inline-flex min-h-toque items-center justify-center rounded-xl px-5 font-semibold text-sky-700 hover:underline dark:text-sky-400">
+          Ver o mapa da tuberculose
+        </Link>
+      </div>
     </section>
   );
 }
