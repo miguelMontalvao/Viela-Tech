@@ -45,7 +45,20 @@ Em conformidade com as diretrizes da FIAP para a Global Solution 2026.2, este do
   * Triagens do morador guardadas sem sinal não eram reenviadas por ninguém. Foi criado o reenvio automático, com uma trava para não duplicar registros.
   * Como o `insert().select()` do `api.js` exige leitura logo após a gravação, a política RLS do morador anônimo foi limitada a registros recentes. A limitação está documentada no README do front-end.
 * **Publicação:** a pedido da equipe, a IA aplicou o `schema.sql` no projeto Supabase que já tínhamos criado, cadastrou a URL e a chave pública (*publishable*) na Vercel e publicou o site em produção. A chave secreta do Supabase não foi acessada.
-* **O que a IA não fez:** não criou usuários nem digitou senhas, e não publicou nada no GitHub. Também não inventou estatísticas de saúde nem dados de pacientes. Os nomes usados nos testes eram fictícios.
+* **Redesign, mapa e perfis:** num segundo momento, pedimos:
+  * uma identidade mais carioca, com tema claro como padrão;
+  * a logo recolorida e vetorizada;
+  * o efeito de login de um componente que colamos, adaptado para JavaScript e Tailwind 3;
+  * um mapa didático da tuberculose no Rio;
+  * dois logins, um para o morador e outro para a equipe.
+
+  O que a IA fez nessa etapa:
+  * vetorizou a logo com o texto convertido em curvas e gerou o favicon, os ícones e a imagem de compartilhamento;
+  * desenhou os elementos cariocas em SVG e reorganizou as páginas;
+  * baixou os limites de bairros do Data.Rio (licença ODbL) e usou só números com fonte citada (El País Brasil, 2015). Como não há dado por bairro, os outros bairros ficam neutros, e a página explica o motivo;
+  * criou a tabela `perfis`, os gatilhos e a nova RLS, aplicou o SQL no Supabase pelo Chrome e configurou as URLs de retorno do Auth;
+  * validou a escala de cores do mapa com um script de contraste e mediu as páginas com o Lighthouse.
+* **O que a IA não fez:** não criou usuários nem digitou senhas. No GitHub, só enviou o branch de trabalho, e com autorização da equipe. Também não inventou estatísticas de saúde nem dados de pacientes. Os nomes usados nos testes eram fictícios.
 
 ---
 
