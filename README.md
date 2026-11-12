@@ -76,20 +76,26 @@
 ---
 
 ### 5. Front-end Design (Interface)
-* **Objetivo:** Aplicação web funcional e inclusiva adaptada às diretrizes formais de acessibilidade.
-* **Stack Tecnológico:** React + Vite + Tailwind CSS + JavaScript.
-* **Diferenciais UX/UI:**
-  * Foco nas diretrizes WCAG 2.1 AA (áreas de clique ampliadas $\ge 48\text{px}$, suporte semântico a leitores de tela).
-  * Formulário de autotriagem sintomática em 4 etapas.
-  * Mapeamento dos postos de apoio para entrega de exames de escarro na Rocinha.
+* **Objetivo:** Aplicação web funcional e inclusiva, seguindo as diretrizes de acessibilidade.
+* **Stack:** React 18 + Vite 6 + Tailwind CSS 3 + Lucide React. O código fica em [`src/Frontend/`](src/Frontend/README.md).
+* **O que tem:**
+  * **Área do Morador:** autotriagem com nome, setor/viela, dias de tosse, febre e suor noturno. Tosse há 21 dias ou mais gera um alerta vermelho prioritário e indica a **Clínica da Família Rinaldo De Lamare** e o **CMS Albert Sabin**. A tela deixa claro que a triagem não é diagnóstico.
+  * **Painel ACS:** login, fila com os urgentes no topo e a faixa **URGENTE — TOSSE +21 DIAS**, ações de atendimento (iniciar, registrar coleta, concluir), filtros e busca.
+  * **Dashboard do Gestor:** umidade, insolação e IVM do sensor IoT com as cores semafóricas oficiais, total de triagens, casos urgentes, coletas concluídas e gráficos.
+  * Identidade visual oficial (Azul Saúde Cívica `#0284C7`, Verde Esmeralda `#059669`), tema claro e escuro, layout responsivo.
+  * WCAG 2.1 AA: alvos de no mínimo 48px, contraste pensado para uso sob o sol, foco visível, link para pular ao conteúdo, mensagens anunciadas a leitores de tela e gráficos com alternativa em tabela.
 
 ---
 
 ### 6. Web Development (Interação)
-* **Objetivo:** Interatividade em JavaScript e persistência client-side.
-* **Recursos Implementados:**
-  * Modo **Light / Dark** com alternância dinâmica de classes Tailwind.
-  * **Operação Offline-First (RN-04):** Salvamento de registros dos ACS no `LocalStorage` durante o trabalho em becos sem sinal, com sincronização automatizada com o Supabase ao recuperar conexão.
+* **Objetivo:** Interatividade em JavaScript, integração com API externa e persistência no navegador.
+* **O que tem:**
+  * **CRUD na API REST do Supabase:** cria triagens, lê a fila e o microclima e atualiza o status dos chamados (`src/Frontend/src/services/api.js`).
+  * **Login da equipe** com Supabase Auth (e-mail e senha) e rotas protegidas.
+  * **Custom Hooks** (`useTriagem`, `useChamados`, `useMicroclima`, `useOnlineStatus`, `useTheme`, `useAuth`, `useEnvioPendente`) separando a tela da lógica.
+  * **Modo claro/escuro** com `darkMode: 'class'`, salvo no aparelho.
+  * **Offline-first (RN-04):** sem sinal, triagens e atualizações ficam no `LocalStorage`. Quando a conexão volta, tudo é enviado sozinho, e também há o botão **Sincronizar**. O header mostra o status **Online/Offline**.
+  * Regras de negócio puras em `domain/`, com testes unitários em Vitest.
 
 ---
 
@@ -129,9 +135,14 @@ O script lê `python/relatorio.csv` ou usa uma simulação identificada de 24 ho
 ### 3. Executar a Aplicação Web (React + Vite)
 
 ```bash
+cd src/Frontend
 npm install
-npm run dev
+cp .env.example .env   # preencha com a URL e a chave anon do Supabase
+npm run dev            # http://localhost:5173
+npm test               # testes das regras de negócio
 ```
+
+Sem o `.env`, o app roda em modo local e guarda as triagens no aparelho. O passo a passo do Supabase (schema SQL, RLS e criação dos usuários da equipe) está em [src/Frontend/README.md](src/Frontend/README.md).
 
 ---
 
@@ -139,18 +150,24 @@ npm run dev
 
 ```text
 ├── assets/                  # Imagens e evidências da simulação e gráficos
-├── doc/                     # Documentação ABNT (Canyon_Backlog_ABNT.pdf)
+├── Doc/                     # Documentação ABNT (VielaTech-Backlog.pdf)
 ├── math/                    # Scripts de Cálculo Diferencial e Integral
 ├── python/                  # Código do cérebro em Python, backup.json e exportações
 │   ├── backup.json
 │   ├── main.py
 │   ├── prompts.md
 │   └── README.md
-├── src/                     # Código fonte do Front-end (React + Tailwind CSS)
-│   ├── components/
-│   ├── services/            # Integração Supabase e ThingSpeak
-│   └── App.jsx
-├── Wokwi/                   # Arquivos do circuito ESP32 MicroPython (main.py, ssd1306.py, diagram.json)
+├── src/
+│   └── Frontend/            # Aplicação web (React + Vite + Tailwind + Supabase)
+│       ├── src/
+│       │   ├── domain/      # Regras de negócio (IVM, prioridade, fila) + testes
+│       │   ├── services/    # api.js, cliente Supabase e autenticação
+│       │   ├── hooks/       # Custom Hooks
+│       │   ├── components/  # UI, layout, morador, acs, gestor
+│       │   └── pages/       # Início, Morador, ACS, Gestor
+│       ├── supabase/schema.sql
+│       └── README.md        # Documentação técnica do front-end
+├── wokwi/                   # Arquivos do circuito ESP32 MicroPython (main.py, ssd1306.py, diagram.json)
 ├── AI.md                    # Registro do uso de Inteligência Artificial como copiloto
 ├── Integrantes.md           # Identificação oficial da equipe
 └── README.md                # Este arquivo
