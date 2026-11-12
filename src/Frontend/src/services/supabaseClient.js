@@ -17,5 +17,15 @@ if (!supabaseConfigurado) {
   );
 }
 
-/** Cliente Supabase usado pelos serviços do Viela Tech (null quando não configurado). */
-export const supabase = supabaseConfigurado ? createClient(supabaseUrl, supabaseAnonKey) : null;
+/**
+ * Substituto usado sem .env: qualquer consulta falha com uma mensagem clara,
+ * e o tratamento de erro já existente em api.js guarda os dados no LocalStorage.
+ */
+const clienteDesconectado = {
+  from() {
+    throw new Error('Supabase não configurado (.env ausente). Usando armazenamento local.');
+  },
+};
+
+/** Cliente Supabase usado pelos serviços do Viela Tech. */
+export const supabase = supabaseConfigurado ? createClient(supabaseUrl, supabaseAnonKey) : clienteDesconectado;

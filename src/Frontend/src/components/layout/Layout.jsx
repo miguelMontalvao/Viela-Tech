@@ -23,7 +23,7 @@ export function Layout() {
     <div className="flex min-h-screen flex-col">
       <a
         href="#conteudo"
-        className="sr-only z-50 rounded-xl bg-sky-700 px-4 py-3 font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="sr-only z-50 rounded-xl bg-sky-700 px-4 font-semibold text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:flex focus:min-h-toque focus:items-center"
       >
         Pular para o conteúdo
       </a>

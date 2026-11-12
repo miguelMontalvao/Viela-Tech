@@ -62,7 +62,7 @@ function Dashboard() {
 
         {temDados ? (
           <div className="grid gap-4 lg:grid-cols-2">
-            <BarChart titulo="Chamados por etapa" descricao="Onde cada triagem está no fluxo de atendimento." dados={resumo.porStatus} unidade="chamados" />
+            <BarChart titulo="Chamados por etapa" descricao="Onde cada triagem está no fluxo de atendimento." dados={resumo.porStatus} unidade={['chamado', 'chamados']} />
             <BarChart titulo="Triagens por setor" descricao="Setores com mais pedidos de visita." dados={resumo.porSetor.slice(0, 8)} />
           </div>
         ) : (

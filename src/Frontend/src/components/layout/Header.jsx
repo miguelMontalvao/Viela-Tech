@@ -64,7 +64,7 @@ export function Header() {
       <div className="container-app flex h-16 items-center gap-3">
         <Link to="/" className="flex min-h-toque items-center gap-2.5 rounded-xl pr-2" aria-label="Viela Tech, página inicial">
           <Logo />
-          <span className="text-lg font-extrabold tracking-tight">
+          <span className="whitespace-nowrap text-lg font-extrabold tracking-tight">
             Viela <span className="text-sky-700 dark:text-sky-400">Tech</span>
           </span>
         </Link>

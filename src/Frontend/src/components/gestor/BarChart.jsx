@@ -8,7 +8,7 @@ import { BarChart3, Table2 } from 'lucide-react';
  * - Valores e rótulos usam as cores de texto, nunca a cor da série.
  * - Tooltip ao passar o mouse ou focar pelo teclado; tabela equivalente para leitores de tela.
  */
-export function BarChart({ titulo, descricao, dados, unidade = 'triagens' }) {
+export function BarChart({ titulo, descricao, dados, unidade = ['triagem', 'triagens'] }) {
   const [verTabela, setVerTabela] = useState(false);
   const [ativo, setAtivo] = useState(null);
   const idTitulo = useId();
@@ -85,7 +85,7 @@ export function BarChart({ titulo, descricao, dados, unidade = 'triagens' }) {
                     role="tooltip"
                     className="pointer-events-none absolute -top-10 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white shadow-lg dark:bg-slate-100 dark:text-slate-900"
                   >
-                    {d.rotulo}: <strong>{d.valor}</strong> {unidade} · {pct(d.valor)}% do total
+                    {d.rotulo}: <strong>{d.valor}</strong> {d.valor === 1 ? unidade[0] : unidade[1]} · {pct(d.valor)}% do total
                   </span>
                 )}
               </li>

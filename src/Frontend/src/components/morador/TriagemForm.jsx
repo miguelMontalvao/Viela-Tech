@@ -45,43 +45,45 @@ export function TriagemForm({ valores, erros, enviando, erroEnvio, alterarCampo,
         />
       </fieldset>
 
-      <fieldset className="space-y-5 border-t border-slate-200 pt-6 dark:border-slate-700">
-        <legend className="pt-2 text-lg font-bold">Como você está</legend>
-        <Field
-          label="Há quantos dias está com tosse?"
-          name="dias_tosse"
-          type="number"
-          inputMode="numeric"
-          min={0}
-          max={365}
-          step={1}
-          dica="Se não lembra o número exato, chute perto. Três semanas são 21 dias."
-          placeholder="0"
-          value={valores.dias_tosse}
-          onChange={(e) => alterarCampo('dias_tosse', e.target.value)}
-          erro={erros.dias_tosse}
-          inputClassName="max-w-[12rem] text-lg"
-        />
-        {tosseLonga && (
-          <Alert tipo="erro" titulo="Tosse há 3 semanas ou mais merece atenção">
-            Ao enviar, seu caso entra como prioridade para o agente de saúde.
-          </Alert>
-        )}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <ToggleQuestion
-            label="Tive febre"
-            descricao="Principalmente no fim da tarde ou à noite."
-            checked={valores.tem_febre}
-            onChange={(v) => alterarCampo('tem_febre', v)}
+      <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
+        <fieldset className="space-y-5">
+          <legend className="text-lg font-bold">Como você está</legend>
+          <Field
+            label="Há quantos dias está com tosse?"
+            name="dias_tosse"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={365}
+            step={1}
+            dica="Se não lembra o número exato, chute perto. Três semanas são 21 dias."
+            placeholder="0"
+            value={valores.dias_tosse}
+            onChange={(e) => alterarCampo('dias_tosse', e.target.value)}
+            erro={erros.dias_tosse}
+            inputClassName="max-w-[12rem] text-lg"
           />
-          <ToggleQuestion
-            label="Suo muito à noite"
-            descricao="Acordo com a roupa ou o lençol molhados."
-            checked={valores.tem_sudorese}
-            onChange={(v) => alterarCampo('tem_sudorese', v)}
-          />
-        </div>
-      </fieldset>
+          {tosseLonga && (
+            <Alert tipo="erro" titulo="Tosse há 3 semanas ou mais merece atenção">
+              Ao enviar, seu caso entra como prioridade para o agente de saúde.
+            </Alert>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <ToggleQuestion
+              label="Tive febre"
+              descricao="Principalmente no fim da tarde ou à noite."
+              checked={valores.tem_febre}
+              onChange={(v) => alterarCampo('tem_febre', v)}
+            />
+            <ToggleQuestion
+              label="Suo muito à noite"
+              descricao="Acordo com a roupa ou o lençol molhados."
+              checked={valores.tem_sudorese}
+              onChange={(v) => alterarCampo('tem_sudorese', v)}
+            />
+          </div>
+        </fieldset>
+      </div>
 
       {erroEnvio && (
         <Alert tipo="erro" role="alert">

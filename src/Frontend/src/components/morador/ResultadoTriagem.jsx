@@ -74,10 +74,10 @@ export function ResultadoTriagem({ resultado, aoNovaTriagem }) {
       )}
 
       {offline && (
-        <Alert tipo="aviso" titulo="Sem conexão agora">
-          <span className="inline-flex items-center gap-1.5">
-            <CloudOff className="h-4 w-4" aria-hidden="true" />
-            Sua triagem ficou guardada neste aparelho e será enviada quando houver sinal.
+        <Alert tipo="aviso" titulo="Guardada neste aparelho">
+          <span className="inline-flex items-start gap-1.5">
+            <CloudOff className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            Não deu para enviar agora. Sua triagem ficou salva aqui e segue para a equipe assim que a conexão voltar.
           </span>
         </Alert>
       )}
