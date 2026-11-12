@@ -35,3 +35,37 @@ export function PalavraQueTroca({ palavras, intervalo = 2600, className = '' }) 
     </span>
   );
 }
+
+/**
+ * Texto que entra palavra por palavra (sobe e desfoca → nítido).
+ * `segmentos`: [{ texto, className }]; cada palavra herda a classe do seu segmento.
+ * `imediato` anima ao montar (hero); senão, quando entra na tela.
+ */
+export function TextoRevelado({ as: Tag = 'p', segmentos, className = '', atraso = 0, passo = 70, imediato = false, ...props }) {
+  const [ref, naTela] = useNaTela();
+  const [montado, setMontado] = useState(false);
+  useEffect(() => {
+    if (!imediato) return undefined;
+    const id = requestAnimationFrame(() => setMontado(true));
+    return () => cancelAnimationFrame(id);
+  }, [imediato]);
+  const visivel = imediato ? montado : naTela;
+  let n = 0;
+  return (
+    <Tag ref={ref} className={`texto-revelado ${visivel ? 'visivel' : ''} ${className}`} {...props}>
+      {segmentos.map((s, i) => (
+        <span key={i}>
+          {s.quebra && <br />}
+          {s.texto.split(' ').map((p, j, arr) => (
+            <span key={j}>
+              <span className={`palavra ${s.className ?? ''}`} style={{ transitionDelay: `${atraso + n++ * passo}ms` }}>
+                {p}
+              </span>
+              {j < arr.length - 1 || i < segmentos.length - 1 ? ' ' : ''}
+            </span>
+          ))}
+        </span>
+      ))}
+    </Tag>
+  );
+}
