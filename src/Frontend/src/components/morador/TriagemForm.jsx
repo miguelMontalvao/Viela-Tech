@@ -22,7 +22,7 @@ export function TriagemForm({ valores, erros, enviando, erroEnvio, alterarCampo,
   return (
     <form ref={formRef} onSubmit={aoEnviar} noValidate className="card space-y-6 p-5 sm:p-8">
       <fieldset className="space-y-5">
-        <legend className="text-lg font-bold">Quem é você</legend>
+        <legend className="text-lg font-semibold">Quem é você</legend>
         <Field
           label="Seu nome"
           name="morador_nome"
@@ -47,7 +47,7 @@ export function TriagemForm({ valores, erros, enviando, erroEnvio, alterarCampo,
 
       <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
         <fieldset className="space-y-5">
-          <legend className="text-lg font-bold">Como você está</legend>
+          <legend className="text-lg font-semibold">Como você está</legend>
           <Field
             label="Há quantos dias está com tosse?"
             name="dias_tosse"

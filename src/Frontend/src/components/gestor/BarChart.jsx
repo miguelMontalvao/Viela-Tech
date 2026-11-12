@@ -79,7 +79,7 @@ export function BarChart({ titulo, descricao, dados, unidade = ['triagem', 'tria
                     style={{ width: `${largura}%`, backgroundColor: '#0284C7', opacity: ativo && !mostrando ? 0.55 : 1 }}
                   />
                 </span>
-                <span className="text-right text-sm font-bold tabular-nums text-slate-900 dark:text-slate-100">{d.valor}</span>
+                <span className="text-right text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">{d.valor}</span>
                 {mostrando && (
                   <span
                     role="tooltip"

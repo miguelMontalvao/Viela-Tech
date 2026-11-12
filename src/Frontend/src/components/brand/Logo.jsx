@@ -41,7 +41,7 @@ export function Logo({ assinatura = false, className = '', tamanho = 'md', inver
       <LogoSimbolo className={`${t.simbolo} w-auto shrink-0`} />
       <span className="flex flex-col leading-none">
         <span className={`font-display ${t.texto} tracking-tight`}>
-          <span className={`font-extrabold ${invertido ? 'text-white' : 'text-slate-900 dark:text-white'}`}>Viela</span>
+          <span className={`font-semibold ${invertido ? 'text-white' : 'text-slate-900 dark:text-white'}`}>Viela</span>
           <span className={`font-light ${invertido ? 'text-sky-400' : 'text-sky-700 dark:text-sky-400'}`}>Tech</span>
         </span>
         {assinatura && (

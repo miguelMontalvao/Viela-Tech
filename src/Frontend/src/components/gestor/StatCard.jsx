@@ -13,7 +13,7 @@ export function StatCard({ icone: Icone, rotulo, valor, detalhe, tom = 'azul' })
       </span>
       <div className="min-w-0">
         <p className="text-sm font-semibold texto-suave">{rotulo}</p>
-        <p className="mt-0.5 text-3xl font-extrabold tabular-nums tracking-tight">{valor}</p>
+        <p className="mt-0.5 text-3xl font-semibold tabular-nums tracking-tight">{valor}</p>
         {detalhe && <p className="mt-1 text-sm texto-suave">{detalhe}</p>}
       </div>
     </div>

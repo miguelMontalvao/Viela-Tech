@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['Bricolage', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
       colors: {
         // Indicadores de risco do IVM (regra de negócio). Uso exclusivo para status.
@@ -31,13 +31,13 @@ export default {
       minWidth: { toque: '48px' },
       borderRadius: { '4xl': '2rem' },
       boxShadow: {
-        cartao: '0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.12)',
-        flutuante: '0 24px 60px -24px rgb(2 132 199 / 0.35)',
-        selo: '3px 3px 0 0 rgb(15 23 42)',
+        cartao: '0 1px 2px rgb(15 23 42 / 0.04)',
+        flutuante: '0 12px 32px -16px rgb(15 23 42 / 0.18)',
+        selo: 'none',
       },
       keyframes: {
         balanco: { '0%,100%': { transform: 'rotate(-2deg)' }, '50%': { transform: 'rotate(2deg)' } },
-        nascer: { from: { transform: 'translateY(18px)', opacity: '0' }, to: { transform: 'translateY(0)', opacity: '1' } },
+        nascer: { from: { transform: 'translateY(8px)', opacity: '0' }, to: { transform: 'translateY(0)', opacity: '1' } },
       },
       animation: {
         balanco: 'balanco 6s ease-in-out infinite',

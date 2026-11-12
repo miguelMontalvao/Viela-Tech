@@ -20,10 +20,10 @@ function linksDoPapel(papel) {
 }
 
 function classeLink({ isActive }) {
-  return `relative flex min-h-toque items-center rounded-full px-4 font-semibold transition-colors ${
+  return `relative flex min-h-toque items-center rounded-full px-3 text-[15px] font-medium transition-colors ${
     isActive
-      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-      : 'text-slate-700 hover:bg-slate-900/5 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-white'
+      ? 'text-slate-900 dark:text-white'
+      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
   }`;
 }
 
@@ -89,7 +89,7 @@ export function Header() {
   useEffect(() => setMenuAberto(false), [pathname]);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-900/5 bg-slate-50/85 backdrop-blur-md dark:border-white/10 dark:bg-noite/85">
+    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-noite/80">
       <div className="container-app flex h-16 items-center gap-3 sm:h-[4.5rem]">
         <Link to="/" className="flex min-h-toque items-center rounded-xl pr-2">
           <Logo />

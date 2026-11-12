@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowRight, CloudOff, ListOrdered, Thermometer } from 'lucide-react';
 import { BotaoLogin, CampoVidro, SignInPage } from '../components/ui/SignIn';
 import { Alert } from '../components/ui/Alert';
-import { Selo } from '../components/brand/Enfeites';
 import { useAuth } from '../hooks/useAuth';
 import { supabaseConfigurado } from '../services/config';
 import { destinoInicial, ehEquipe } from '../domain/perfis';
@@ -67,10 +66,6 @@ export default function EquipePage() {
       legendaFoto="Fim de tarde no morro: hora de subir a viela."
       cartoes={CARTOES}
     >
-      <div className="animate-element animate-delay-200 flex flex-wrap gap-2">
-        <Selo tom="verde">ACS</Selo>
-        <Selo tom="azul" inclinacao="rotate-1">Gestão</Selo>
-      </div>
 
       {!supabaseConfigurado && (
         <Alert tipo="aviso" titulo="Login indisponível neste ambiente">

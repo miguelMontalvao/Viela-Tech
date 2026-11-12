@@ -13,7 +13,6 @@ import { useChamados } from '../hooks/useChamados';
 import { ehUrgente } from '../domain/risco';
 import { estaFinalizado, filtrarChamados, idDoChamado } from '../domain/chamados';
 import { PAPEIS } from '../domain/perfis';
-import { Selo } from '../components/brand/Enfeites';
 
 function PainelACS() {
   const { nome, usuario, logout } = useAuth();
@@ -40,7 +39,6 @@ function PainelACS() {
       <PageHeader
         eyebrow="Painel do agente comunitário"
         titulo="Fila de visitas"
-        selo={<Selo tom="verde">Bora pra rua</Selo>}
         acoes={
           <Button variante="fantasma" icone={LogOut} onClick={logout}>
             Sair

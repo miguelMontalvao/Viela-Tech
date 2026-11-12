@@ -23,7 +23,7 @@ export function ProtectedRoute({ papeis, children }) {
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-sol-100 text-slate-900">
           <ShieldAlert className="h-7 w-7" aria-hidden="true" />
         </span>
-        <h1 className="mt-5 text-2xl font-extrabold">Essa área não é do seu perfil</h1>
+        <h1 className="mt-5 text-2xl font-semibold">Essa área não é do seu perfil</h1>
         <p className="mt-3 texto-suave">
           {papel
             ? `Você entrou como ${ROTULOS_PAPEL[papel]?.toLowerCase() ?? papel}. ${areaDaEquipe ? 'Esta parte é só para a equipe de saúde.' : 'Esta parte é a área pessoal do morador.'}`

@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CloudFog, ExternalLink, MapPin, Microscope, SunDim, Wind } from 'lucide-react';
 import { PageHeader } from '../components/layout/Layout';
-import { Bandeirinhas, Selo } from '../components/brand/Enfeites';
 import { BAIRROS, VIEWBOX } from '../data/rioBairros';
 import { FONTES, INCIDENCIA, SERIE, VEZES_ROCINHA_RIO } from '../data/tuberculoseRio';
 import { UNIDADES_SAUDE } from '../domain/unidades';
@@ -44,7 +43,7 @@ function MapaCidade({ aoPassar, destaque }) {
         <circle cx={ROCINHA.cx} cy={ROCINHA.cy} r="14" className="fill-tijolo-600/25 motion-safe:animate-ping" style={{ transformOrigin: `${ROCINHA.cx}px ${ROCINHA.cy}px` }} />
         <line x1={ROCINHA.cx} y1={ROCINHA.cy} x2={ROCINHA.cx - 70} y2={ROCINHA.cy + 70} className="stroke-slate-900 dark:stroke-white" strokeWidth="1.5" />
         <rect x={ROCINHA.cx - 190} y={ROCINHA.cy + 62} width="124" height="34" rx="10" className="fill-slate-900 dark:fill-white" />
-        <text x={ROCINHA.cx - 128} y={ROCINHA.cy + 85} textAnchor="middle" className="fill-white font-display text-[17px] font-extrabold dark:fill-slate-900">
+        <text x={ROCINHA.cx - 128} y={ROCINHA.cy + 85} textAnchor="middle" className="fill-white font-display text-[17px] font-semibold dark:fill-slate-900">
           Rocinha
         </text>
       </g>
@@ -73,7 +72,7 @@ function ZoomRocinha() {
           </text>
         ) : null,
       )}
-      <text x={ROCINHA.cx} y={ROCINHA.cy + 1} textAnchor="middle" className="fill-white font-display text-[3.4px] font-extrabold">
+      <text x={ROCINHA.cx} y={ROCINHA.cy + 1} textAnchor="middle" className="fill-white font-display text-[3.4px] font-semibold">
         Rocinha
       </text>
     </svg>
@@ -85,7 +84,7 @@ function Comparacao() {
   return (
     <figure className="card p-6">
       <figcaption>
-        <p className="font-display text-xl font-extrabold">Casos novos por 100 mil habitantes</p>
+        <p className="font-display text-xl font-semibold">Casos novos por 100 mil habitantes</p>
         <p className="mt-1 text-sm texto-suave">Quanto mais comprida a barra, mais gente adoeceu proporcionalmente.</p>
       </figcaption>
       <ul className="mt-6 space-y-5">
@@ -95,7 +94,7 @@ function Comparacao() {
               <span className="font-semibold">
                 {i.local} <span className="text-sm font-normal texto-suave">({i.ano})</span>
               </span>
-              <span className="font-display text-2xl font-extrabold tabular-nums">{fmt(i.valor)}</span>
+              <span className="font-display text-2xl font-semibold tabular-nums">{fmt(i.valor)}</span>
             </div>
             <div className="mt-2 h-4 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700/60" aria-hidden="true">
               <div
@@ -151,9 +150,8 @@ export default function MapaPage() {
 
   return (
     <div className="relative">
-      <Bandeirinhas className="pointer-events-none absolute inset-x-0 top-0 h-10 w-full opacity-90" />
       <div className="container-app pt-6">
-        <PageHeader eyebrow="Mapa da tuberculose · Rio de Janeiro" titulo="Onde a tosse pesa mais" selo={<Selo tom="sol">Dados com fonte</Selo>}>
+        <PageHeader eyebrow="Mapa da tuberculose · Rio de Janeiro" titulo="Onde a tosse pesa mais">
           A Rocinha teve uma taxa de tuberculose <strong className="text-slate-900 dark:text-white">{fmt(VEZES_ROCINHA_RIO)} vezes maior</strong> que a média da
           cidade. Entenda o porquê e o que dá para fazer.
         </PageHeader>
@@ -197,7 +195,7 @@ export default function MapaPage() {
 
           <div className="space-y-6">
             <section className="card overflow-hidden" aria-labelledby="zoom-titulo">
-              <h2 id="zoom-titulo" className="px-5 pt-5 text-lg font-extrabold">
+              <h2 id="zoom-titulo" className="px-5 pt-5 text-lg font-semibold">
                 De perto: a Rocinha
               </h2>
               <p className="px-5 text-sm texto-suave">Entre São Conrado e a Gávea, encostada na Floresta da Tijuca.</p>
@@ -205,16 +203,16 @@ export default function MapaPage() {
                 <ZoomRocinha />
               </div>
             </section>
-            <section className="rounded-4xl bg-slate-900 p-6 text-white dark:bg-white/5" aria-labelledby="tendencia-titulo">
-              <h2 id="tendencia-titulo" className="text-lg font-extrabold">
+            <section className="card p-6" aria-labelledby="tendencia-titulo">
+              <h2 id="tendencia-titulo" className="text-lg font-semibold">
                 Melhorou, mas ainda é alto
               </h2>
               <p className="mt-3 flex items-baseline gap-3">
-                <span className="font-display text-4xl font-extrabold tabular-nums text-sol-300">{fmt(rocinhaSerie[0].valor)}</span>
-                <ArrowRight className="h-5 w-5 text-slate-400" aria-label="caiu para" />
-                <span className="font-display text-4xl font-extrabold tabular-nums">{fmt(rocinhaSerie[1].valor)}</span>
+                <span className="font-display text-4xl font-semibold tabular-nums text-slate-400">{fmt(rocinhaSerie[0].valor)}</span>
+                <ArrowRight className="h-5 w-5 text-slate-300" aria-label="caiu para" />
+                <span className="font-display text-4xl font-semibold tabular-nums">{fmt(rocinhaSerie[1].valor)}</span>
               </p>
-              <p className="mt-2 text-sm text-slate-300">
+              <p className="mt-2 text-sm texto-suave">
                 Casos por 100 mil habitantes na Rocinha, de {rocinhaSerie[0].ano} para {rocinhaSerie[1].ano}: queda de {queda}%. Na
                 cidade, a taxa foi de {fmt(SERIE[1].pontos[0].valor)} para {fmt(SERIE[1].pontos[1].valor)}.
               </p>
@@ -225,13 +223,13 @@ export default function MapaPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <Comparacao />
           <section className="card p-6" aria-labelledby="onde-titulo">
-            <h2 id="onde-titulo" className="text-xl font-extrabold">
+            <h2 id="onde-titulo" className="text-xl font-semibold">
               Onde fazer o exame na Rocinha
             </h2>
             <ul className="mt-4 space-y-3">
               {UNIDADES_SAUDE.map((u) => (
-                <li key={u.nome} className="flex gap-3 rounded-2xl bg-emerald-50 p-4 dark:bg-emerald-950/40">
-                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
+                <li key={u.nome} className="flex gap-3 border-t border-slate-200 py-4 first:border-t-0 first:pt-0 dark:border-slate-800">
+                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-sky-700 dark:text-sky-400" aria-hidden="true" />
                   <span>
                     <strong className="block">{u.nome}</strong>
                     <span className="text-sm texto-suave">{u.descricao}</span>
@@ -250,28 +248,22 @@ export default function MapaPage() {
         </div>
 
         <section aria-labelledby="porque-titulo" className="mt-16">
-          <p className="sobrelinha">Papo reto</p>
-          <h2 id="porque-titulo" className="mt-2 text-3xl font-extrabold sm:text-4xl">
+          <h2 id="porque-titulo" className="text-2xl font-semibold tracking-tight sm:text-3xl">
             Por que a viela adoece
           </h2>
-          <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {PASSOS.map(({ icone: Icone, cor, titulo, texto }, i) => (
-              <li key={titulo} className="card relative p-6">
-                <span className="absolute right-5 top-4 font-display text-5xl font-extrabold text-slate-900/5 dark:text-white/5" aria-hidden="true">
-                  {i + 1}
-                </span>
-                <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${cor}`}>
-                  <Icone className="h-6 w-6" aria-hidden="true" />
-                </span>
-                <h3 className="mt-4 text-lg font-extrabold">{titulo}</h3>
+          <ol className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            {PASSOS.map(({ icone: Icone, titulo, texto }) => (
+              <li key={titulo}>
+                <Icone className="h-6 w-6 text-sky-700 dark:text-sky-400" aria-hidden="true" />
+                <h3 className="mt-4 text-lg font-semibold">{titulo}</h3>
                 <p className="mt-2 text-sm leading-relaxed texto-suave">{texto}</p>
               </li>
             ))}
           </ol>
         </section>
 
-        <section aria-labelledby="fontes-titulo" className="mt-14 rounded-3xl border border-dashed border-slate-300 p-6 text-sm dark:border-slate-600">
-          <h2 id="fontes-titulo" className="font-display text-base font-bold">
+        <section aria-labelledby="fontes-titulo" className="mt-16 border-t border-slate-200 pt-6 text-sm dark:border-slate-800">
+          <h2 id="fontes-titulo" className="font-display text-base font-semibold">
             Fontes e limites dos dados
           </h2>
           <ul className="mt-3 space-y-2 texto-suave">

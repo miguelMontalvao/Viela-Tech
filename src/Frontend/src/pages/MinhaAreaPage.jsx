@@ -5,7 +5,6 @@ import { PageHeader } from '../components/layout/Layout';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { Alert } from '../components/ui/Alert';
 import { EmptyState, Spinner } from '../components/ui/Feedback';
-import { Selo } from '../components/brand/Enfeites';
 import { useAuth } from '../hooks/useAuth';
 import { minhasTriagens } from '../services/perfilService';
 import { PAPEIS, STATUS_PARA_MORADOR } from '../domain/perfis';
@@ -67,7 +66,6 @@ function Area() {
       <PageHeader
         eyebrow="Minha área"
         titulo={nome ? `Fala, ${nome.split(' ')[0]}!` : 'Sua área'}
-        selo={<Selo tom="sol">Morador da Rocinha</Selo>}
       >
         Aqui você acompanha cada triagem que fez e vê em que pé está o atendimento.
       </PageHeader>
@@ -75,7 +73,7 @@ function Area() {
       <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
         <section aria-labelledby="minhas-triagens" className="space-y-4">
           <div className="flex items-center justify-between gap-3">
-            <h2 id="minhas-triagens" className="text-2xl font-extrabold">
+            <h2 id="minhas-triagens" className="text-2xl font-semibold">
               Minhas triagens
             </h2>
             <button
@@ -109,14 +107,14 @@ function Area() {
               {triagens.map((t) => (
                 <li key={t.id} className="card overflow-hidden">
                   {ehUrgente(t) && (
-                    <p className="flex items-center gap-2 bg-red-600 px-5 py-2 text-sm font-bold uppercase tracking-wide text-white">
+                    <p className="flex items-center gap-2 bg-red-600 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-white">
                       <Siren className="h-4 w-4" aria-hidden="true" />
                       Prioridade: tosse há 21 dias ou mais
                     </p>
                   )}
                   <div className="p-5 sm:p-6">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <p className="font-display text-lg font-bold">Triagem de {formatar(t.created_at)}</p>
+                      <p className="text-base font-semibold">Triagem de {formatar(t.created_at)}</p>
                       <p className="text-sm texto-suave">
                         <MapPin className="mr-1 inline h-4 w-4" aria-hidden="true" />
                         {t.setor_viela}
@@ -138,15 +136,15 @@ function Area() {
         <aside className="space-y-4">
           <Link
             to="/morador"
-            className="group block rounded-4xl bg-gradient-to-br from-sky-700 to-emerald-700 p-6 text-white shadow-flutuante"
+            className="group block rounded-2xl bg-sky-700 p-6 text-white "
           >
             <ClipboardPlus className="h-8 w-8" aria-hidden="true" />
-            <p className="mt-4 font-display text-2xl font-extrabold leading-tight">Nova triagem</p>
+            <p className="mt-4 font-display text-2xl font-semibold leading-tight">Nova triagem</p>
             <p className="mt-1 text-sky-50">A tosse voltou ou piorou? Conta pra gente.</p>
             <span className="mt-4 inline-flex min-h-toque items-center font-semibold underline-offset-4 group-hover:underline">Começar →</span>
           </Link>
           <div className="card p-6">
-            <p className="font-display text-lg font-bold">Onde fazer o exame</p>
+            <p className="text-base font-semibold">Onde fazer o exame</p>
             <ul className="mt-3 space-y-3">
               {UNIDADES_SAUDE.map((u) => (
                 <li key={u.nome} className="flex gap-2 text-sm">

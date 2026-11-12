@@ -60,7 +60,7 @@ function Medida({ icone: Icone, rotulo, valor, ajuda }) {
         <Icone className="h-4 w-4 text-sky-700 dark:text-sky-400" aria-hidden="true" />
         {rotulo}
       </dt>
-      <dd className="mt-1 text-2xl font-extrabold tabular-nums">{valor}</dd>
+      <dd className="mt-1 text-2xl font-semibold tabular-nums">{valor}</dd>
       {ajuda && <dd className="mt-0.5 text-xs texto-suave">{ajuda}</dd>}
     </div>
   );
@@ -75,7 +75,7 @@ export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
     <section aria-labelledby="microclima-titulo" className="card p-5 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 id="microclima-titulo" className="text-xl font-bold">
+          <h2 id="microclima-titulo" className="text-xl font-semibold">
             Microclima da viela
           </h2>
           <p className="mt-0.5 text-sm texto-suave">
@@ -99,11 +99,11 @@ export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
       ) : (
         <div className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_1fr]">
           <div className={`rounded-2xl border-l-8 p-5 ${faixa ? ESTILO_FAIXA[faixa.id] : 'border-slate-300'}`} role="status">
-            <p className="text-sm font-bold uppercase tracking-wider">IVM · Índice de Vulnerabilidade de Microclima</p>
+            <p className="text-sm font-semibold uppercase tracking-wider">IVM · Índice de Vulnerabilidade de Microclima</p>
             <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-1">
-              <p className="text-5xl font-extrabold tabular-nums tracking-tight">{fmt(leitura.ivm)}</p>
+              <p className="text-5xl font-semibold tabular-nums tracking-tight">{fmt(leitura.ivm)}</p>
               {faixa && (
-                <p className="mb-1 inline-flex items-center gap-1.5 text-xl font-extrabold">
+                <p className="mb-1 inline-flex items-center gap-1.5 text-xl font-semibold">
                   <IconeFaixa className="h-6 w-6" aria-hidden="true" style={{ color: faixa.cor }} />
                   {faixa.rotulo}
                 </p>

@@ -202,7 +202,7 @@ export default function EntrarPage() {
 
       <Link
         to="/morador"
-        className="animate-element animate-delay-800 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-slate-300 font-semibold transition-colors hover:bg-slate-900/5 dark:border-slate-600 dark:hover:bg-white/5"
+        className="animate-element animate-delay-800 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 font-semibold transition-colors hover:bg-slate-900/5 dark:border-slate-600 dark:hover:bg-white/5"
       >
         Fazer a triagem sem conta
       </Link>

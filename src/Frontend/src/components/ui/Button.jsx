@@ -19,7 +19,7 @@ const VARIANTES = {
 
 const TAMANHOS = {
   md: 'min-h-toque px-5 text-base',
-  lg: 'min-h-14 px-6 text-lg',
+  lg: 'min-h-12 px-6 text-base',
   icone: 'min-h-toque min-w-toque p-0',
 };
 

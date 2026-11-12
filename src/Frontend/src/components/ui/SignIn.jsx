@@ -26,8 +26,8 @@ export function CampoVidro({ label, erro, dica, type = 'text', className = '', .
         </p>
       )}
       <div
-        className={`mt-1.5 rounded-2xl border-2 bg-white/70 transition-colors focus-within:border-sky-600 focus-within:bg-sky-50/70
-          dark:bg-white/5 dark:focus-within:border-sky-400 dark:focus-within:bg-sky-400/10 md:backdrop-blur-sm
+        className={`mt-1.5 rounded-xl border bg-white transition-colors focus-within:border-sky-600 focus-within:ring-4 focus-within:ring-sky-600/10
+          dark:bg-slate-900 dark:focus-within:border-sky-400
           ${erro ? 'border-red-600 dark:border-red-400' : 'border-slate-300 dark:border-slate-600'}`}
       >
         <div className="relative">
@@ -36,7 +36,7 @@ export function CampoVidro({ label, erro, dica, type = 'text', className = '', .
             type={senha && mostrar ? 'text' : type}
             aria-invalid={erro ? true : undefined}
             aria-describedby={descricao}
-            className={`min-h-14 w-full rounded-2xl bg-transparent px-4 text-base text-slate-900 placeholder:text-slate-500 focus:outline-none dark:text-slate-50 dark:placeholder:text-slate-400 ${senha ? 'pr-14' : ''}`}
+            className={`min-h-12 w-full rounded-xl bg-transparent px-4 text-base text-slate-900 placeholder:text-slate-500 focus:outline-none dark:text-slate-50 dark:placeholder:text-slate-400 ${senha ? 'pr-14' : ''}`}
             {...props}
           />
           {senha && (
@@ -62,16 +62,16 @@ export function CampoVidro({ label, erro, dica, type = 'text', className = '', .
 }
 
 function CartaoInfo({ cartao, atraso }) {
-  const { icone: Icone, titulo, texto, tom = 'bg-white/85 dark:bg-slate-900/80' } = cartao;
+  const { icone: Icone, titulo, texto, tom = 'bg-white dark:bg-slate-900' } = cartao;
   return (
-    <div className={`animate-testimonial ${atraso} flex w-64 items-start gap-3 rounded-3xl border border-white/30 p-4 shadow-flutuante backdrop-blur-xl ${tom}`}>
+    <div className={`animate-testimonial ${atraso} flex w-64 items-start gap-3 rounded-2xl p-4 ${tom}`}>
       {Icone && (
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-sol-300 dark:bg-white dark:text-slate-900">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
           <Icone className="h-5 w-5" aria-hidden="true" />
         </span>
       )}
       <div className="text-sm leading-snug">
-        <p className="font-display font-bold text-slate-900 dark:text-white">{titulo}</p>
+        <p className="font-display font-semibold text-slate-900 dark:text-white">{titulo}</p>
         <p className="mt-1 text-slate-700 dark:text-slate-300">{texto}</p>
       </div>
     </div>
@@ -97,7 +97,7 @@ export function SignInPage({ titulo, descricao, foto = 'rocinha-por-do-sol', fot
       <section className="flex flex-1 items-start justify-center px-4 pb-12 pt-2 sm:px-8 md:items-center md:py-12">
         <div className="w-full max-w-md">
           <div className="flex flex-col gap-6">
-            <h1 className="animate-element animate-delay-100 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-5xl">{titulo}</h1>
+            <h1 className="animate-element animate-delay-100 text-3xl font-semibold tracking-tight md:text-4xl">{titulo}</h1>
             {descricao && <p className="animate-element animate-delay-200 text-lg texto-suave">{descricao}</p>}
             {children}
           </div>
@@ -106,9 +106,9 @@ export function SignInPage({ titulo, descricao, foto = 'rocinha-por-do-sol', fot
 
       {/* Coluna da foto com cartões (tablet e desktop) */}
       <section className="relative hidden flex-1 p-4 md:block" aria-label={legendaFoto ? undefined : 'Imagem ilustrativa'}>
-        <div className="animate-slide-right animate-delay-300 absolute inset-4 overflow-hidden rounded-4xl bg-noite">
+        <div className="animate-slide-right animate-delay-300 absolute inset-4 overflow-hidden rounded-3xl bg-noite">
           <Foto nome={foto} alt={fotoAlt} sizes="50vw" prioridade imgClassName="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-noite/85 via-noite/10 to-sky-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           {legendaFoto && <p className="absolute left-6 top-6 max-w-xs text-sm font-medium text-white/90">{legendaFoto}</p>}
         </div>
         {cartoes.length > 0 && (
@@ -138,7 +138,7 @@ export function BotaoLogin({ children, carregando, className = '', ...props }) {
       type="submit"
       disabled={carregando}
       aria-busy={carregando || undefined}
-      className={`inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-sky-700 font-display text-lg font-bold text-white transition-colors hover:bg-sky-800 disabled:cursor-wait disabled:opacity-70 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400 ${className}`}
+      className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-sky-700 font-semibold text-white transition-colors hover:bg-sky-800 disabled:cursor-wait disabled:opacity-70 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400 ${className}`}
       {...props}
     >
       {children}

@@ -6,7 +6,6 @@ import { TriagemForm } from '../components/morador/TriagemForm';
 import { ResultadoTriagem } from '../components/morador/ResultadoTriagem';
 import { ConfigNotice } from '../components/ui/ConfigNotice';
 import { Alert } from '../components/ui/Alert';
-import { Selo } from '../components/brand/Enfeites';
 import { useTriagem } from '../hooks/useTriagem';
 import { useEnvioPendente } from '../hooks/useEnvioPendente';
 import { useAuth } from '../hooks/useAuth';
@@ -29,7 +28,7 @@ export default function MoradorPage() {
 
   return (
     <div className="container-app max-w-5xl">
-      <PageHeader eyebrow="Área do morador" titulo="Autotriagem de tosse" selo={<Selo tom="sol">Menos de 1 minuto</Selo>}>
+      <PageHeader eyebrow="Área do morador" titulo="Autotriagem de tosse">
         Responde com calma. Suas respostas ajudam o agente de saúde a chegar primeiro em quem mais precisa.
       </PageHeader>
 
@@ -61,9 +60,9 @@ export default function MoradorPage() {
 
         <aside className="space-y-4">
           {ehMorador ? (
-            <div className="rounded-4xl bg-emerald-50 p-6 dark:bg-emerald-950/40">
+            <div className="rounded-3xl bg-emerald-50 p-6 dark:bg-emerald-950/40">
               <UserRound className="h-7 w-7 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
-              <p className="mt-3 font-display text-lg font-bold">Triagem ligada à sua conta</p>
+              <p className="mt-3 text-base font-semibold">Triagem ligada à sua conta</p>
               <p className="mt-1 text-sm texto-suave">Depois de enviar, acompanhe o atendimento na sua área.</p>
               <Link to="/minha-area" className="mt-3 inline-flex min-h-toque items-center font-semibold text-emerald-800 hover:underline dark:text-emerald-300">
                 Ir para Minha área →
@@ -71,9 +70,9 @@ export default function MoradorPage() {
             </div>
           ) : (
             !autenticado && (
-              <div className="rounded-4xl bg-sky-50 p-6 dark:bg-sky-950/40">
+              <div className="rounded-3xl bg-sky-50 p-6 dark:bg-sky-950/40">
                 <UserRound className="h-7 w-7 text-sky-700 dark:text-sky-400" aria-hidden="true" />
-                <p className="mt-3 font-display text-lg font-bold">Quer acompanhar o atendimento?</p>
+                <p className="mt-3 text-base font-semibold">Quer acompanhar o atendimento?</p>
                 <p className="mt-1 text-sm texto-suave">
                   Com uma conta, você vê quando o agente está a caminho e quando a amostra foi coletada. A triagem funciona sem conta também.
                 </p>
@@ -84,7 +83,7 @@ export default function MoradorPage() {
             )
           )}
           <div className="card p-6">
-            <p className="font-display text-lg font-bold">Sinais de alerta</p>
+            <p className="text-base font-semibold">Sinais de alerta</p>
             <ul className="mt-3 space-y-2 text-sm texto-suave">
               <li>• Tosse há 3 semanas ou mais</li>
               <li>• Febre no fim da tarde</li>

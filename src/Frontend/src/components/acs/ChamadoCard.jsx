@@ -46,7 +46,7 @@ export function ChamadoCard({ chamado, aoAtualizar, atualizando }) {
       } ${finalizado ? 'opacity-80' : ''}`}
     >
       {urgente && !finalizado && (
-        <p className="flex items-center gap-2 bg-red-600 px-4 py-2 text-sm font-extrabold uppercase tracking-wide text-white">
+        <p className="flex items-center gap-2 bg-red-600 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white">
           <Siren className="h-4 w-4" aria-hidden="true" />
           Urgente — tosse +21 dias
         </p>
@@ -55,7 +55,7 @@ export function ChamadoCard({ chamado, aoAtualizar, atualizando }) {
       <div className="p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 id={tituloId} className="truncate text-lg font-bold">
+            <h3 id={tituloId} className="truncate text-lg font-semibold">
               {chamado.morador_nome || 'Morador sem nome'}
             </h3>
             <p className="mt-0.5 flex items-center gap-1.5 texto-suave">
@@ -69,7 +69,7 @@ export function ChamadoCard({ chamado, aoAtualizar, atualizando }) {
         <dl className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide texto-suave">Tosse há</dt>
-            <dd className={`text-2xl font-extrabold ${urgente ? 'text-red-700 dark:text-red-400' : ''}`}>
+            <dd className={`text-2xl font-semibold ${urgente ? 'text-red-700 dark:text-red-400' : ''}`}>
               {Number(chamado.dias_tosse) || 0} {Number(chamado.dias_tosse) === 1 ? 'dia' : 'dias'}
             </dd>
           </div>

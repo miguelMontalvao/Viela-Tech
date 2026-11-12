@@ -36,7 +36,7 @@ export function MapaRocinha({ chamados }) {
     <section aria-labelledby="mapa-rocinha-titulo" className="card overflow-hidden">
       <div className="flex flex-col gap-3 border-b border-slate-200 p-5 dark:border-slate-700 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div>
-          <h2 id="mapa-rocinha-titulo" className="text-xl font-extrabold">
+          <h2 id="mapa-rocinha-titulo" className="text-xl font-semibold">
             Triagens por sub-área da Rocinha
           </h2>
           <p className="mt-1 text-sm texto-suave">
@@ -114,13 +114,13 @@ export function MapaRocinha({ chamados }) {
                     <text x={x + 14} y={y + 30} className={`${f.texto} font-sans text-[13px] font-semibold`}>
                       {s.nome}
                     </text>
-                    <text x={x + 14} y={y + 66} className={`${f.texto} font-display text-[26px] font-extrabold`}>
+                    <text x={x + 14} y={y + 66} className={`${f.texto} font-display text-[26px] font-semibold`}>
                       {c.total}
                     </text>
                     {c.urgentes > 0 && (
                       <g>
                         <rect x={x + LARG - 46} y={y + 46} width="34" height="26" rx="13" className="fill-red-600" />
-                        <text x={x + LARG - 29} y={y + 64} textAnchor="middle" className="fill-white font-sans text-[13px] font-bold">
+                        <text x={x + LARG - 29} y={y + 64} textAnchor="middle" className="fill-white font-sans text-[13px] font-semibold">
                           {c.urgentes}
                         </text>
                       </g>
@@ -135,8 +135,8 @@ export function MapaRocinha({ chamados }) {
             <div aria-live="polite" className="min-h-[7.5rem] rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/60">
               {detalhe ? (
                 <>
-                  <p className="font-display text-lg font-bold">{detalhe.setor.nome}</p>
-                  <p className="mt-1 text-3xl font-extrabold tabular-nums">{detalhe.total}</p>
+                  <p className="text-base font-semibold">{detalhe.setor.nome}</p>
+                  <p className="mt-1 text-3xl font-semibold tabular-nums">{detalhe.total}</p>
                   <p className="text-sm texto-suave">{detalhe.total === 1 ? 'triagem registrada' : 'triagens registradas'}</p>
                   {detalhe.urgentes > 0 && (
                     <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-red-700 dark:text-red-300">
@@ -162,7 +162,7 @@ export function MapaRocinha({ chamados }) {
                   </li>
                 ))}
                 <li className="flex items-center gap-2">
-                  <span className="flex h-4 w-6 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white" aria-hidden="true">
+                  <span className="flex h-4 w-6 items-center justify-center rounded-full bg-red-600 text-[10px] font-semibold text-white" aria-hidden="true">
                     n
                   </span>
                   Casos urgentes (tosse +21 dias)

@@ -30,7 +30,7 @@ export function EmptyState({ icone: Icone, titulo, children, acao }) {
 export function Badge({ children, className = '', ...props }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${className}`}
       {...props}
     >
       {children}

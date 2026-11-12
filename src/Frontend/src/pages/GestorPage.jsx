@@ -40,7 +40,7 @@ function Dashboard() {
         <MicroclimaPanel {...microclima} aoAtualizar={microclima.atualizar} />
 
         <section aria-labelledby="indicadores-titulo">
-          <h2 id="indicadores-titulo" className="mb-3 text-xl font-bold">
+          <h2 id="indicadores-titulo" className="mb-3 text-xl font-semibold">
             Triagens e coletas
           </h2>
           {erro && <Alert tipo="aviso" className="mb-4">{erro}</Alert>}

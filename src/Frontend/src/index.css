@@ -74,7 +74,7 @@
   }
 
   .card {
-    @apply rounded-3xl border border-slate-200/80 bg-white shadow-cartao dark:border-slate-700/70 dark:bg-slate-800;
+    @apply rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900;
   }
 
   .texto-suave {
@@ -82,11 +82,11 @@
   }
 
   .sobrelinha {
-    @apply inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-emerald-700 dark:text-emerald-400;
+    @apply inline-flex items-center gap-2 text-sm font-medium text-sky-700 dark:text-sky-400;
   }
 
   .campo {
-    @apply block min-h-toque w-full rounded-2xl border-2 border-slate-300 bg-white px-4 text-base text-slate-900
+    @apply block min-h-toque w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900
       placeholder:text-slate-500 transition-colors
       hover:border-slate-400 focus:border-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-600/25
       dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400
@@ -99,7 +99,7 @@
 
   /* Selo de letreiro pintado à mão (placas e muros da comunidade) */
   .selo {
-    @apply inline-flex items-center gap-1.5 rounded-xl border-2 border-slate-900 px-3 py-1 font-display text-sm font-extrabold uppercase tracking-wide shadow-selo;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:text-slate-300;
   }
 
   /* Ondas do calçadão: textura em SVG, sem requisição extra */
@@ -116,22 +116,19 @@
   /* Efeitos de entrada do login (adaptados do componente sign-in) */
   .animate-element {
     opacity: 0;
-    filter: blur(4px);
-    transform: translateY(14px);
+    transform: translateY(8px);
     animation: fadeSlideIn 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
   }
 
   .animate-slide-right {
     opacity: 0;
-    filter: blur(6px);
-    transform: translateX(28px);
+    transform: translateX(12px);
     animation: slideRightIn 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
   }
 
   .animate-testimonial {
     opacity: 0;
-    filter: blur(4px);
-    transform: translateY(18px) scale(0.96);
+    transform: translateY(8px);
     animation: testimonialIn 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
   }
 
@@ -150,11 +147,11 @@
 
 /* Keyframes dos efeitos do login (fora do Tailwind para não serem descartados no build). */
 @keyframes fadeSlideIn {
-  to { opacity: 1; filter: blur(0px); transform: translateY(0px); }
+  to { opacity: 1; transform: translateY(0px); }
 }
 @keyframes slideRightIn {
-  to { opacity: 1; filter: blur(0px); transform: translateX(0px); }
+  to { opacity: 1; transform: translateX(0px); }
 }
 @keyframes testimonialIn {
-  to { opacity: 1; filter: blur(0px); transform: translateY(0px) scale(1); }
+  to { opacity: 1; transform: translateY(0px); }
 }

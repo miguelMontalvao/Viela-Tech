@@ -38,7 +38,7 @@ export function ResultadoTriagem({ resultado, aoNovaTriagem, logado = false }) {
         <div className="overflow-hidden rounded-2xl border-2 border-red-600 bg-white shadow-sm dark:bg-slate-800">
           <div className="flex items-center gap-3 bg-red-600 px-5 py-4 text-white">
             <Siren className="h-7 w-7 shrink-0" aria-hidden="true" />
-            <h2 id="resultado-titulo" ref={tituloRef} tabIndex={-1} className="text-xl font-extrabold focus:outline-none">
+            <h2 id="resultado-titulo" ref={tituloRef} tabIndex={-1} className="text-xl font-semibold focus:outline-none">
               Alerta prioritário: tosse há 21 dias ou mais
             </h2>
           </div>
@@ -61,7 +61,7 @@ export function ResultadoTriagem({ resultado, aoNovaTriagem, logado = false }) {
           <div className="flex items-start gap-3">
             <CheckCircle2 className="mt-0.5 h-7 w-7 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
             <div>
-              <h2 id="resultado-titulo" ref={tituloRef} tabIndex={-1} className="text-xl font-extrabold focus:outline-none">
+              <h2 id="resultado-titulo" ref={tituloRef} tabIndex={-1} className="text-xl font-semibold focus:outline-none">
                 Obrigado, {nome}. Sua triagem foi registrada.
               </h2>
               <p className="mt-2 texto-suave">
