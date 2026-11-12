@@ -70,7 +70,7 @@
 
 @layer components {
   .container-app {
-    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10 2xl:max-w-[88rem];
   }
 
   .card {
@@ -185,3 +185,106 @@
 @media (prefers-reduced-motion: reduce) {
   .ecg-linha { stroke-dashoffset: 0; animation: none; }
 }
+
+/* ---------- Home: efeitos ---------- */
+/* Revelar ao rolar */
+.revelar {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.revelar.visivel {
+  opacity: 1;
+  transform: none;
+}
+/* Manchas de luz do fundo do hero */
+@keyframes flutuar {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(3%, -4%, 0) scale(1.08); }
+}
+.mancha {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(72px);
+  animation: flutuar 14s ease-in-out infinite;
+}
+/* Cards flutuantes do hero */
+@keyframes boiar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.boiar { animation: boiar 6s ease-in-out infinite; }
+/* Grade pontilhada que some nas bordas */
+.grade-hero {
+  background-image: radial-gradient(rgb(148 163 184 / 0.28) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+}
+.dark .grade-hero { background-image: radial-gradient(rgb(71 85 105 / 0.4) 1px, transparent 1px); }
+/* Luz que segue o mouse nos cards */
+.holofote { position: relative; isolation: isolate; }
+.holofote::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), rgb(2 132 199 / 0.10), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+  pointer-events: none;
+}
+.holofote:hover::before { opacity: 1; }
+.dark .holofote::before { background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), rgb(56 189 248 / 0.12), transparent 45%); }
+/* Palavra que troca */
+@keyframes trocaPalavra {
+  from { opacity: 0; transform: translateY(60%); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.troca-palavra { display: inline-block; animation: trocaPalavra 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+/* Barra de progresso das abas */
+@keyframes encher { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.encher { transform-origin: left; animation: encher linear forwards; }
+/* Faixa infinita */
+@keyframes rolar { to { transform: translateX(-50%); } }
+.rolar { animation: rolar 40s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .revelar { opacity: 1; transform: none; transition: none; }
+  .mancha, .boiar, .rolar { animation: none; }
+}
+
+/* ---------- Login em tela cheia ---------- */
+@keyframes zoomLento { from { transform: scale(1.08); } to { transform: scale(1); } }
+.animate-zoom-lento { animation: zoomLento 14s ease-out both; }
+
+/* ---------- Páginas legais ---------- */
+.texto-legal ul { list-style: disc; padding-left: 1.25rem; }
+.texto-legal li + li { margin-top: 0.5rem; }
+.texto-legal a { font-weight: 600; color: #0369a1; text-decoration: underline; }
+.dark .texto-legal a { color: #38bdf8; }
+
+/* ---------- Triagem: controle deslizante ---------- */
+.deslizante { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 9999px; background: transparent; cursor: pointer; }
+.deslizante::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 9999px;
+  background: #fff; border: 3px solid #0369a1; box-shadow: 0 2px 8px rgb(15 23 42 / 0.25); transition: transform 0.15s;
+}
+.deslizante::-moz-range-thumb { width: 24px; height: 24px; border-radius: 9999px; background: #fff; border: 3px solid #0369a1; }
+.deslizante:active::-webkit-slider-thumb { transform: scale(1.15); }
+.deslizante:focus-visible { outline: 3px solid #0284c7; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .animate-zoom-lento { animation: none; } }
+
+/* ---------- Header ---------- */
+@keyframes descer { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
+.animate-descer { animation: descer 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+html.com-intro .animate-descer { animation-delay: 1.45s; }
+@keyframes girarEntrar { from { opacity: 0; transform: rotate(-90deg) scale(0.6); } to { opacity: 1; transform: none; } }
+.animate-girar-entrar { display: inline-flex; animation: girarEntrar 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .animate-descer, .animate-girar-entrar { animation: none; } }
+
+/* ---------- 404 ---------- */
+@keyframes andar404 { to { stroke-dashoffset: -56; } }
+.caminho-404 { animation: andar404 1.6s linear infinite; }
+@keyframes pino404 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.pino-404 { animation: pino404 1.8s ease-in-out infinite; transform-box: fill-box; }
+@media (prefers-reduced-motion: reduce) { .caminho-404, .pino-404 { animation: none; } }

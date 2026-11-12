@@ -1,6 +1,6 @@
 import { lazy, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Layout } from './components/layout/Layout';
+import { Layout, TelaCheia } from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 
 // Cada área carrega só quando é aberta: a Home fica leve no celular.
@@ -12,6 +12,7 @@ const MinhaAreaPage = lazy(() => import('./pages/MinhaAreaPage'));
 const AcsPage = lazy(() => import('./pages/AcsPage'));
 const GestorPage = lazy(() => import('./pages/GestorPage'));
 const MapaPage = lazy(() => import('./pages/MapaPage'));
+const LegalPage = lazy(() => import('./pages/LegalPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const TITULOS = {
@@ -24,6 +25,8 @@ const TITULOS = {
   '/acs': 'Fila de visitas do ACS · Viela Tech',
   '/gestor': 'Dashboard do gestor · Viela Tech',
   '/mapa': 'Mapa da tuberculose no Rio · Viela Tech',
+  '/privacidade': 'Política de privacidade · Viela Tech',
+  '/termos': 'Termos de uso · Viela Tech',
 };
 
 /** Atualiza o título da aba e volta ao topo a cada troca de página. */
@@ -39,16 +42,21 @@ export default function App() {
   useAnuncioDeRota();
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="morador" element={<MoradorPage />} />
+      {/* Login em tela cheia, sem cabeçalho nem rodapé do site */}
+      <Route element={<TelaCheia />}>
         <Route path="entrar" element={<EntrarPage />} />
         <Route path="equipe" element={<EquipePage />} />
         <Route path="redefinir-senha" element={<RedefinirSenhaPage />} />
+      </Route>
+      <Route element={<Layout />}>
+        <Route index element={<HomePage />} />
+        <Route path="morador" element={<MoradorPage />} />
         <Route path="minha-area" element={<MinhaAreaPage />} />
         <Route path="acs" element={<AcsPage />} />
         <Route path="gestor" element={<GestorPage />} />
         <Route path="mapa" element={<MapaPage />} />
+        <Route path="privacidade" element={<LegalPage tipo="privacidade" />} />
+        <Route path="termos" element={<LegalPage tipo="termos" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
