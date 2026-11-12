@@ -23,5 +23,6 @@
 
 ---
 
+**Aplicação publicada (Vercel):** [viela-tech.vercel.app](https://viela-tech.vercel.app)  
 **Link do Repositório GitHub:** [github.com/miguelMontalvao/Viela-Tech](https://github.com/miguelMontalvao/Viela-Tech)  
 **Link do Vídeo no YouTube (Pitch 3min):** `[INSIRA_LINK_DO_YOUTUBE_AQUI]`  

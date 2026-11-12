@@ -6,6 +6,8 @@ Aplicação web do Viela Tech, com três áreas:
 - **Painel ACS:** fila de visitas dos Agentes Comunitários de Saúde. Funciona sem sinal.
 - **Dashboard do Gestor:** microclima medido pelo sensor IoT, indicadores e gráficos.
 
+**Em produção:** [viela-tech.vercel.app](https://viela-tech.vercel.app), conectado ao Supabase e com deploy pela Vercel CLI (`vercel deploy --prod` a partir de `src/Frontend`).
+
 Stack: **React 18 + Vite 6 + Tailwind CSS 3 + Supabase + Lucide React**, com React Router e Vitest.
 
 ---
