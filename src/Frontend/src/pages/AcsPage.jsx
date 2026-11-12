@@ -1,21 +1,22 @@
 import { useMemo, useState } from 'react';
-import { ClipboardCheck, LogOut } from 'lucide-react';
-import { PageHeader } from '../components/layout/Layout';
+import { CheckCircle2, ClipboardCheck, ClipboardList, Siren, Stethoscope } from 'lucide-react';
+import { CabecalhoPainel } from '../components/painel/Painel';
+import { Revelar } from '../components/home/Efeitos';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { ChamadoCard } from '../components/acs/ChamadoCard';
 import { ChamadosFilter } from '../components/acs/ChamadosFilter';
 import { SyncBar } from '../components/acs/SyncBar';
 import { Alert } from '../components/ui/Alert';
-import { Button } from '../components/ui/Button';
 import { EmptyState, Spinner } from '../components/ui/Feedback';
 import { useAuth } from '../hooks/useAuth';
 import { useChamados } from '../hooks/useChamados';
 import { ehUrgente } from '../domain/risco';
-import { estaFinalizado, filtrarChamados, idDoChamado } from '../domain/chamados';
+import { STATUS, estaFinalizado, filtrarChamados, idDoChamado } from '../domain/chamados';
+import { primeiroNome } from '../domain/cadastro';
 import { PAPEIS } from '../domain/perfis';
 
 function PainelACS() {
-  const { nome, usuario, logout } = useAuth();
+  const { nome, usuario } = useAuth();
   const {
     chamados, carregando, erro, online, sincronizando, pendentes, mensagem, limparMensagem,
     atualizandoId, recarregar, atualizarStatus, sincronizar,
@@ -29,6 +30,7 @@ function PainelACS() {
       abertos: chamados.filter((c) => !estaFinalizado(c)).length,
       urgentes: chamados.filter((c) => ehUrgente(c) && !estaFinalizado(c)).length,
       concluidos: chamados.filter(estaFinalizado).length,
+      emAtendimento: chamados.filter((c) => c.status === STATUS.EM_ANDAMENTO || c.status === STATUS.COLETADO).length,
       todos: chamados.length,
     }),
     [chamados],
@@ -36,19 +38,20 @@ function PainelACS() {
 
   return (
     <div className="container-app">
-      <PageHeader
-        eyebrow="Painel do agente comunitário"
+      <CabecalhoPainel
+        sobrelinha="Painel do agente comunitário"
         titulo="Fila de visitas"
-        acoes={
-          <Button variante="fantasma" icone={LogOut} onClick={logout}>
-            Sair
-          </Button>
-        }
+        kpis={[
+          { rotulo: 'Em aberto', valor: contagens.abertos, icone: ClipboardList, detalhe: 'esperando visita ou coleta' },
+          { rotulo: 'Urgentes', valor: contagens.urgentes, icone: Siren, destaque: contagens.urgentes > 0, detalhe: 'tosse há 21 dias ou mais' },
+          { rotulo: 'Em atendimento', valor: contagens.emAtendimento, icone: Stethoscope, detalhe: 'visita iniciada ou amostra colhida' },
+          { rotulo: 'Concluídos', valor: contagens.concluidos, icone: CheckCircle2, detalhe: 'chamados encerrados' },
+        ]}
       >
-        {`Olá, ${nome ?? usuario?.email ?? 'agente'}. `}Os casos de tosse há 21 dias ou mais aparecem primeiro.
-      </PageHeader>
+        {`Bom plantão, ${primeiroNome(nome) || usuario?.email || 'agente'}. `}Os casos de tosse há 21 dias ou mais aparecem primeiro.
+      </CabecalhoPainel>
 
-      <div className="space-y-5">
+      <div className="space-y-5 py-8">
         <SyncBar
           online={online}
           pendentes={pendentes}
@@ -80,7 +83,7 @@ function PainelACS() {
           {carregando && chamados.length === 0 ? (
             <Spinner texto="Buscando chamados…" />
           ) : visiveis.length === 0 ? (
-            <div className="card">
+            <div className="painel">
               <EmptyState icone={ClipboardCheck} titulo={chamados.length ? 'Nada neste filtro' : 'Nenhum chamado por enquanto'}>
                 {chamados.length
                   ? 'Troque o filtro ou limpe a busca para ver os outros chamados.'
@@ -88,11 +91,11 @@ function PainelACS() {
               </EmptyState>
             </div>
           ) : (
-            <ul className="grid gap-4 lg:grid-cols-2">
-              {visiveis.map((c) => (
-                <li key={idDoChamado(c)}>
+            <ul className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+              {visiveis.map((c, i) => (
+                <Revelar as="li" key={idDoChamado(c)} atraso={Math.min(i, 5) * 60}>
                   <ChamadoCard chamado={c} aoAtualizar={atualizarStatus} atualizando={atualizandoId === idDoChamado(c)} />
-                </li>
+                </Revelar>
               ))}
             </ul>
           )}

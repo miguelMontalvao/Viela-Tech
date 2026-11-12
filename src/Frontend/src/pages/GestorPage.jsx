@@ -1,14 +1,12 @@
 import { useMemo } from 'react';
-import { ClipboardList, FlaskConical, LogOut, Siren, Timer } from 'lucide-react';
-import { PageHeader } from '../components/layout/Layout';
+import { ClipboardList, FlaskConical, Siren, Timer } from 'lucide-react';
+import { CabecalhoPainel } from '../components/painel/Painel';
+import { Revelar } from '../components/home/Efeitos';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { MicroclimaPanel } from '../components/gestor/MicroclimaPanel';
-import { StatCard } from '../components/gestor/StatCard';
 import { BarChart } from '../components/gestor/BarChart';
-import { Button } from '../components/ui/Button';
 import { EmptyState, Spinner } from '../components/ui/Feedback';
 import { Alert } from '../components/ui/Alert';
-import { useAuth } from '../hooks/useAuth';
 import { useChamados } from '../hooks/useChamados';
 import { useMicroclima } from '../hooks/useMicroclima';
 import { resumirChamados } from '../domain/chamados';
@@ -16,7 +14,6 @@ import { PAPEIS } from '../domain/perfis';
 import { MapaRocinha } from '../components/mapa/MapaRocinha';
 
 function Dashboard() {
-  const { logout } = useAuth();
   const microclima = useMicroclima();
   const { chamados, carregando, erro } = useChamados({ sincronizarAoReconectar: false });
   const resumo = useMemo(() => resumirChamados(chamados), [chamados]);
@@ -24,56 +21,55 @@ function Dashboard() {
 
   return (
     <div className="container-app">
-      <PageHeader
-        eyebrow="Dashboard do gestor"
+      <CabecalhoPainel
+        sobrelinha="Dashboard do gestor"
         titulo="Vigilância nas vielas"
-        acoes={
-          <Button variante="fantasma" icone={LogOut} onClick={logout}>
-            Sair
-          </Button>
+        kpis={
+          carregando && !temDados
+            ? null
+            : [
+                {
+                  rotulo: 'Triagens',
+                  valor: resumo.total,
+                  icone: ClipboardList,
+                  detalhe: resumo.pendentesSync ? `${resumo.pendentesSync} ainda no aparelho` : 'registradas no sistema',
+                },
+                { rotulo: 'Casos urgentes', valor: resumo.urgentes, icone: Siren, destaque: resumo.urgentesAbertos > 0, detalhe: `${resumo.urgentesAbertos} em aberto · tosse +21 dias` },
+                {
+                  rotulo: 'Coletas concluídas',
+                  valor: resumo.concluidos,
+                  icone: FlaskConical,
+                  detalhe: temDados ? `${Math.round((resumo.concluidos / resumo.total) * 100)}% do total` : 'nenhuma ainda',
+                },
+                { rotulo: 'Média de dias com tosse', valor: resumo.mediaDiasTosse, casas: 1, icone: Timer, detalhe: 'entre todos os triados' },
+              ]
         }
       >
         O ambiente medido pelos sensores e o andamento das triagens e coletas, em um só lugar.
-      </PageHeader>
+      </CabecalhoPainel>
 
-      <div className="space-y-6">
-        <MicroclimaPanel {...microclima} aoAtualizar={microclima.atualizar} />
+      <div className="space-y-6 py-8">
+        {erro && <Alert tipo="aviso">{erro}</Alert>}
+        {carregando && !temDados && <Spinner texto="Calculando indicadores…" />}
 
-        <section aria-labelledby="indicadores-titulo">
-          <h2 id="indicadores-titulo" className="mb-3 text-xl font-semibold">
-            Triagens e coletas
-          </h2>
-          {erro && <Alert tipo="aviso" className="mb-4">{erro}</Alert>}
-          {carregando && !temDados ? (
-            <Spinner texto="Calculando indicadores…" />
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <StatCard icone={ClipboardList} rotulo="Total de triagens" valor={resumo.total} detalhe={resumo.pendentesSync ? `${resumo.pendentesSync} ainda no aparelho` : 'Registradas no sistema'} />
-              <StatCard
-                icone={Siren}
-                tom="vermelho"
-                rotulo="Casos urgentes"
-                valor={resumo.urgentes}
-                detalhe={`${resumo.urgentesAbertos} em aberto · tosse +21 dias`}
-              />
-              <StatCard icone={FlaskConical} tom="verde" rotulo="Coletas concluídas" valor={resumo.concluidos} detalhe={temDados ? `${Math.round((resumo.concluidos / resumo.total) * 100)}% do total` : 'Nenhuma ainda'} />
-              <StatCard icone={Timer} tom="neutro" rotulo="Média de dias com tosse" valor={resumo.mediaDiasTosse.toLocaleString('pt-BR')} detalhe="Entre todos os triados" />
-            </div>
-          )}
-        </section>
+        <Revelar>
+          <MicroclimaPanel {...microclima} aoAtualizar={microclima.atualizar} />
+        </Revelar>
 
         {temDados ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2">
             <BarChart titulo="Chamados por etapa" descricao="Onde cada triagem está no fluxo de atendimento." dados={resumo.porStatus} unidade={['chamado', 'chamados']} />
             <BarChart titulo="Triagens por setor" descricao="Setores com mais pedidos de visita." dados={resumo.porSetor.slice(0, 8)} />
           </div>
         ) : null}
 
         {temDados ? (
-          <MapaRocinha chamados={chamados} />
+          <Revelar>
+            <MapaRocinha chamados={chamados} />
+          </Revelar>
         ) : (
           !carregando && (
-            <div className="card">
+            <div className="painel">
               <EmptyState icone={ClipboardList} titulo="Ainda não há triagens para exibir">
                 Os gráficos aparecem assim que os primeiros moradores fizerem a autotriagem.
               </EmptyState>

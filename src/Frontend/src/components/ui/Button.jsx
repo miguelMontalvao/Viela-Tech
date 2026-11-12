@@ -15,6 +15,8 @@ const VARIANTES = {
   secundaria:
     'border-2 border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700',
   fantasma: 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800',
+  // Sobre fundos escuros (cabeçalho dos painéis).
+  vidro: 'bg-white/10 text-white ring-1 ring-inset ring-white/20 backdrop-blur hover:bg-white/15',
 };
 
 const TAMANHOS = {
@@ -34,8 +36,9 @@ export const Button = forwardRef(function Button(
       type={type}
       disabled={disabled || carregando}
       aria-busy={carregando || undefined}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors
-        disabled:cursor-not-allowed disabled:opacity-60 ${VARIANTES[variante]} ${TAMANHOS[tamanho]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition duration-200
+        hover:-translate-y-px active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0
+        ${VARIANTES[variante]} ${TAMANHOS[tamanho]} ${className}`}
       {...props}
     >
       {carregando ? (

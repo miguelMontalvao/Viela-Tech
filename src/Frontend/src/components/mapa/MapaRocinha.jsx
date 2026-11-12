@@ -33,7 +33,7 @@ export function MapaRocinha({ chamados }) {
   const altura = 4 * (ALT + GAP);
 
   return (
-    <section aria-labelledby="mapa-rocinha-titulo" className="card overflow-hidden">
+    <section aria-labelledby="mapa-rocinha-titulo" className="painel overflow-hidden">
       <div className="flex flex-col gap-3 border-b border-slate-200 p-5 dark:border-slate-700 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div>
           <h2 id="mapa-rocinha-titulo" className="text-xl font-semibold">

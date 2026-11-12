@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { BarChart3, Table2 } from 'lucide-react';
+import { useNaTela } from '../../hooks/useAnimacao';
 
 /*
  * Gráfico de barras horizontais de série única.
@@ -12,15 +13,16 @@ export function BarChart({ titulo, descricao, dados, unidade = ['triagem', 'tria
   const [verTabela, setVerTabela] = useState(false);
   const [ativo, setAtivo] = useState(null);
   const idTitulo = useId();
+  const [ref, naTela] = useNaTela();
   const total = dados.reduce((s, d) => s + d.valor, 0);
   const maximo = Math.max(1, ...dados.map((d) => d.valor));
   const pct = (v) => (total ? Math.round((v / total) * 100) : 0);
 
   return (
-    <figure className="card flex flex-col p-5" aria-labelledby={idTitulo}>
+    <figure ref={ref} className="painel flex flex-col p-6 sm:p-8" aria-labelledby={idTitulo}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <figcaption id={idTitulo} className="font-bold">
+          <figcaption id={idTitulo} className="text-lg font-semibold tracking-tight">
             {titulo}
           </figcaption>
           {descricao && <p className="mt-0.5 text-sm texto-suave">{descricao}</p>}
@@ -57,7 +59,7 @@ export function BarChart({ titulo, descricao, dados, unidade = ['triagem', 'tria
         </table>
       ) : (
         <ul className="mt-5 space-y-3" aria-label={`${titulo}: ${dados.map((d) => `${d.rotulo}, ${d.valor}`).join('; ')}`}>
-          {dados.map((d) => {
+          {dados.map((d, i) => {
             const largura = d.valor ? Math.max(2, (d.valor / maximo) * 100) : 0;
             const mostrando = ativo === d.chave;
             return (
@@ -73,10 +75,15 @@ export function BarChart({ titulo, descricao, dados, unidade = ['triagem', 'tria
                 <span className="truncate text-sm font-medium text-slate-700 dark:text-slate-200" title={d.rotulo}>
                   {d.rotulo}
                 </span>
-                <span className="relative h-5 rounded-r bg-slate-100 dark:bg-slate-700/50" aria-hidden="true">
+                <span className="relative h-5 rounded-r bg-slate-100 dark:bg-slate-800" aria-hidden="true">
                   <span
-                    className="absolute inset-y-0 left-0 rounded-r transition-[width] duration-500"
-                    style={{ width: `${largura}%`, backgroundColor: '#0284C7', opacity: ativo && !mostrando ? 0.55 : 1 }}
+                    className="absolute inset-y-0 left-0 rounded-r transition-[width,opacity] duration-700 ease-out"
+                    style={{
+                      width: `${naTela ? largura : 0}%`,
+                      transitionDelay: naTela ? `${i * 70}ms` : '0ms',
+                      backgroundColor: '#0284C7',
+                      opacity: ativo && !mostrando ? 0.55 : 1,
+                    }}
                   />
                 </span>
                 <span className="text-right text-sm font-semibold tabular-nums text-slate-900 dark:text-slate-100">{d.valor}</span>
