@@ -47,7 +47,7 @@ export function OnlineBadge() {
     <span
       role="status"
       title={online ? 'Conectado' : 'Sem internet: o que você fizer fica salvo no aparelho'}
-      className="inline-flex min-h-9 items-center gap-2 rounded-full px-3 text-sm font-medium text-slate-600 dark:text-slate-300"
+      className="inline-flex min-h-9 items-center gap-2 rounded-full px-3 text-sm font-medium text-slate-950 dark:text-white"
     >
       <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
         {online && <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60 motion-safe:animate-ping" />}
@@ -67,7 +67,7 @@ export function ThemeToggle() {
       aria-label={escuro ? 'Ativar tema claro' : 'Ativar tema escuro'}
       aria-pressed={escuro}
       title={escuro ? 'Tema claro' : 'Tema escuro'}
-      className="group flex min-h-toque min-w-toque items-center justify-center rounded-full text-slate-700 transition-colors hover:bg-slate-900/5 dark:text-slate-200 dark:hover:bg-white/10"
+      className="group flex min-h-toque min-w-toque items-center justify-center rounded-full text-slate-950 transition-colors hover:bg-slate-900/5 dark:text-white dark:hover:bg-white/10"
     >
       <span key={String(escuro)} className="animate-girar-entrar">
         {escuro ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
@@ -76,15 +76,17 @@ export function ThemeToggle() {
   );
 }
 
-function BotaoConta({ movel = false }) {
+function BotaoConta({ movel = false, compacto = false }) {
   const { autenticado, logout } = useAuth();
-  const base = `group inline-flex min-h-toque items-center justify-center gap-2 rounded-full px-5 font-semibold transition-all ${movel ? 'w-full text-lg' : ''}`;
+  // No desktop acompanha a altura dos itens do menu (44px) e encolhe junto com a barra flutuante.
+  const tamanho = movel ? 'min-h-toque w-full px-5 text-lg' : compacto ? 'h-10 px-4 text-[15px]' : 'h-11 px-5';
+  const base = `group inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-500 ${tamanho}`;
   if (autenticado) {
     return (
       <button
         type="button"
         onClick={logout}
-        className={`${base} text-slate-700 ring-1 ring-slate-300 hover:bg-slate-900/5 dark:text-slate-200 dark:ring-slate-600 dark:hover:bg-white/10`}
+        className={`${base} text-slate-950 ring-1 ring-slate-300 hover:bg-slate-900/5 dark:text-white dark:ring-slate-600 dark:hover:bg-white/10`}
       >
         <LogOut className="h-4 w-4" aria-hidden="true" />
         Sair
@@ -209,11 +211,11 @@ export function Header() {
                 <OnlineBadge />
                 <ThemeToggle />
                 <div className="hidden lg:block">
-                  <BotaoConta />
+                  <BotaoConta compacto={flutuante} />
                 </div>
                 <button
                   type="button"
-                  className="flex min-h-toque min-w-toque items-center justify-center rounded-full text-slate-800 hover:bg-slate-900/5 dark:text-slate-100 dark:hover:bg-white/10 lg:hidden"
+                  className="flex min-h-toque min-w-toque items-center justify-center rounded-full text-slate-950 hover:bg-slate-900/5 dark:text-white dark:hover:bg-white/10 lg:hidden"
                   aria-expanded={menuAberto}
                   aria-controls="menu-movel"
                   aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
@@ -246,7 +248,7 @@ export function Header() {
                 <NavLink
                   to={l.to}
                   className={({ isActive }) =>
-                    `flex min-h-16 items-center justify-between text-2xl font-semibold tracking-tight ${isActive ? 'text-sky-700 dark:text-sky-400' : ''}`
+                    `flex min-h-16 items-center justify-between text-2xl font-semibold tracking-tight ${isActive ? 'text-sky-700 dark:text-sky-400' : 'text-slate-950 dark:text-white'}`
                   }
                 >
                   {l.rotulo}

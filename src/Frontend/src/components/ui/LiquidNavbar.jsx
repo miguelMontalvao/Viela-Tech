@@ -16,10 +16,10 @@ export { NimbusIcons };
 const PAD = 14; // borda do canvas para sombras e ondas
 
 const NIMBUS_CSS = `
-.nimbus-nav{--n-tint:#fff;--n-fg:#0B132B;--n-fg-soft:rgba(11,19,43,.68);--n-rim:rgba(255,255,255,.8);
+.nimbus-nav{--n-tint:#fff;--n-fg:#020617;--n-fg-soft:#020617;--n-rim:rgba(255,255,255,.8);
   position:relative;display:inline-flex;align-items:center;gap:2px;padding:4px;border-radius:999px;isolation:isolate;
   -webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
-.nimbus-nav[data-tone="dark"]{--n-tint:#0f172a;--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.72);--n-rim:rgba(255,255,255,.22)}
+.nimbus-nav[data-tone="dark"]{--n-tint:#0f172a;--n-fg:#fff;--n-fg-soft:#fff;--n-rim:rgba(255,255,255,.22)}
 .nimbus-glass{position:absolute;inset:0;border-radius:inherit;z-index:-2;overflow:hidden;background:transparent}
 .nimbus-water{position:absolute;left:${-PAD}px;top:${-PAD}px;z-index:-1;pointer-events:none;transition:opacity .35s}
 .nimbus-nav[data-gl="off"] .nimbus-water{display:none}
