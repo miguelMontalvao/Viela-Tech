@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { existemTriagensPendentes, sincronizarComTrava } from '../services/sincronizacao';
-import { supabaseConfigurado } from '../services/supabaseClient';
+import { supabaseConfigurado } from '../services/config';
 import { useOnlineStatus } from './useOnlineStatus';
 
 /**

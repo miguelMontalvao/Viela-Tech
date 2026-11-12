@@ -1,4 +1,4 @@
-import { supabaseConfigurado } from '../../services/supabaseClient';
+import { supabaseConfigurado } from '../../services/config';
 import { Alert } from './Alert';
 
 /** Avisa, sem alarmar, quando o app está rodando sem a conexão com o Supabase. */

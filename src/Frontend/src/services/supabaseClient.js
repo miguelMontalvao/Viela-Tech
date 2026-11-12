@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
+import { supabaseConfigurado } from './config';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 /**
- * Indica se as variáveis do Supabase foram definidas no .env.
- * Sem elas, o app continua funcionando no modo local (offline-first):
+ * Sem as variáveis do .env, o app continua funcionando no modo local (offline-first):
  * as funções de api.js caem no tratamento de erro e usam o LocalStorage.
  */
-export const supabaseConfigurado = Boolean(supabaseUrl && supabaseAnonKey);
+export { supabaseConfigurado };
 
 if (!supabaseConfigurado) {
   console.warn(
