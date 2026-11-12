@@ -173,8 +173,8 @@ export function Header() {
           <div
             className={`relative mx-auto transition-all duration-500 ease-out ${
               flutuante
-                ? 'max-w-7xl rounded-full bg-white/75 shadow-lg shadow-slate-900/[0.06] ring-1 ring-slate-900/[0.06] backdrop-blur-xl dark:bg-slate-900/75 dark:ring-white/10'
-                : `max-w-full rounded-none ring-0 ${menuAberto ? 'bg-slate-50 dark:bg-noite' : 'bg-transparent'}`
+                ? 'max-w-7xl rounded-full bg-white shadow-lg shadow-slate-900/[0.07] ring-1 ring-slate-900/[0.06] dark:bg-slate-900 dark:ring-white/10'
+                : 'max-w-full rounded-none bg-white shadow-[0_1px_0_rgba(15,23,42,0.06)] dark:bg-slate-900 dark:shadow-[0_1px_0_rgba(255,255,255,0.06)]'
             }`}
           >
             <div
@@ -231,7 +231,7 @@ export function Header() {
         <nav
           id="menu-movel"
           aria-label="Principal (celular)"
-          className="fixed inset-x-0 bottom-0 top-16 z-30 overflow-y-auto bg-slate-50 dark:bg-noite sm:top-[4.5rem] lg:hidden"
+          className="fixed inset-x-0 bottom-0 top-16 z-30 overflow-y-auto bg-white dark:bg-slate-900 sm:top-[4.5rem] lg:hidden"
         >
           <ul className="container-app flex flex-col py-6">
             {links.map((l, i) => (

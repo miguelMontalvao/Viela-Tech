@@ -16,14 +16,14 @@ export { NimbusIcons };
 const PAD = 14; // borda do canvas para sombras e ondas
 
 const NIMBUS_CSS = `
-.nimbus-nav{--n-tint:rgba(255,255,255,.55);--n-fg:#0B132B;--n-fg-soft:rgba(11,19,43,.68);--n-rim:rgba(255,255,255,.8);
+.nimbus-nav{--n-tint:#fff;--n-fg:#0B132B;--n-fg-soft:rgba(11,19,43,.68);--n-rim:rgba(255,255,255,.8);
   position:relative;display:inline-flex;align-items:center;gap:2px;padding:4px;border-radius:999px;isolation:isolate;
   -webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
-.nimbus-nav[data-tone="dark"]{--n-tint:rgba(15,23,42,.55);--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.72);--n-rim:rgba(255,255,255,.22)}
+.nimbus-nav[data-tone="dark"]{--n-tint:#0f172a;--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.72);--n-rim:rgba(255,255,255,.22)}
 .nimbus-glass{position:absolute;inset:0;border-radius:inherit;z-index:-2;overflow:hidden;background:var(--n-tint);
   -webkit-backdrop-filter:blur(10px) saturate(1.2) brightness(1.04);backdrop-filter:blur(10px) saturate(1.2) brightness(1.04);
-  box-shadow:inset 0 1px 1px var(--n-rim),inset 0 0 0 1px rgba(15,23,42,.06),0 10px 28px -16px rgba(0,40,90,.45),0 1px 4px rgba(0,40,90,.08)}
-.nimbus-nav[data-tone="dark"] .nimbus-glass{box-shadow:inset 0 1px 1px var(--n-rim),inset 0 0 0 1px rgba(255,255,255,.08),0 10px 28px -16px rgba(0,0,0,.6)}
+  box-shadow:inset 0 1px 1px var(--n-rim),inset 0 0 0 1px rgba(15,23,42,.07)}
+.nimbus-nav[data-tone="dark"] .nimbus-glass{box-shadow:inset 0 1px 1px var(--n-rim),inset 0 0 0 1px rgba(255,255,255,.08)}
 .nimbus-water{position:absolute;left:${-PAD}px;top:${-PAD}px;z-index:-1;pointer-events:none;transition:opacity .35s}
 .nimbus-nav[data-gl="off"] .nimbus-water{display:none}
 .nimbus-drop{display:none;position:absolute;top:4px;bottom:4px;left:0;border-radius:999px;z-index:-1;pointer-events:none;will-change:transform,width;transition:opacity .35s;
