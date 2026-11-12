@@ -180,7 +180,14 @@ export function Header() {
             <div
               className={`container-app relative flex items-center gap-3 transition-[height] duration-500 ${flutuante ? 'h-14 !px-3 sm:!px-4' : 'h-16 sm:h-[4.5rem]'}`}
             >
-              <Link to="/" className="flex min-h-toque items-center rounded-xl pr-2 transition-transform hover:scale-[1.02]">
+              <Link
+                to="/"
+                onClick={() => {
+                  // Já na Home, o link não muda de rota: sobe até o topo.
+                  if (pathname === '/') window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+                }}
+                className="flex min-h-toque items-center rounded-xl pr-2 transition-transform hover:scale-[1.02]"
+              >
                 <Logo />
                 <span className="sr-only">, página inicial</span>
               </Link>

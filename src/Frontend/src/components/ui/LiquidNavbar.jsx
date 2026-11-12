@@ -20,10 +20,7 @@ const NIMBUS_CSS = `
   position:relative;display:inline-flex;align-items:center;gap:2px;padding:4px;border-radius:999px;isolation:isolate;
   -webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
 .nimbus-nav[data-tone="dark"]{--n-tint:#0f172a;--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.72);--n-rim:rgba(255,255,255,.22)}
-.nimbus-glass{position:absolute;inset:0;border-radius:inherit;z-index:-2;overflow:hidden;background:var(--n-tint);
-  -webkit-backdrop-filter:blur(10px) saturate(1.2) brightness(1.04);backdrop-filter:blur(10px) saturate(1.2) brightness(1.04);
-  box-shadow:inset 0 1px 1px var(--n-rim),inset 0 0 0 1px rgba(15,23,42,.07)}
-.nimbus-nav[data-tone="dark"] .nimbus-glass{box-shadow:inset 0 1px 1px var(--n-rim),inset 0 0 0 1px rgba(255,255,255,.08)}
+.nimbus-glass{position:absolute;inset:0;border-radius:inherit;z-index:-2;overflow:hidden;background:transparent}
 .nimbus-water{position:absolute;left:${-PAD}px;top:${-PAD}px;z-index:-1;pointer-events:none;transition:opacity .35s}
 .nimbus-nav[data-gl="off"] .nimbus-water{display:none}
 .nimbus-drop{display:none;position:absolute;top:4px;bottom:4px;left:0;border-radius:999px;z-index:-1;pointer-events:none;will-change:transform,width;transition:opacity .35s;
@@ -89,7 +86,7 @@ void main(){
  float pm=smoothstep(1.,-1.,dp);float dm=smoothstep(1.,-1.,dd)*smoothstep(1.,-2.,dp);
  float sh=smoothstep(9.,-9.,dropD(p-vec2(0.,5.)))*(1.-dm)*pm*(.11+.07*uDark);
  vec3 c=vec3(0.,.14,.36)*sh;float a=sh;
- float pa=clamp(pm*(fres*.5+spec*.9+spec2),0.,1.);
+ float pa=clamp(dm*(fres*.5+spec*.9+spec2),0.,1.);
  c=mix(vec3(1.),irid,.5*fres)*pa+c*(1.-pa);a=pa+a*(1.-pa);
  float th=lens(dd,11.);
  float cs=caus((p+n.xy*th*18.)*.085,uTime*.9);

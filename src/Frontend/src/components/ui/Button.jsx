@@ -18,6 +18,8 @@ const VARIANTES = {
   fantasma: 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800',
   // Sobre fundos escuros (cabeçalho dos painéis).
   vidro: 'bg-white/10 text-white ring-1 ring-inset ring-white/20 backdrop-blur hover:bg-white/15',
+  // Ação principal sobre fundo escuro.
+  claro: 'bg-white text-slate-900 shadow-sm hover:bg-sky-50',
   // Ação terciária em texto azul (ex.: "Ver o mapa").
   link: 'text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/40',
 };

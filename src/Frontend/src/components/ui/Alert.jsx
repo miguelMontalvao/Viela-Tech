@@ -27,7 +27,7 @@ const TIPOS = {
 export function Alert({ tipo = 'info', titulo, children, acao, className = '', ...props }) {
   const { icone: Icone, classe, corIcone } = TIPOS[tipo];
   return (
-    <div className={`flex gap-3 rounded-xl border-2 p-4 ${classe} ${className}`} {...props}>
+    <div className={`flex gap-3 rounded-2xl border p-4 ${classe} ${className}`} {...props}>
       <Icone className={`mt-0.5 h-5 w-5 shrink-0 ${corIcone}`} aria-hidden="true" />
       <div className="min-w-0 flex-1">
         {titulo && <p className="font-semibold">{titulo}</p>}

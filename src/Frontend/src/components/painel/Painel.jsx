@@ -70,7 +70,7 @@ export function CabecalhoPainel({ sobrelinha, titulo, children, acoes, kpis }) {
           <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{titulo}</h1>
           {children && <p className="mt-3 text-lg leading-relaxed text-slate-300">{children}</p>}
         </div>
-        {acoes && <div className="animate-surgir flex shrink-0 flex-wrap gap-2">{acoes}</div>}
+        {acoes && <div className="animate-surgir flex shrink-0 gap-2">{acoes}</div>}
       </div>
 
       {kpis && (
