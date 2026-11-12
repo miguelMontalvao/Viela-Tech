@@ -44,7 +44,8 @@ Em conformidade com as diretrizes da FIAP para a Global Solution 2026.2, este do
   * Texto branco sobre o azul `#0284C7` não atinge o contraste AA. Os botões passaram a usar o tom 700 da mesma família.
   * Triagens do morador guardadas sem sinal não eram reenviadas por ninguém. Foi criado o reenvio automático, com uma trava para não duplicar registros.
   * Como o `insert().select()` do `api.js` exige leitura logo após a gravação, a política RLS do morador anônimo foi limitada a registros recentes. A limitação está documentada no README do front-end.
-* **O que a IA não fez:** não criou o projeto no Supabase, não usou credenciais reais e não publicou nada no GitHub. Também não inventou estatísticas de saúde nem dados de pacientes. Os nomes que aparecem nos testes eram fictícios e ficaram fora do repositório.
+* **Publicação:** a pedido da equipe, a IA aplicou o `schema.sql` no projeto Supabase que já tínhamos criado, cadastrou a URL e a chave pública (*publishable*) na Vercel e publicou o site em produção. A chave secreta do Supabase não foi acessada.
+* **O que a IA não fez:** não criou usuários nem digitou senhas, e não publicou nada no GitHub. Também não inventou estatísticas de saúde nem dados de pacientes. Os nomes usados nos testes eram fictícios.
 
 ---
 

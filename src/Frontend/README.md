@@ -137,7 +137,8 @@ O CRUD completo é feito pela API REST do Supabase: **C**reate (triagem), **R**e
   - Dashboard com IVM em "Perigo", indicadores, gráficos, tooltip e tabela;
   - temas claro e escuro, 375px e desktop.
 
-  As respostas do Supabase foram simuladas por interceptação de rede, porque o ambiente de testes não tinha credenciais.
+  Nesses testes, as respostas do Supabase foram simuladas por interceptação de rede.
+- **Em produção:** uma triagem urgente enviada em viela-tech.vercel.app chegou ao Supabase com `prioridade_alta = true` e status `PENDENTE`, sem erros no console.
 
 ## Limitações conhecidas
 
