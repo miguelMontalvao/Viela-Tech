@@ -1,15 +1,147 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ClipboardList, Cpu, Users } from 'lucide-react';
+import { ArrowRight, BarChart3, ClipboardList, Cpu, Lock, ShieldCheck, Stethoscope, Users, WifiOff } from 'lucide-react';
 import { Foto } from '../components/ui/Foto';
 import { FONTES, VEZES_ROCINHA_RIO } from '../data/tuberculoseRio';
+import { useNaTela } from '../hooks/useAnimacao';
 
 const fmt = (n) => n.toLocaleString('pt-BR');
 
-const PASSOS = [
-  { icone: Cpu, titulo: 'O sensor mede a viela', texto: 'Umidade e luz viram o índice de risco do microclima.' },
-  { icone: ClipboardList, titulo: 'O morador faz a triagem', texto: 'Quatro perguntas. Tosse há 21 dias ou mais é prioridade.' },
-  { icone: Users, titulo: 'O agente sobe o morro', texto: 'A fila chega organizada e funciona mesmo sem sinal.' },
+/* Os três pilares da proposta: medir, priorizar e agir. */
+const PILARES = [
+  {
+    id: 'medir',
+    verbo: 'Medir',
+    icone: Cpu,
+    titulo: 'O sensor mostra onde o risco mora',
+    texto:
+      'Um ESP32 instalado na viela lê a umidade e a luz e calcula o IVM, o índice de vulnerabilidade do microclima. A gestão enxerga quais becos são úmidos e escuros, o ambiente onde o bacilo da tuberculose sobrevive.',
+    publico: 'Gestão da saúde',
+    publicoIcone: BarChart3,
+  },
+  {
+    id: 'priorizar',
+    verbo: 'Priorizar',
+    icone: ClipboardList,
+    titulo: 'A triagem diz quem precisa de visita primeiro',
+    texto:
+      'O morador responde quatro perguntas pelo celular, com ou sem conta. Tosse há 21 dias ou mais vira prioridade e vai para o topo da fila. A tela avisa que não é diagnóstico e indica onde fazer o exame.',
+    publico: 'Moradores',
+    publicoIcone: Users,
+  },
+  {
+    id: 'agir',
+    verbo: 'Agir',
+    icone: Stethoscope,
+    titulo: 'O agente sobe o morro com a fila pronta',
+    texto:
+      'O Agente Comunitário de Saúde recebe a lista organizada por urgência, registra a visita e a coleta do escarro e continua trabalhando sem sinal. Tudo sincroniza quando a internet volta.',
+    publico: 'Agentes de saúde',
+    publicoIcone: Stethoscope,
+  },
 ];
+
+const COMPROMISSOS = [
+  { icone: ShieldCheck, titulo: 'Orienta, não diagnostica', texto: 'Quem confirma é o exame, feito de graça no SUS.' },
+  { icone: WifiOff, titulo: 'Feito para a viela', texto: 'Funciona com sinal fraco ou sem internet.' },
+  { icone: Lock, titulo: 'Dados protegidos', texto: 'Cada morador vê só o que é dele. A fila completa é da equipe.' },
+];
+
+function Proposta() {
+  const [ativo, setAtivo] = useState(0);
+  const [ref, naTela] = useNaTela();
+  const pilar = PILARES[ativo];
+  const Icone = pilar.icone;
+  const Publico = pilar.publicoIcone;
+
+  return (
+    <section ref={ref} aria-labelledby="proposta" className="container-app py-20 sm:py-28">
+      <div className={`max-w-3xl transition duration-700 ${naTela ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+        <p className="sobrelinha">A proposta</p>
+        <h2 id="proposta" className="mt-3 text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          Encurtar o caminho entre a primeira tosse e o exame.
+        </h2>
+        <p className="mt-5 text-lg leading-relaxed texto-suave">
+          A tuberculose tem cura, mas nas vielas fechadas da Rocinha ela costuma ser descoberta tarde. A tosse vira rotina, a
+          pessoa não procura a clínica e o bacilo passa para a família. O Viela Tech junta três peças que já existem no
+          território (o ambiente, o morador e o agente de saúde) para achar os casos mais cedo.
+        </p>
+      </div>
+
+      <div className="mt-12 grid gap-6 lg:grid-cols-[16rem_1fr]">
+        <div role="tablist" aria-label="Pilares da proposta" className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:pb-0">
+          {PILARES.map((p, i) => {
+            const I = p.icone;
+            const sel = i === ativo;
+            return (
+              <button
+                key={p.id}
+                id={`aba-${p.id}`}
+                role="tab"
+                type="button"
+                aria-selected={sel}
+                aria-controls="painel-pilar"
+                onClick={() => setAtivo(i)}
+                className={`flex min-h-14 shrink-0 items-center gap-3 rounded-2xl px-4 text-left transition-all duration-300 lg:w-full ${
+                  sel
+                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                }`}
+              >
+                <span className={`text-sm tabular-nums ${sel ? 'opacity-70' : ''}`}>0{i + 1}</span>
+                <I className="h-5 w-5" aria-hidden="true" />
+                <span className="font-semibold">{p.verbo}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div id="painel-pilar" role="tabpanel" aria-labelledby={`aba-${pilar.id}`} className="card relative overflow-hidden p-8 sm:p-10">
+          <span aria-hidden="true" className="pointer-events-none absolute -right-4 -top-8 text-[9rem] font-semibold leading-none text-slate-900/[0.03] dark:text-white/[0.04]">
+            0{ativo + 1}
+          </span>
+          <div key={pilar.id} className="animate-surgir relative">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+              <Icone className="h-6 w-6" aria-hidden="true" />
+            </span>
+            <h3 className="mt-6 text-2xl font-semibold tracking-tight sm:text-3xl">{pilar.titulo}</h3>
+            <p className="mt-4 max-w-2xl leading-relaxed texto-suave">{pilar.texto}</p>
+            <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium dark:bg-slate-800">
+              <Publico className="h-4 w-4 text-sky-700 dark:text-sky-400" aria-hidden="true" />
+              Para: {pilar.publico}
+            </p>
+          </div>
+          <div className="relative mt-10 flex gap-2" aria-hidden="true">
+            {PILARES.map((p, i) => (
+              <span key={p.id} className="h-1 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                <span className={`block h-full bg-sky-600 transition-[width] duration-500 dark:bg-sky-400 ${i <= ativo ? 'w-full' : 'w-0'}`} />
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <ul className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-slate-200 ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-800 sm:grid-cols-3">
+        {COMPROMISSOS.map(({ icone: I, titulo, texto }, i) => (
+          <li
+            key={titulo}
+            className={`bg-slate-50 p-6 transition duration-700 dark:bg-noite ${naTela ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0'}`}
+            style={{ transitionDelay: `${300 + i * 120}ms` }}
+          >
+            <I className="h-5 w-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+            <p className="mt-3 font-semibold">{titulo}</p>
+            <p className="mt-1 text-sm texto-suave">{texto}</p>
+          </li>
+        ))}
+      </ul>
+
+      <p className="mt-6 text-sm texto-suave">
+        Projeto da FIAP Global Solution 2026.2, ligado aos Objetivos de Desenvolvimento Sustentável 3 (saúde e bem-estar), 10
+        (redução das desigualdades) e 11 (cidades sustentáveis).
+      </p>
+    </section>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -76,24 +208,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* COMO FUNCIONA */}
-      <section aria-labelledby="como-funciona" className="container-app py-16 sm:py-20">
-        <h2 id="como-funciona" className="sr-only">
-          Como funciona
-        </h2>
-        <ol className="grid gap-10 md:grid-cols-3">
-          {PASSOS.map(({ icone: Icone, titulo, texto }, i) => (
-            <li key={titulo}>
-              <Icone className="h-7 w-7 text-sky-700 dark:text-sky-400" aria-hidden="true" />
-              <h3 className="mt-4 text-xl font-semibold">
-                <span className="sr-only">Passo {i + 1}: </span>
-                {titulo}
-              </h3>
-              <p className="mt-1 texto-suave">{texto}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <Proposta />
     </>
   );
 }
