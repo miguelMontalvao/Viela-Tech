@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, UserRound } from 'lucide-react';
-import { PageHeader } from '../components/layout/Layout';
+import { CabecalhoPainel } from '../components/painel/Painel';
 import { TriagemForm } from '../components/morador/TriagemForm';
 import { ResultadoTriagem } from '../components/morador/ResultadoTriagem';
 import { ConfigNotice } from '../components/ui/ConfigNotice';
@@ -28,11 +28,11 @@ export default function MoradorPage() {
 
   return (
     <div className="container-app max-w-5xl">
-      <PageHeader eyebrow="Área do morador" titulo="Autotriagem de tosse">
+      <CabecalhoPainel sobrelinha="Área do morador" titulo="Autotriagem de tosse">
         Responde com calma. Suas respostas ajudam o agente de saúde a chegar primeiro em quem mais precisa.
-      </PageHeader>
+      </CabecalhoPainel>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_17rem]">
+      <div className="grid gap-6 py-8 lg:grid-cols-[1fr_17rem]">
         <div>
           <ConfigNotice className="mb-6" />
           {enviadas > 0 && (
@@ -82,7 +82,7 @@ export default function MoradorPage() {
               </div>
             )
           )}
-          <div className="card p-6">
+          <div className="painel p-6">
             <p className="text-base font-semibold">Sinais de alerta</p>
             <ul className="mt-3 space-y-2 text-sm texto-suave">
               <li>• Tosse há 3 semanas ou mais</li>

@@ -22,7 +22,7 @@ function Sintoma({ icone: Icone, ativo, children }) {
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${
         ativo
           ? 'bg-amber-50 text-amber-900 ring-1 ring-inset ring-amber-200 dark:bg-amber-950 dark:text-amber-100 dark:ring-amber-800'
-          : 'bg-slate-100 text-slate-500 line-through decoration-slate-400 dark:bg-slate-800 dark:text-slate-400'
+          : 'bg-slate-100 text-slate-600 line-through decoration-slate-400 dark:bg-slate-800 dark:text-slate-400'
       }`}
     >
       <Icone className="h-4 w-4" aria-hidden="true" />
@@ -73,7 +73,7 @@ export function ChamadoCard({ chamado, aoAtualizar, atualizando }) {
   return (
     <article
       aria-labelledby={tituloId}
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/[0.06] dark:bg-slate-900 ${
+      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.06] dark:bg-slate-900 ${
         alerta ? 'border-red-200 dark:border-red-900' : 'border-slate-200 dark:border-slate-800'
       } ${finalizado ? 'opacity-75 hover:opacity-100' : ''} ${mudou ? 'animate-destaque' : ''}`}
     >

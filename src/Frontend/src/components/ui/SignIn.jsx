@@ -195,7 +195,7 @@ export function BotaoLogin({ children, carregando, className = '', ...props }) {
       type="submit"
       disabled={carregando}
       aria-busy={carregando || undefined}
-      className={`group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-sky-700 font-semibold text-white shadow-lg shadow-sky-700/20 transition hover:-translate-y-0.5 hover:bg-sky-800 hover:shadow-xl active:translate-y-0 disabled:cursor-wait disabled:opacity-70 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400 ${className}`}
+      className={`group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-sky-700 font-semibold text-white shadow-lg shadow-sky-700/20 transition hover:-translate-y-0.5 hover:bg-sky-800 hover:shadow-lg active:translate-y-0 disabled:cursor-wait disabled:opacity-70 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400 ${className}`}
       {...props}
     >
       {children}

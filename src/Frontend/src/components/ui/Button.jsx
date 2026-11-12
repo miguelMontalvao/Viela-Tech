@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 /*
@@ -17,6 +18,8 @@ const VARIANTES = {
   fantasma: 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800',
   // Sobre fundos escuros (cabeçalho dos painéis).
   vidro: 'bg-white/10 text-white ring-1 ring-inset ring-white/20 backdrop-blur hover:bg-white/15',
+  // Ação terciária em texto azul (ex.: "Ver o mapa").
+  link: 'text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/40',
 };
 
 const TAMANHOS = {
@@ -24,6 +27,13 @@ const TAMANHOS = {
   lg: 'min-h-12 px-6 text-base',
   icone: 'min-h-toque min-w-toque p-0',
 };
+
+/** Classes do botão, para reutilizar em links que parecem botão. */
+export function estiloBotao({ variante = 'primaria', tamanho = 'md', className = '' } = {}) {
+  return `inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition duration-200
+    hover:-translate-y-px active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0
+    ${VARIANTES[variante]} ${TAMANHOS[tamanho]} ${className}`;
+}
 
 /** Botão acessível com área de toque mínima de 48px. */
 export const Button = forwardRef(function Button(
@@ -36,9 +46,7 @@ export const Button = forwardRef(function Button(
       type={type}
       disabled={disabled || carregando}
       aria-busy={carregando || undefined}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition duration-200
-        hover:-translate-y-px active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0
-        ${VARIANTES[variante]} ${TAMANHOS[tamanho]} ${className}`}
+      className={estiloBotao({ variante, tamanho, className })}
       {...props}
     >
       {carregando ? (
@@ -48,5 +56,15 @@ export const Button = forwardRef(function Button(
       )}
       {children}
     </button>
+  );
+});
+
+/** Link de navegação com a mesma aparência do Button (mesmas variantes e tamanhos). */
+export const ButtonLink = forwardRef(function ButtonLink({ variante = 'primaria', tamanho = 'md', icone: Icone, className = '', children, ...props }, ref) {
+  return (
+    <Link ref={ref} className={estiloBotao({ variante, tamanho, className })} {...props}>
+      {Icone && <Icone className="h-5 w-5 shrink-0" aria-hidden="true" />}
+      {children}
+    </Link>
   );
 });

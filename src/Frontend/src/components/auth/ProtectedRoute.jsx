@@ -1,6 +1,7 @@
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { ButtonLink } from '../ui/Button';
 import { Spinner } from '../ui/Feedback';
 import { destinoInicial, ehEquipe, ROTULOS_PAPEL } from '../../domain/perfis';
 
@@ -19,7 +20,7 @@ export function ProtectedRoute({ papeis, children }) {
 
   return (
     <div className="container-app py-16">
-      <div className="card mx-auto max-w-lg p-8 text-center">
+      <div className="painel mx-auto max-w-lg p-8 text-center">
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-sol-100 text-slate-900">
           <ShieldAlert className="h-7 w-7" aria-hidden="true" />
         </span>
@@ -31,12 +32,9 @@ export function ProtectedRoute({ papeis, children }) {
         </p>
         <p className="mt-2 text-sm texto-suave">Se você é da equipe e deveria ter acesso, peça à coordenação para ajustar o seu perfil.</p>
         {papel && (
-          <Link
-            to={destinoInicial(papel)}
-            className="mt-6 inline-flex min-h-toque items-center justify-center rounded-full bg-sky-700 px-6 font-semibold text-white hover:bg-sky-800 dark:bg-sky-500 dark:text-slate-950"
-          >
+          <ButtonLink to={destinoInicial(papel)} className="mt-6">
             Ir para a minha área
-          </Link>
+          </ButtonLink>
         )}
       </div>
     </div>

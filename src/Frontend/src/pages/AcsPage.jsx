@@ -66,7 +66,7 @@ function PainelACS() {
             <Alert
               tipo={mensagem.tipo}
               acao={
-                <button type="button" onClick={limparMensagem} className="min-h-toque rounded-lg px-3 text-sm font-semibold underline">
+                <button type="button" onClick={limparMensagem} className="min-h-toque rounded-xl px-3 text-sm font-semibold underline">
                   Fechar
                 </button>
               }

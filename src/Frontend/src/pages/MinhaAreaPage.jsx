@@ -18,7 +18,7 @@ import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { CabecalhoPainel } from '../components/painel/Painel';
 import { Revelar, moverHolofote } from '../components/home/Efeitos';
 import { Alert } from '../components/ui/Alert';
-import { Button } from '../components/ui/Button';
+import { Button, ButtonLink } from '../components/ui/Button';
 import { EmptyState, Spinner } from '../components/ui/Feedback';
 import { useAuth } from '../hooks/useAuth';
 import { minhasTriagens } from '../services/perfilService';
@@ -231,12 +231,9 @@ function Area() {
                 icone={ClipboardPlus}
                 titulo="Você ainda não fez nenhuma triagem com esta conta"
                 acao={
-                  <Link
-                    to="/morador"
-                    className="inline-flex min-h-toque items-center gap-2 rounded-full bg-sky-700 px-6 font-semibold text-white transition hover:-translate-y-px hover:bg-sky-800 dark:bg-sky-500 dark:text-slate-950"
-                  >
+                  <ButtonLink to="/morador" tamanho="lg">
                     Fazer minha triagem <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
+                  </ButtonLink>
                 }
               >
                 Está com tosse? Responda quatro perguntas e o agente de saúde fica sabendo.
@@ -257,7 +254,7 @@ function Area() {
             <Link
               to="/morador"
               onMouseMove={moverHolofote}
-              className="holofote group relative block overflow-hidden rounded-3xl bg-gradient-to-br from-sky-700 to-sky-900 p-7 text-white shadow-lg shadow-sky-900/20 transition hover:-translate-y-1 hover:shadow-xl"
+              className="holofote group relative block overflow-hidden rounded-3xl bg-gradient-to-br from-sky-700 to-sky-900 p-7 text-white shadow-lg shadow-sky-900/20 transition hover:-translate-y-1 hover:shadow-lg"
             >
               <div aria-hidden="true" className="grade-hero absolute inset-0 opacity-20" />
               <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">

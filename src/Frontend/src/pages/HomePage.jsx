@@ -100,7 +100,7 @@ function Hero() {
           <div className="animate-surgir mt-9 flex flex-col gap-3 sm:flex-row" style={atraso(240)}>
             <Link
               to="/morador"
-              className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-sky-700 px-7 text-base font-semibold text-white shadow-lg shadow-sky-700/25 transition hover:-translate-y-0.5 hover:bg-sky-800 hover:shadow-xl hover:shadow-sky-700/30 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400"
+              className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-sky-700 px-7 text-base font-semibold text-white shadow-lg shadow-sky-700/25 transition hover:-translate-y-0.5 hover:bg-sky-800 hover:shadow-lg hover:shadow-sky-700/30 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400"
             >
               Fazer a triagem
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
@@ -131,7 +131,7 @@ function Hero() {
         {/* composição: foto + telas do produto */}
         <div className="relative lg:col-span-6">
           <div className="animate-surgir relative mx-auto max-w-xl lg:ml-auto lg:mr-0" style={atraso(200)}>
-            <div className="relative overflow-hidden rounded-[2rem] shadow-2xl shadow-slate-900/20 ring-1 ring-slate-900/5">
+            <div className="relative overflow-hidden rounded-3xl shadow-2xl shadow-slate-900/20 ring-1 ring-slate-900/5">
               <div ref={foto} className="will-change-transform">
                 <Foto
                   nome="rocinha-por-do-sol"
@@ -427,7 +427,7 @@ function Proposta() {
 
         <div className="lg:col-span-7">
           <Revelar atraso={150} className="h-full">
-            <div className="relative h-full overflow-hidden rounded-[2rem] bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-6 ring-1 ring-slate-200 dark:from-sky-950/40 dark:via-slate-900 dark:to-emerald-950/30 dark:ring-slate-800 sm:p-10">
+            <div className="relative h-full overflow-hidden rounded-3xl bg-gradient-to-br from-sky-50 via-white to-emerald-50 p-6 ring-1 ring-slate-200 dark:from-sky-950/40 dark:via-slate-900 dark:to-emerald-950/30 dark:ring-slate-800 sm:p-10">
               <div aria-hidden="true" className="grade-hero absolute inset-0 opacity-60" />
               <div id="painel-pilar" role="tabpanel" aria-labelledby={`aba-${pilar.id}`} className="relative flex h-full flex-col">
                 <div key={pilar.id} className="animate-surgir">
@@ -436,7 +436,7 @@ function Proposta() {
                   </p>
                   <h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{pilar.titulo}</h3>
                 </div>
-                <div key={`${pilar.id}-v`} className="mt-8 rounded-2xl bg-white/90 p-5 shadow-xl shadow-slate-900/5 ring-1 ring-slate-200 backdrop-blur dark:bg-slate-900/90 dark:ring-slate-800 sm:p-6" aria-hidden="true">
+                <div key={`${pilar.id}-v`} className="mt-8 rounded-2xl bg-white/90 p-5 shadow-lg shadow-slate-900/5 ring-1 ring-slate-200 backdrop-blur dark:bg-slate-900/90 dark:ring-slate-800 sm:p-6" aria-hidden="true">
                   <VisualPilar id={pilar.id} />
                 </div>
                 <p className="mt-4 text-xs texto-suave">Ilustração das telas do sistema.</p>
@@ -458,7 +458,7 @@ function CartaoBento({ className = '', atraso = 0, children, to }) {
       <Tag
         to={to}
         onMouseMove={moverHolofote}
-        className="holofote group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-xl hover:shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-sky-900"
+        className="holofote group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 transition duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-lg hover:shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-sky-900"
       >
         {children}
       </Tag>
@@ -554,7 +554,7 @@ function ChamadaFinal() {
   return (
     <section className="container-app py-24 sm:py-32">
       <Revelar>
-        <div className="relative isolate overflow-hidden rounded-[2.5rem] bg-slate-950 px-6 py-16 text-white sm:px-14 sm:py-20">
+        <div className="relative isolate overflow-hidden rounded-3xl bg-slate-950 px-6 py-16 text-white sm:px-14 sm:py-20">
           <Foto nome="rocinha-por-do-sol" alt="" sizes="100vw" className="absolute inset-0 -z-20" imgClassName="h-full w-full object-cover opacity-40" />
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-slate-950 via-slate-950/85 to-slate-950/30" />
           <div className="grid gap-10 lg:grid-cols-12 lg:items-end">

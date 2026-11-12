@@ -163,8 +163,8 @@ export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
               ajuda="Quanto menos luz, maior o risco."
               ativo={naTela}
             />
-            {leitura.ivmCalculado && <p className="text-xs texto-suave">IVM calculado: 0,6 × umidade + 0,4 × (100 − luz).</p>}
           </dl>
+          {leitura.ivmCalculado && <p className="-mt-5 text-xs texto-suave lg:col-start-2">IVM calculado: 0,6 × umidade + 0,4 × (100 − luz).</p>}
         </div>
       )}
 

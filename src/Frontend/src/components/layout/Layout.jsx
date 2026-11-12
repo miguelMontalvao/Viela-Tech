@@ -166,21 +166,3 @@ export function TelaCheia() {
   );
 }
 
-/** Cabeçalho padrão das páginas internas. */
-export function PageHeader({ eyebrow, titulo, children, acoes, selo }) {
-  return (
-    <div className="relative flex flex-col gap-4 pb-8 pt-10 sm:flex-row sm:items-end sm:justify-between sm:pt-14">
-      <div className="max-w-2xl">
-        {eyebrow && <p className="sobrelinha">{eyebrow}</p>}
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{titulo}</h1>
-        {children && <p className="mt-4 text-lg leading-relaxed texto-suave">{children}</p>}
-      </div>
-      {(acoes || selo) && (
-        <div className="flex flex-wrap items-center gap-3">
-          {selo}
-          {acoes}
-        </div>
-      )}
-    </div>
-  );
-}

@@ -94,7 +94,7 @@ function BotaoConta({ movel = false }) {
   return (
     <Link
       to="/entrar"
-      className={`${base} bg-slate-900 text-white shadow-sm hover:-translate-y-px hover:bg-slate-800 hover:shadow-md dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100`}
+      className={`${base} bg-slate-900 text-white shadow-sm hover:-translate-y-px hover:bg-slate-800 hover:shadow-lg dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100`}
     >
       <LogIn className="h-4 w-4" aria-hidden="true" />
       Entrar

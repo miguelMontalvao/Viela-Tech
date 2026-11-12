@@ -74,7 +74,7 @@
   }
 
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900;
+    @apply rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-900/[0.03] dark:border-slate-800 dark:bg-slate-900;
   }
 
   .texto-suave {

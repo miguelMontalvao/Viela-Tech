@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, CloudOff, Info, Map as MapaIcone, MapPin, RotateCcw, Siren } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { Button, ButtonLink } from '../ui/Button';
 import { Alert } from '../ui/Alert';
 import { Revelar } from '../home/Efeitos';
 import { UNIDADES_SAUDE } from '../../domain/unidades';
@@ -14,7 +13,7 @@ function UnidadesDeSaude() {
           as="li"
           key={u.nome}
           atraso={150 + i * 80}
-          className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+          className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900"
         >
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
             <MapPin className="h-5 w-5" aria-hidden="true" />
@@ -70,7 +69,7 @@ export function ResultadoTriagem({ resultado, aoNovaTriagem, logado = false }) {
   return (
     <section aria-labelledby="resultado-titulo" className="space-y-5">
       {urgente ? (
-        <div className="animate-surgir overflow-hidden rounded-3xl border border-red-200 bg-white shadow-xl shadow-red-900/[0.06] dark:border-red-900 dark:bg-slate-900">
+        <div className="animate-surgir overflow-hidden rounded-3xl border border-red-200 bg-white shadow-lg shadow-red-900/[0.06] dark:border-red-900 dark:bg-slate-900">
           <div className="relative overflow-hidden bg-gradient-to-br from-red-600 to-red-700 px-6 py-6 text-white sm:px-8">
             <div aria-hidden="true" className="grade-hero absolute inset-0 opacity-20" />
             <div className="relative flex items-start gap-4">
@@ -146,26 +145,19 @@ export function ResultadoTriagem({ resultado, aoNovaTriagem, logado = false }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         {logado && (
-          <Link
-            to="/minha-area"
-            className="group inline-flex min-h-toque items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 font-semibold text-white transition hover:-translate-y-px hover:bg-emerald-800 hover:shadow-md active:scale-[0.98] dark:bg-emerald-600 dark:text-slate-950"
-          >
+          <ButtonLink to="/minha-area" variante="sucesso" className="group">
             Acompanhar na Minha área
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-          </Link>
+          </ButtonLink>
         )}
         <Button variante="secundaria" icone={RotateCcw} onClick={aoNovaTriagem}>
           Fazer outra triagem
         </Button>
-        <Link
-          to="/mapa"
-          className="inline-flex min-h-toque items-center justify-center gap-2 rounded-xl px-5 font-semibold text-sky-700 transition hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/40"
-        >
-          <MapaIcone className="h-4 w-4" aria-hidden="true" />
+        <ButtonLink to="/mapa" variante="link" icone={MapaIcone}>
           Ver o mapa da tuberculose
-        </Link>
+        </ButtonLink>
       </div>
     </section>
   );
