@@ -1,0 +1,31 @@
+{
+  "morro-casas": {
+    "larguras": [
+      400,
+      640,
+      672
+    ],
+    "largura": 672,
+    "altura": 396,
+    "cor": "#080808"
+  },
+  "morro-cristo": {
+    "larguras": [
+      372
+    ],
+    "largura": 372,
+    "altura": 600,
+    "cor": "#282828"
+  },
+  "rocinha-por-do-sol": {
+    "larguras": [
+      400,
+      640,
+      960,
+      1024
+    ],
+    "largura": 1024,
+    "altura": 1024,
+    "cor": "#080808"
+  }
+}

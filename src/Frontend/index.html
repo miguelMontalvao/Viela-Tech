@@ -2,26 +2,46 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Viela Tech — autotriagem de tosse e apoio aos Agentes Comunitários de Saúde na Rocinha. Onde o sol não chega, a saúde chega." />
-    <meta name="theme-color" content="#0284C7" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Viela Tech · Saúde nas vielas da Rocinha</title>
+    <meta name="description" content="Autotriagem de tosse, fila de visitas dos Agentes Comunitários de Saúde e mapa da tuberculose na Rocinha. Onde o sol não chega, a saúde chega." />
+    <meta name="theme-color" content="#F8FAFC" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <title>Viela Tech — Saúde nas vielas da Rocinha</title>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preload" href="/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="Viela Tech · Onde o sol não chega, a saúde chega" />
+    <meta property="og:description" content="Triagem de tuberculose e apoio aos Agentes Comunitários de Saúde na Rocinha, Rio de Janeiro." />
+    <meta property="og:image" content="https://viela-tech.vercel.app/og-image.jpg" />
+    <meta property="og:url" content="https://viela-tech.vercel.app/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://viela-tech.vercel.app/" />
+
     <script>
-      // Aplica o tema antes da renderização para evitar o "piscar" de cor.
+      // Na Home, a foto do hero é o maior elemento da tela: começa a baixar junto com o HTML.
+      if (location.pathname === '/') {
+        var l = document.createElement('link');
+        l.rel = 'preload';
+        l.as = 'image';
+        l.type = 'image/avif';
+        l.setAttribute('imagesrcset', '/img/rocinha-por-do-sol-400.avif 400w, /img/rocinha-por-do-sol-640.avif 640w, /img/rocinha-por-do-sol-960.avif 960w, /img/rocinha-por-do-sol-1024.avif 1024w');
+        l.setAttribute('imagesizes', '(min-width: 1024px) 400px, (min-width: 640px) 384px, 90vw');
+        l.setAttribute('fetchpriority', 'high');
+        document.head.appendChild(l);
+      }
+      // Tema claro é o padrão; o escuro só entra se a pessoa escolheu antes.
       try {
-        var t = localStorage.getItem('viela_tema');
-        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        }
+        if (localStorage.getItem('viela_tema') === 'dark') document.documentElement.classList.add('dark');
       } catch (e) {}
     </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>O Viela Tech precisa de JavaScript para funcionar.</noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -7,9 +7,10 @@ function temaInicial() {
     const salvo = localStorage.getItem(CHAVE_TEMA);
     if (salvo === 'dark' || salvo === 'light') return salvo;
   } catch {
-    /* armazenamento indisponível: segue a preferência do sistema */
+    /* armazenamento indisponível: fica no padrão */
   }
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // O tema claro é o padrão do Viela Tech (leitura sob sol forte); o escuro é escolha da pessoa.
+  return 'light';
 }
 
 /** Alterna entre tema claro e escuro (classe "dark" no <html>, darkMode: 'class'). */
@@ -20,7 +21,7 @@ export function useTheme() {
     const raiz = document.documentElement;
     raiz.classList.toggle('dark', tema === 'dark');
     raiz.style.colorScheme = tema;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', tema === 'dark' ? '#0F172A' : '#0284C7');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', tema === 'dark' ? '#0B1222' : '#F8FAFC');
     try {
       localStorage.setItem(CHAVE_TEMA, tema);
     } catch {
