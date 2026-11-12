@@ -3,10 +3,13 @@ import { PageHeader } from '../components/layout/Layout';
 import { TriagemForm } from '../components/morador/TriagemForm';
 import { ResultadoTriagem } from '../components/morador/ResultadoTriagem';
 import { ConfigNotice } from '../components/ui/ConfigNotice';
+import { Alert } from '../components/ui/Alert';
 import { useTriagem } from '../hooks/useTriagem';
+import { useEnvioPendente } from '../hooks/useEnvioPendente';
 
 export default function MoradorPage() {
   const triagem = useTriagem();
+  const { enviadas } = useEnvioPendente();
 
   return (
     <div className="container-app max-w-3xl">
@@ -15,6 +18,13 @@ export default function MoradorPage() {
       </PageHeader>
 
       <ConfigNotice className="mb-6" />
+      {enviadas > 0 && (
+        <Alert tipo="sucesso" className="mb-6" role="status">
+          {enviadas === 1
+            ? 'A triagem que estava guardada neste aparelho foi enviada para a equipe de saúde.'
+            : `${enviadas} triagens que estavam guardadas neste aparelho foram enviadas para a equipe de saúde.`}
+        </Alert>
+      )}
 
       <div aria-live="polite">
         {triagem.resultado ? (

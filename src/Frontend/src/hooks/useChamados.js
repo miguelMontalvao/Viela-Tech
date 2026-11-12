@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { atualizarStatusChamado, buscarChamadosACS, sincronizarPendenciasOffline } from '../services/api';
+import { atualizarStatusChamado, buscarChamadosACS } from '../services/api';
+import { sincronizarComTrava } from '../services/sincronizacao';
 import { comDadosDoMorador, idDoChamado, ordenarPorPrioridade, semDuplicados } from '../domain/chamados';
 import { useOnlineStatus } from './useOnlineStatus';
 
@@ -56,7 +57,7 @@ export function useChamados({ sincronizarAoReconectar = true } = {}) {
 
   const sincronizar = useCallback(async () => {
     setSincronizando(true);
-    const { sincronizados, error } = await sincronizarPendenciasOffline();
+    const { sincronizados, error } = await sincronizarComTrava();
     setSincronizando(false);
     if (error) {
       setMensagem({
