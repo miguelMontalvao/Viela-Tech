@@ -27,7 +27,7 @@ CONFIGURACAO: dict[str, float] = {
     "peso_insolacao_inversa": 0.4,
 }
 CAMPOS_CSV: list[str] = [
-    "entry_id", "created_at", "umidade", "insolacao", "ivm", "faixa_risco"
+    "entry_id", "created_at", "umidade", "temperatura", "insolacao", "ivm", "faixa_risco"
 ]
 
 
@@ -151,6 +151,8 @@ def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
             identificador: str = str(leitura["entry_id"]).strip()
             umidade: float = float(leitura["field1"])
             insolacao: float = float(leitura["field2"])
+            temperatura_bruta = leitura.get("field4")
+            temperatura = float(temperatura_bruta) if temperatura_bruta not in (None, "") else None
             if not identificador:
                 raise ValueError("entry_id ausente")
             ivm: float = calcular_ivm(umidade, insolacao)
@@ -159,6 +161,7 @@ def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "entry_id": identificador,
                     "created_at": str(leitura.get("created_at", "")),
                     "umidade": umidade,
+                    "temperatura": temperatura,
                     "insolacao": insolacao,
                     "ivm": ivm,
                     "faixa_risco": classificar_risco(ivm),

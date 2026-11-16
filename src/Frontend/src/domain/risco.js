@@ -75,11 +75,15 @@ export function normalizarLeitura(leitura) {
   if (!leitura) return null;
   const umidade = percentual(leitura.umidade);
   const insolacao = percentual(leitura.insolacao);
+  const temperatura = leitura.temperatura === null || leitura.temperatura === undefined || leitura.temperatura === ''
+    ? null
+    : Number.isFinite(Number(leitura.temperatura)) ? Number(leitura.temperatura) : null;
   const ivmGravado = percentual(leitura.ivm);
   const ivm = ivmGravado ?? calcularIVM(umidade, insolacao);
   return {
     umidade,
     insolacao,
+    temperatura,
     ivm,
     ivmCalculado: ivmGravado === null && ivm !== null,
     faixa: classificarIVM(ivm),

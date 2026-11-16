@@ -4,6 +4,8 @@ import { CabecalhoPainel } from '../components/painel/Painel';
 import { Revelar } from '../components/home/Efeitos';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { MicroclimaPanel } from '../components/gestor/MicroclimaPanel';
+import { BacterialSimulator } from '../components/gestor/BacterialSimulator';
+import { CommunityBulletin } from '../components/gestor/CommunityBulletin';
 import { BarChart } from '../components/gestor/BarChart';
 import { EmptyState, Spinner } from '../components/ui/Feedback';
 import { Alert } from '../components/ui/Alert';
@@ -55,6 +57,9 @@ function Dashboard() {
         <Revelar>
           <MicroclimaPanel {...microclima} aoAtualizar={microclima.atualizar} />
         </Revelar>
+
+        <BacterialSimulator leitura={microclima.leitura} />
+        <CommunityBulletin leitura={microclima.leitura} />
 
         {temDados ? (
           <div className="grid gap-6 lg:grid-cols-2">

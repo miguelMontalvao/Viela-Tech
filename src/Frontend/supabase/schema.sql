@@ -48,6 +48,10 @@ create table if not exists public.leituras_microclima (
   created_at  timestamptz not null default now()
 );
 
+-- Temperatura DHT22 enviada no field4 do ThingSpeak (opcional para leituras antigas).
+alter table public.leituras_microclima
+  add column if not exists temperatura numeric(5,2) check (temperatura between -40 and 125);
+
 create index if not exists idx_leituras_recentes on public.leituras_microclima (created_at desc);
 
 -- ---------------------------------------------------------------------

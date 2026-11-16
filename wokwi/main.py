@@ -72,8 +72,8 @@ def atualizar_display_e_leds(umidade, insolacao, ivm):
         
     oled.show()
 
-def enviar_thingspeak(umidade, insolacao, ivm):
-    url = f"{THINGSPEAK_URL}?api_key={WRITE_API_KEY}&field1={umidade}&field2={insolacao}&field3={ivm}"
+def enviar_thingspeak(umidade, insolacao, ivm, temperatura):
+    url = f"{THINGSPEAK_URL}?api_key={WRITE_API_KEY}&field1={umidade}&field2={insolacao}&field3={ivm}&field4={temperatura}"
     try:
         res = urequests.get(url)
         print(f"ThingSpeak Resposta: {res.status_code}")
@@ -91,7 +91,7 @@ while True:
         
         print(f"Umidade: {u}% | Insolação: {i:.1f}% | IVM: {ivm}%")
         atualizar_display_e_leds(u, i, ivm)
-        enviar_thingspeak(u, i, ivm)
+        enviar_thingspeak(u, i, ivm, t)
         
     except Exception as e:
         print("Erro no ciclo de leitura:", e)

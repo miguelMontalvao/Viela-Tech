@@ -85,8 +85,12 @@
   * **Área do Morador:** autotriagem com nome, setor/viela, dias de tosse, febre e suor noturno. Tosse há 21 dias ou mais gera um alerta vermelho prioritário e indica a **Clínica da Família Rinaldo De Lamare** e o **CMS Albert Sabin**. A tela deixa claro que a triagem não é diagnóstico.
   * **Painel ACS:** login, fila com os urgentes no topo e a faixa **URGENTE — TOSSE +21 DIAS**, ações de atendimento (iniciar, registrar coleta, concluir), filtros e busca.
   * **Dashboard do Gestor:** umidade, insolação e IVM do sensor IoT com as cores semafóricas oficiais, total de triagens, casos urgentes, coletas concluídas e gráficos.
+  * **Simulador preditivo de 24h:** linha do tempo interativa que projeta um fator exponencial de crescimento a partir do microclima, com curva, taxa estimada e faixa visual de risco. A taxa é uma hipótese didática, não calibrada nem equivalente a risco clínico; leituras sem temperatura usam cenário simulado identificado.
+  * **Boletim comunitário inteligente:** diagnóstico ambiental em linguagem simples, três recomendações adaptadas à umidade e temperatura e compartilhamento via WhatsApp. O IVM é um indicador ambiental, não diagnóstico de tuberculose.
   * Identidade visual oficial (Azul Saúde Cívica `#0284C7`, Verde Esmeralda `#059669`) com elementos cariocas: casas coloridas, calçadão e bandeirinhas. Tem logo vetorizada, tema claro como padrão (o escuro é opcional) e layout responsivo do celular ao monitor grande.
   * WCAG 2.1 AA: alvos de no mínimo 48px, contraste pensado para uso sob o sol, foco visível, link para pular ao conteúdo, mensagens anunciadas a leitores de tela e gráficos com alternativa em tabela.
+
+  O backlog original em PDF é binário e não foi editado diretamente nesta atualização. As histórias US-07 e US-08 estão registradas na fonte Markdown [`Doc/VielaTech-Backlog.md`](Doc/VielaTech-Backlog.md), pronta para revisão e exportação.
 
 ---
 
@@ -94,6 +98,7 @@
 * **Objetivo:** Interatividade em JavaScript, integração com API externa e persistência no navegador.
 * **O que tem:**
   * **CRUD na API REST do Supabase:** cria triagens, lê a fila e o microclima e atualiza o status dos chamados (`src/Frontend/src/services/api.js`).
+  * O ESP32 envia temperatura do DHT22 como `field4` no ThingSpeak; a coluna opcional `temperatura` em `leituras_microclima` aceita esse dado. Leituras antigas permanecem válidas e recebem temperatura simulada apenas nas projeções que precisam dela.
   * **Supabase Auth:** e-mail e senha, cadastro e recuperação de senha, com perfis `morador`, `acs` e `gestor`, rotas protegidas por papel e RLS no banco.
   * **Custom Hooks** (`useTriagem`, `useChamados`, `useMicroclima`, `useOnlineStatus`, `useTheme`, `useAuth`, `useEnvioPendente`) separando a tela da lógica.
   * **Modo claro/escuro** com `darkMode: 'class'`, salvo no aparelho.
