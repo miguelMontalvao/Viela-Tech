@@ -6,3 +6,8 @@
 # Dependencies and build output
 node_modules/
 dist/
+
+# Front-end (src/Frontend)
+src/Frontend/node_modules/
+src/Frontend/dist/
+Viela-Tech.zip
