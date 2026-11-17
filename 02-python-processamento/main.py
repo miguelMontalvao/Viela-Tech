@@ -1,13 +1,15 @@
-"""Ferramenta CLI para análise de vulnerabilidade de microclima do CANYON.
+"""Viela Tech — "O Cérebro Conectado": análise do microclima das vielas da Rocinha.
 
-Busca leituras públicas do ThingSpeak, mantém um backup local e um histórico
-sem duplicatas, calcula o IVM e exporta os dados processados para CSV.
+Busca as leituras públicas do ESP32 no ThingSpeak, mantém um backup local e um
+histórico sem duplicatas, calcula o Índice de Vulnerabilidade de Microclima
+(IVM) com normalização mín–máx e exporta os dados processados para CSV.
 """
 
 from __future__ import annotations
 
 import csv
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -17,18 +19,96 @@ import requests
 # Todos os arquivos de dados ficam ao lado deste script, independentemente do
 # diretório a partir do qual o programa for iniciado.
 PASTA_DADOS: Path = Path(__file__).resolve().parent
-URL_THINGSPEAK: str = "https://api.thingspeak.com/channels/3571901/feeds.json"
 ARQUIVO_BACKUP: Path = PASTA_DADOS / "backup.json"
 ARQUIVO_HISTORICO: Path = PASTA_DADOS / "historico.json"
 ARQUIVO_CSV: Path = PASTA_DADOS / "relatorio.csv"
 
-CONFIGURACAO: dict[str, float] = {
-    "peso_umidade": 0.6,
-    "peso_insolacao_inversa": 0.4,
+# Configuração centralizada: toda regra de negócio ajustável mora aqui.
+CONFIGURACAO: dict[str, Any] = {
+    "api": {
+        "url": "https://api.thingspeak.com/channels/3571901/feeds.json",
+        "quantidade_leituras": 100,   # pede até 100; a atividade exige ao menos 20
+        "minimo_leituras": 20,
+        "timeout_segundos": 5,
+    },
+    # Faixa usada na normalização nivel = (valor - min) / (max - min) * 100.
+    # 0–100 é a faixa física dos sensores: o DHT22 mede 0–100 %UR e o LDR é
+    # convertido para 0–100 % no ESP32. Assim o IVM do Python é igual ao do
+    # ESP32, da Matemática e da aplicação web.
+    "limites": {
+        "umidade": {"min": 0.0, "max": 100.0},
+        "insolacao": {"min": 0.0, "max": 100.0},
+    },
+    # risco = peso1 * nivel_umidade + peso2 * nivel_falta_de_luz (soma = 1).
+    "pesos": {
+        "umidade": 0.6,
+        "falta_de_luz": 0.4,
+    },
+    # NORMAL < 40 <= ATENÇÃO < 70 <= PERIGO
+    "limiares": {
+        "atencao": 40.0,
+        "perigo": 70.0,
+    },
+    "leituras_para_tendencia": 3,   # altas consecutivas que indicam piora
 }
+
+FAIXAS: tuple[str, str, str] = ("NORMAL", "ATENÇÃO", "PERIGO")
 CAMPOS_CSV: list[str] = [
     "entry_id", "created_at", "umidade", "temperatura", "insolacao", "ivm", "faixa_risco"
 ]
+
+
+def validar_configuracao(config: dict[str, Any] = CONFIGURACAO) -> None:
+    """Confere se a configuração do índice é coerente antes de qualquer cálculo.
+
+    Args:
+        config: Dicionário no formato de CONFIGURACAO.
+
+    Returns:
+        None quando a configuração é válida.
+
+    Raises:
+        ValueError: Se os pesos não somarem 1, algum peso for negativo, algum
+            limite tiver min >= max ou os limiares estiverem fora de ordem.
+    """
+    try:
+        pesos: dict[str, float] = config["pesos"]
+        limites: dict[str, dict[str, float]] = config["limites"]
+        limiares: dict[str, float] = config["limiares"]
+    except (KeyError, TypeError) as erro:
+        raise ValueError(f"Configuração incompleta: {erro}") from erro
+
+    if any(peso < 0 for peso in pesos.values()):
+        raise ValueError("Os pesos não podem ser negativos")
+    if not math.isclose(sum(pesos.values()), 1.0, abs_tol=1e-9):
+        raise ValueError(f"A soma dos pesos deve ser 1.0 (atual: {sum(pesos.values())})")
+    for nome, faixa in limites.items():
+        if faixa["min"] >= faixa["max"]:
+            raise ValueError(f"Limite inválido para {nome}: min deve ser menor que max")
+    if not 0 < limiares["atencao"] < limiares["perigo"] <= 100:
+        raise ValueError("Limiares inválidos: use 0 < atenção < perigo <= 100")
+
+
+def normalizar(valor: float, minimo: float, maximo: float) -> float:
+    """Converte um valor para a escala 0–100 a partir da sua faixa mín–máx.
+
+    Args:
+        valor: Medição bruta.
+        minimo: Menor valor esperado da faixa.
+        maximo: Maior valor esperado da faixa.
+
+    Returns:
+        nivel = (valor - minimo) / (maximo - minimo) * 100, limitado a [0, 100].
+
+    Raises:
+        ValueError: Se minimo >= maximo ou o valor não for finito.
+    """
+    if minimo >= maximo:
+        raise ValueError("O mínimo deve ser menor que o máximo")
+    if not math.isfinite(valor):
+        raise ValueError("Valor não finito")
+    nivel: float = (valor - minimo) / (maximo - minimo) * 100.0
+    return max(0.0, min(100.0, nivel))
 
 
 def carregar_json(caminho: Path) -> list[dict[str, Any]]:
@@ -88,28 +168,30 @@ def salvar_json(caminho: Path, registros: list[dict[str, Any]]) -> bool:
 
 
 def calcular_ivm(umidade: float, insolacao: float) -> float:
-    """Calcula o Índice de Vulnerabilidade de Microclima.
+    """Calcula o Índice de Vulnerabilidade de Microclima (IVM).
+
+    nivel_umidade = normalizar(umidade); nivel_falta_de_luz = 100 - normalizar(insolacao);
+    IVM = peso_umidade * nivel_umidade + peso_falta_de_luz * nivel_falta_de_luz.
 
     Args:
-        umidade: Percentual de umidade, entre 0 e 100.
-        insolacao: Percentual de insolação, entre 0 e 100.
+        umidade: Umidade relativa medida (%), entre 0 e 100.
+        insolacao: Insolação medida (%), entre 0 e 100.
 
     Returns:
-        IVM arredondado a duas casas decimais.
+        IVM entre 0 e 100, arredondado a uma casa decimal (igual ao ESP32 e ao app).
 
     Raises:
-        ValueError: Se os pesos não somarem 1.0 ou se as medições forem inválidas.
+        ValueError: Se as medições estiverem fora da faixa física 0–100.
     """
-    soma_pesos: float = CONFIGURACAO["peso_umidade"] + CONFIGURACAO["peso_insolacao_inversa"]
-    if abs(soma_pesos - 1.0) > 1e-9:
-        raise ValueError("A soma dos pesos deve ser igual a 1.0")
     if not (0.0 <= umidade <= 100.0 and 0.0 <= insolacao <= 100.0):
         raise ValueError("Umidade e insolação devem estar entre 0 e 100")
-    return round(
-        CONFIGURACAO["peso_umidade"] * umidade
-        + CONFIGURACAO["peso_insolacao_inversa"] * (100.0 - insolacao),
-        2,
+    limites: dict[str, dict[str, float]] = CONFIGURACAO["limites"]
+    pesos: dict[str, float] = CONFIGURACAO["pesos"]
+    nivel_umidade: float = normalizar(umidade, limites["umidade"]["min"], limites["umidade"]["max"])
+    nivel_falta_de_luz: float = 100.0 - normalizar(
+        insolacao, limites["insolacao"]["min"], limites["insolacao"]["max"]
     )
+    return round(pesos["umidade"] * nivel_umidade + pesos["falta_de_luz"] * nivel_falta_de_luz, 1)
 
 
 def classificar_risco(ivm: float) -> str:
@@ -119,25 +201,54 @@ def classificar_risco(ivm: float) -> str:
         ivm: Índice de Vulnerabilidade de Microclima.
 
     Returns:
-        NORMAL, ATENÇÃO ou PERIGO conforme os limites definidos.
+        NORMAL (< 40), ATENÇÃO (40 a < 70) ou PERIGO (>= 70), conforme CONFIGURACAO.
 
     Raises:
         ValueError: Se o índice for negativo ou não finito.
     """
-    if ivm < 0 or ivm != ivm or ivm == float("inf"):
+    if not math.isfinite(ivm) or ivm < 0:
         raise ValueError("IVM inválido")
-    if ivm < 40:
+    limiares: dict[str, float] = CONFIGURACAO["limiares"]
+    if ivm < limiares["atencao"]:
         return "NORMAL"
-    if ivm < 70:
+    if ivm < limiares["perigo"]:
         return "ATENÇÃO"
     return "PERIGO"
+
+
+def converter_opcional(valor: Any) -> float | None:
+    """Converte um campo opcional (como a temperatura) sem descartar a leitura.
+
+    Args:
+        valor: Texto ou número vindo da API ou do arquivo local.
+
+    Returns:
+        O número convertido, ou None se estiver vazio ou inválido.
+
+    Raises:
+        Nenhuma exceção é propagada.
+    """
+    if valor in (None, ""):
+        return None
+    try:
+        numero: float = float(valor)
+    except (TypeError, ValueError):
+        return None
+    return numero if math.isfinite(numero) else None
+
+
+def chave_ordenacao(registro: dict[str, Any]) -> tuple[int, Any]:
+    """Ordena numericamente pelo entry_id quando possível (ordem temporal da API)."""
+    entry_id: str = str(registro["entry_id"])
+    return (0, int(entry_id)) if entry_id.isdigit() else (1, entry_id)
 
 
 def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Valida e enriquece feeds do ThingSpeak com IVM e faixa de risco.
 
     Args:
-        leituras: Dicionários contendo entry_id, created_at, field1 e field2.
+        leituras: Dicionários contendo entry_id, created_at, field1, field2 e,
+            opcionalmente, field4 (temperatura).
 
     Returns:
         Registros válidos e ordenados pelo entry_id crescente.
@@ -149,19 +260,17 @@ def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for leitura in leituras:
         try:
             identificador: str = str(leitura["entry_id"]).strip()
-            umidade: float = float(leitura["field1"])
-            insolacao: float = float(leitura["field2"])
-            temperatura_bruta = leitura.get("field4")
-            temperatura = float(temperatura_bruta) if temperatura_bruta not in (None, "") else None
             if not identificador:
                 raise ValueError("entry_id ausente")
+            umidade: float = float(leitura["field1"])
+            insolacao: float = float(leitura["field2"])
             ivm: float = calcular_ivm(umidade, insolacao)
             resultado.append(
                 {
                     "entry_id": identificador,
                     "created_at": str(leitura.get("created_at", "")),
                     "umidade": umidade,
-                    "temperatura": temperatura,
+                    "temperatura": converter_opcional(leitura.get("field4")),
                     "insolacao": insolacao,
                     "ivm": ivm,
                     "faixa_risco": classificar_risco(ivm),
@@ -169,47 +278,18 @@ def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
             )
         except (KeyError, TypeError, ValueError, OverflowError) as erro:
             print(f"Aviso: leitura inválida ignorada ({erro}).")
-    # Ordena numericamente quando possível para preservar a ordem temporal da API.
-    resultado.sort(key=lambda item: (0, int(item["entry_id"])) if item["entry_id"].isdigit() else (1, item["entry_id"]))
+    resultado.sort(key=chave_ordenacao)
     return resultado
 
 
-def buscar_leituras() -> tuple[list[dict[str, Any]], bool]:
-    """Busca até 20 leituras e usa backup local quando a API falhar.
-
-    Returns:
-        Tupla (registros normalizados, origem_online). A origem_online indica
-        que a resposta HTTP e o JSON da API foram aceitos.
-
-    Raises:
-        requests.exceptions.RequestException: Capturada internamente; aciona fallback.
-    """
-    try:
-        resposta: requests.Response = requests.get(
-            URL_THINGSPEAK, params={"results": 20}, timeout=5
-        )
-        resposta.raise_for_status()
-        dados: Any = resposta.json()
-        if not isinstance(dados, dict) or not isinstance(dados.get("feeds"), list):
-            raise ValueError("Resposta da API sem lista 'feeds' válida")
-        registros: list[dict[str, Any]] = normalizar_leituras(dados["feeds"])
-        if not salvar_json(ARQUIVO_BACKUP, registros):
-            print("Aviso: leituras recebidas, mas o backup não pôde ser atualizado.")
-        return registros, True
-    except (requests.exceptions.RequestException, ValueError, json.JSONDecodeError) as erro:
-        print(f"API indisponível ou resposta inválida ({erro}). Usando backup local.")
-        backup: list[dict[str, Any]] = carregar_json(ARQUIVO_BACKUP)
-        return normalizar_registros_salvos(backup), False
-
-
 def normalizar_registros_salvos(registros: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Valida registros normalizados carregados do backup ou histórico.
+    """Valida registros já processados, carregados do backup ou do histórico.
 
     Args:
-        registros: Lista com campos umidade, insolacao e entry_id.
+        registros: Lista com campos entry_id, umidade, insolacao e temperatura.
 
     Returns:
-        Registros válidos normalizados e ordenados.
+        Registros válidos, recalculados com a configuração atual e ordenados.
 
     Raises:
         ValueError: Registros com valores inválidos são descartados individualmente.
@@ -223,11 +303,46 @@ def normalizar_registros_salvos(registros: list[dict[str, Any]]) -> list[dict[st
                     "created_at": item.get("created_at", ""),
                     "field1": item["umidade"],
                     "field2": item["insolacao"],
+                    "field4": item.get("temperatura"),
                 }
             )
         except (KeyError, TypeError):
             print("Aviso: registro local sem campos obrigatórios ignorado.")
     return normalizar_leituras(feeds)
+
+
+def buscar_leituras() -> tuple[list[dict[str, Any]], bool]:
+    """Busca as leituras na API e usa o backup local quando ela falhar.
+
+    Returns:
+        Tupla (registros normalizados, origem_online). origem_online é True
+        quando a resposta HTTP e o JSON da API foram aceitos.
+
+    Raises:
+        requests.exceptions.RequestException: Capturada internamente; aciona o backup.
+    """
+    api: dict[str, Any] = CONFIGURACAO["api"]
+    try:
+        resposta: requests.Response = requests.get(
+            api["url"],
+            params={"results": api["quantidade_leituras"]},
+            timeout=api["timeout_segundos"],
+        )
+        resposta.raise_for_status()
+        dados: Any = resposta.json()
+        if not isinstance(dados, dict) or not isinstance(dados.get("feeds"), list):
+            raise ValueError("Resposta da API sem lista 'feeds' válida")
+        registros: list[dict[str, Any]] = normalizar_leituras(dados["feeds"])
+        if not registros:
+            raise ValueError("A API não retornou leituras válidas")
+        # O backup só é substituído quando há dados válidos novos.
+        if not salvar_json(ARQUIVO_BACKUP, registros):
+            print("Aviso: leituras recebidas, mas o backup não pôde ser atualizado.")
+        return registros, True
+    except (requests.exceptions.RequestException, ValueError) as erro:
+        print(f"API indisponível ou resposta inválida ({erro}). Usando backup local.")
+        backup: list[dict[str, Any]] = carregar_json(ARQUIVO_BACKUP)
+        return normalizar_registros_salvos(backup), False
 
 
 def atualizar_historico(novas_leituras: list[dict[str, Any]]) -> int:
@@ -253,25 +368,25 @@ def atualizar_historico(novas_leituras: list[dict[str, Any]]) -> int:
             historico.append(leitura)
             ids_existentes.add(entry_id)
             adicionadas += 1
-    historico.sort(key=lambda item: (0, int(item["entry_id"])) if item["entry_id"].isdigit() else (1, item["entry_id"]))
+    historico.sort(key=chave_ordenacao)
     if adicionadas and not salvar_json(ARQUIVO_HISTORICO, historico):
         return 0
     return adicionadas
 
 
 def analisar_leituras(registros: list[dict[str, Any]]) -> dict[str, Any]:
-    """Calcula contagens, tendência e maior sequência de leituras perigosas.
+    """Calcula contagens por faixa, tendência e maior sequência em PERIGO.
 
     Args:
         registros: Leituras processadas em ordem temporal.
 
     Returns:
-        Dicionário com contagens por faixa, flag de piora e maior episódio PERIGO.
+        Dicionário com contagens por faixa, tendência e maior episódio PERIGO.
 
     Raises:
         ValueError: Se algum registro não tiver IVM numérico válido.
     """
-    contagens: dict[str, int] = {"NORMAL": 0, "ATENÇÃO": 0, "PERIGO": 0}
+    contagens: dict[str, int] = {faixa: 0 for faixa in FAIXAS}
     ivms: list[float] = []
     maior_perigo: int = 0
     perigo_atual: int = 0
@@ -285,12 +400,14 @@ def analisar_leituras(registros: list[dict[str, Any]]) -> dict[str, Any]:
             maior_perigo = max(maior_perigo, perigo_atual)
         else:
             perigo_atual = 0
+
+    altas_necessarias: int = CONFIGURACAO["leituras_para_tendencia"]
     aumentos_consecutivos: int = 0
     piorando: bool = False
     for anterior, atual in zip(ivms, ivms[1:]):
         if atual > anterior:
             aumentos_consecutivos += 1
-            if aumentos_consecutivos >= 3:
+            if aumentos_consecutivos >= altas_necessarias:
                 piorando = True
         else:
             aumentos_consecutivos = 0
@@ -304,7 +421,7 @@ def analisar_leituras(registros: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def exportar_csv(registros: list[dict[str, Any]]) -> bool:
-    """Cria/sobrescreve o relatório CSV em UTF-8 com BOM para Excel.
+    """Cria/sobrescreve o relatório CSV (UTF-8 com BOM, abre direto no Excel).
 
     Args:
         registros: Leituras normalizadas a exportar.
@@ -327,7 +444,7 @@ def exportar_csv(registros: list[dict[str, Any]]) -> bool:
 
 
 def exibir_analise(registros: list[dict[str, Any]]) -> None:
-    """Exibe no terminal o resumo epidemiológico dos dados disponíveis.
+    """Exibe no terminal o resumo de risco dos dados disponíveis.
 
     Args:
         registros: Leituras analisadas.
@@ -342,12 +459,14 @@ def exibir_analise(registros: list[dict[str, Any]]) -> None:
         analise: dict[str, Any] = analisar_leituras(registros)
         print("\n--- Análise de risco e tendência ---")
         print(f"Leituras analisadas: {analise['total']}")
+        if analise["total"] < CONFIGURACAO["api"]["minimo_leituras"]:
+            print(f"Aviso: menos de {CONFIGURACAO['api']['minimo_leituras']} leituras no histórico.")
         for faixa, quantidade in analise["contagens"].items():
             print(f"{faixa}: {quantidade}")
         print(f"Tendência: {analise['tendencia']}")
         print(f"Maior episódio contínuo em PERIGO: {analise['maior_episodio_perigo']} leitura(s)")
         if analise["ultimo_ivm"] is not None:
-            print(f"Último IVM: {analise['ultimo_ivm']:.2f} ({classificar_risco(analise['ultimo_ivm'])})")
+            print(f"Último IVM: {analise['ultimo_ivm']:.1f} ({classificar_risco(analise['ultimo_ivm'])})")
         else:
             print("Sem leituras para analisar.")
     except (KeyError, TypeError, ValueError) as erro:
@@ -364,13 +483,14 @@ def menu() -> None:
         None.
 
     Raises:
-        EOFError: Tratado como solicitação de encerramento do programa.
+        ValueError: Se a configuração do índice for inválida (verificada ao iniciar).
     """
+    validar_configuracao()
     registros_atuais: list[dict[str, Any]] = normalizar_registros_salvos(
         carregar_json(ARQUIVO_HISTORICO)
     )
     while True:
-        print("\n=== VielaTech | Monitoramento de Microclima ===")
+        print("\n=== Viela Tech | Monitoramento de Microclima ===")
         print("[1] Buscar e Processar Leituras do ThingSpeak / Backup")
         print("[2] Exibir Análise de Risco e Tendência Atual")
         print("[3] Exportar Relatório CSV")
@@ -387,15 +507,12 @@ def menu() -> None:
             registros_atuais = normalizar_registros_salvos(carregar_json(ARQUIVO_HISTORICO))
             origem: str = "ThingSpeak" if online else "backup offline"
             print(f"{len(lidas)} leitura(s) obtida(s) de {origem}; {adicionadas} nova(s) adicionada(s) ao histórico.")
+            print(f"Histórico acumulado: {len(registros_atuais)} leitura(s).")
         elif opcao == "2":
-            if not registros_atuais:
-                registros_atuais = normalizar_registros_salvos(carregar_json(ARQUIVO_HISTORICO))
             exibir_analise(registros_atuais)
         elif opcao == "3":
-            if not registros_atuais:
-                registros_atuais = normalizar_registros_salvos(carregar_json(ARQUIVO_HISTORICO))
             if exportar_csv(registros_atuais):
-                print(f"Relatório exportado: {ARQUIVO_CSV}")
+                print(f"Relatório exportado: {ARQUIVO_CSV} ({len(registros_atuais)} linha(s)).")
         elif opcao == "4":
             print("Até logo!")
             break
@@ -406,5 +523,7 @@ def menu() -> None:
 if __name__ == "__main__":
     try:
         menu()
+    except ValueError as erro:
+        print(f"Configuração inválida: {erro}")
     except Exception as erro:  # Última barreira para manter a CLI utilizável.
         print(f"Erro inesperado: {erro}")

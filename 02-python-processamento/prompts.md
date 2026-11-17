@@ -4,7 +4,7 @@
 > **Disciplina:** Computational Thinking with Python  
 > **Turma:** 1ESSRA — FIAP GS 2026.2  
 
-Este documento registra os prompts utilizados com ferramentas de IA Generativa (Codex / Gemini) para o desenvolvimento da engine de lógica em Python (`python/main.py`).
+Este documento registra os prompts utilizados com ferramentas de IA Generativa (Codex / Gemini) para o desenvolvimento da engine de lógica em Python (`02-python-processamento/main.py`).
 
 ---
 
@@ -30,3 +30,18 @@ Este documento registra os prompts utilizados com ferramentas de IA Generativa (
 ## 3. Validação Humana e Aprendizado
 
 Todo o código gerado pelo Codex foi revisado, testado no terminal do VS Code, validado contra a falha de rede (simulando offline) e auditado pela equipe para garantir total domínio das funções e tipos utilizados.
+---
+
+## 4. Revisão da auditoria final (17/11/2026)
+
+- **Ferramenta:** Claude Code (Anthropic, Claude Opus 5.5).
+- **Pedido:** auditar `main.py` contra os requisitos da atividade e corrigir o que faltava sem mudar o comportamento validado.
+- **Resultado:**
+  - normalização mín–máx (`normalizar`);
+  - `validar_configuracao` chamada ao iniciar;
+  - limites, pesos, limiares, timeout e quantidade de leituras centralizados em `CONFIGURACAO`;
+  - o backup não é mais apagado por um feed vazio;
+  - a temperatura (`field4`) é preservada ao recarregar o histórico;
+  - IVM arredondado a 1 casa, como no ESP32 e no app;
+  - 21 testes em `test_main.py`.
+- **Validação humana:** testes executados (`python -m unittest -v test_main`, 21 OK) e execução real contra a API registrada no [README](README.md).
