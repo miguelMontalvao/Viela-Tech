@@ -1,7 +1,7 @@
 # 06 · Storytelling & Inspiração Empreendedora (Pitch)
 
 > **Entrega:** vídeo de até 3 minutos, publicado no YouTube como **não listado**.
-> **Link do vídeo:** ⏳ **pendente**. A equipe deve preencher depois de publicar, aqui, no [README raiz](../README.md) e no [`Integrantes.md`](../Integrantes.md).
+> **Link do vídeo:** **pendente**. A equipe deve preencher depois de publicar, aqui, no [README raiz](../README.md) e no [`Integrantes.md`](../Integrantes.md).
 
 ## Mensagem central
 

@@ -196,7 +196,7 @@ create policy "cada um le o proprio perfil" on public.perfis
 
 -- ---------------------------------------------------------------------
 -- 5. Seed opcional: leituras reais do canal ThingSpeak 3571901,
---    copiadas de 02-python-processamento/historico.json (não são dados inventados).
+--    copiadas de python/historico.json (não são dados inventados).
 -- ---------------------------------------------------------------------
 -- insert into public.leituras_microclima (umidade, insolacao, ivm, created_at) values
 --   (53.0, 24.44, 62.02, '2026-11-09T13:26:01Z'),

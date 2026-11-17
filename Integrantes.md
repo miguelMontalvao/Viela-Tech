@@ -23,4 +23,4 @@
 | **Repositório GitHub** | [github.com/miguelMontalvao/Viela-Tech](https://github.com/miguelMontalvao/Viela-Tech) |
 | **Simulação Wokwi** | [wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793) |
 | **Canal ThingSpeak** | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |
-| **Vídeo do pitch (YouTube, até 3 min)** | ⏳ pendente: preencher depois da publicação |
+| **Vídeo do pitch (YouTube, até 3 min)** | pendente: preencher depois da publicação |

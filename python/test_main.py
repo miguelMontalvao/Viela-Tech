@@ -101,6 +101,12 @@ class TestConfiguracao(unittest.TestCase):
         with self.assertRaises(ValueError):
             main.validar_configuracao(config)
 
+    def test_falta_aviso_de_uma_faixa(self) -> None:
+        config = copy.deepcopy(main.CONFIGURACAO)
+        del config["avisos"]["PERIGO"]
+        with self.assertRaises(ValueError):
+            main.validar_configuracao(config)
+
 
 class TestClassificacao(unittest.TestCase):
     def test_bordas_das_faixas(self) -> None:
@@ -118,7 +124,11 @@ class TestClassificacao(unittest.TestCase):
 class TestAnalise(unittest.TestCase):
     @staticmethod
     def registros(ivms: list[float]) -> list[dict]:
-        return [{"entry_id": str(i), "ivm": v} for i, v in enumerate(ivms, start=1)]
+        # Uma leitura a cada 15 minutos, a partir das 13:00 UTC.
+        return [
+            {"id": str(i), "horario": f"2026-11-09T{13 + (i - 1) * 15 // 60:02d}:{(i - 1) * 15 % 60:02d}:00Z", "ivm": v}
+            for i, v in enumerate(ivms, start=1)
+        ]
 
     def test_tendencia_de_piora_com_tres_altas(self) -> None:
         analise = main.analisar_leituras(self.registros([30, 35, 45, 50]))
@@ -130,21 +140,44 @@ class TestAnalise(unittest.TestCase):
 
     def test_maior_episodio_e_contagens(self) -> None:
         analise = main.analisar_leituras(self.registros([75, 80, 30, 71, 72, 73, 50]))
+        self.assertEqual(analise["episodios_perigo"], 2)
         self.assertEqual(analise["maior_episodio_perigo"], 3)
+        self.assertEqual(analise["maior_episodio_minutos"], 30)  # 13:45 até 14:15
         self.assertEqual(analise["contagens"], {"NORMAL": 1, "ATENÇÃO": 1, "PERIGO": 5})
+
+    def test_media_pico_e_aviso_da_ultima_faixa(self) -> None:
+        analise = main.analisar_leituras(self.registros([30, 90, 60]))
+        self.assertEqual(analise["media_ivm"], 60.0)
+        self.assertEqual(analise["pico_ivm"], 90.0)
+        self.assertEqual(analise["pico_horario"], "2026-11-09T13:15:00Z")
+        self.assertEqual(analise["aviso"], main.CONFIGURACAO["avisos"]["ATENÇÃO"])
+        self.assertEqual(main.formatar_horario(analise["pico_horario"]), "09/11 10:15")
 
 
 class TestLeiturasEPersistencia(ArquivosTemporarios):
+    def test_modelo_da_leitura(self) -> None:
+        leitura = main.normalizar_leituras([feed(4, 79.5, 95.091576, "26")])[0]
+        self.assertEqual(set(leitura), {"id", "horario", "medidas", "ivm", "faixa"})
+        self.assertEqual(leitura["id"], "4")
+        self.assertEqual(leitura["medidas"], {"umidade": 79.5, "insolacao": 95.091576, "temperatura": 26.0})
+        self.assertEqual((leitura["ivm"], leitura["faixa"]), (49.7, "ATENÇÃO"))
+
+    def test_carrega_historico_no_formato_antigo(self) -> None:
+        antigo = [{"entry_id": "3", "created_at": "2026-11-09T14:00:00Z", "umidade": 80, "insolacao": 20, "temperatura": None}]
+        leitura = main.normalizar_registros_salvos(antigo)[0]
+        self.assertEqual((leitura["id"], leitura["horario"]), ("3", "2026-11-09T14:00:00Z"))
+        self.assertEqual(leitura["faixa"], "PERIGO")
+
     def test_temperatura_invalida_nao_descarta_a_leitura(self) -> None:
         registros = main.normalizar_leituras([feed(1, 80, 20, "erro"), feed(2, 80, 20, "25.5")])
         self.assertEqual(len(registros), 2)
-        self.assertIsNone(registros[0]["temperatura"])
-        self.assertEqual(registros[1]["temperatura"], 25.5)
+        self.assertIsNone(registros[0]["medidas"]["temperatura"])
+        self.assertEqual(registros[1]["medidas"]["temperatura"], 25.5)
 
     def test_temperatura_sobrevive_ao_recarregar_do_arquivo(self) -> None:
         registros = main.normalizar_leituras([feed(1, 80, 20, "26.1")])
         recarregados = main.normalizar_registros_salvos(registros)
-        self.assertEqual(recarregados[0]["temperatura"], 26.1)
+        self.assertEqual(recarregados[0]["medidas"]["temperatura"], 26.1)
 
     def test_historico_sem_duplicatas(self) -> None:
         lote = main.normalizar_leituras([feed(1, 60, 50), feed(2, 70, 40)])
@@ -153,7 +186,7 @@ class TestLeiturasEPersistencia(ArquivosTemporarios):
         novo = main.normalizar_leituras([feed(2, 70, 40), feed(3, 90, 10)])
         self.assertEqual(main.atualizar_historico(novo), 1)
         historico = main.carregar_json(main.ARQUIVO_HISTORICO)
-        self.assertEqual([item["entry_id"] for item in historico], ["1", "2", "3"])
+        self.assertEqual([item["id"] for item in historico], ["1", "2", "3"])
 
     def test_api_online_salva_backup(self) -> None:
         resposta = mock.Mock()
@@ -173,7 +206,7 @@ class TestLeiturasEPersistencia(ArquivosTemporarios):
         with mock.patch.object(main.requests, "get", side_effect=erro):
             registros, online = main.buscar_leituras()
         self.assertFalse(online)
-        self.assertEqual(registros[0]["entry_id"], "7")
+        self.assertEqual(registros[0]["id"], "7")
 
     def test_erro_http_usa_backup(self) -> None:
         main.salvar_json(main.ARQUIVO_BACKUP, main.normalizar_leituras([feed(8, 50, 50)]))
@@ -193,7 +226,7 @@ class TestLeiturasEPersistencia(ArquivosTemporarios):
             registros, online = main.buscar_leituras()
         self.assertFalse(online)
         self.assertEqual(len(main.carregar_json(main.ARQUIVO_BACKUP)), 1)
-        self.assertEqual(registros[0]["entry_id"], "9")
+        self.assertEqual(registros[0]["id"], "9")
 
     def test_csv_com_cabecalho(self) -> None:
         registros = main.normalizar_leituras([feed(1, 80, 20, "27")])
@@ -201,7 +234,7 @@ class TestLeiturasEPersistencia(ArquivosTemporarios):
         with main.ARQUIVO_CSV.open(encoding="utf-8-sig", newline="") as arquivo:
             linhas = list(csv.DictReader(arquivo))
         self.assertEqual(list(linhas[0].keys()), main.CAMPOS_CSV)
-        self.assertEqual(linhas[0]["faixa_risco"], "PERIGO")
+        self.assertEqual(linhas[0]["faixa"], "PERIGO")
         self.assertEqual(linhas[0]["temperatura"], "27.0")
 
 

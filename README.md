@@ -3,13 +3,28 @@
 > **Plataforma cívica de inteligência urbana e vigilância em saúde para a prevenção da tuberculose na Rocinha (RJ)**
 > FIAP · Engenharia de Software · **Global Solution 2026.2: CitizenTech** · Turma 1ESSRA
 
+## Ficha da CitizenTech
+
+| Campo | Resposta |
+|---|---|
+| **Nome da CitizenTech** | **Viela Tech** |
+| **Cidade e bairro** | Rio de Janeiro (RJ), Rocinha: becos e vielas estreitos, com pouco sol e pouca ventilação |
+| **Cidadão beneficiado** | Morador das vielas que está com tosse e não sabe se deve procurar a Clínica da Família. Também ajuda o Agente Comunitário de Saúde (ACS), que visita as famílias, e o gestor da Secretaria Municipal de Saúde. |
+| **Problema, em uma frase** | Nos becos da Rocinha, a falta de sol e de ventilação mantém o ar úmido e parado, o que favorece a tuberculose, e quem tosse há semanas demora a ser triado e visitado. |
+| **Como funciona** | Um sensor ESP32 mede umidade, luz e temperatura no beco e calcula o risco do ar (IVM). Os dados vão para o ThingSpeak e são analisados em Python e Matemática. No site, o morador faz a autotriagem; tosse há 21 dias ou mais vira prioridade na fila do ACS, que funciona mesmo sem internet. O gestor acompanha tudo de forma agregada. |
+| **O que cada parte faz** | **Sensor (Edge):** mede o beco, acende o LED da faixa e envia ao ThingSpeak.<br>**Lógica (Python):** busca as leituras, calcula o IVM, percebe a piora, guarda o histórico e exporta o CSV.<br>**Matemática:** usa limites, derivadas e integrais para mostrar quando o risco sobe mais rápido e quanto ele se acumula no dia.<br>**Interface (Front-end):** o site em React onde o morador, o ACS e o gestor veem a informação.<br>**Interação (Web Dev):** a triagem com validação, a fila offline, o modo claro/escuro e o boletim no WhatsApp.<br>**Experiência (Software & TX):** personas, requisitos, regras de negócio e backlog priorizado.<br>**Pitch:** o vídeo de 3 minutos que conta a história do morador. |
+| **Link do repositório** | [github.com/miguelMontalvao/Viela-Tech](https://github.com/miguelMontalvao/Viela-Tech) |
+| **Indicador de impacto** | Dias de tosse até a triagem: o site já registra quantos dias de tosse a pessoa tem quando faz a triagem. A meta é baixar essa média e aumentar a parcela de triagens feitas antes de 21 dias, para que o exame chegue antes. |
+| **ODS conectados** | **ODS 3 (Saúde e Bem-Estar):** triagem precoce da tuberculose (meta 3.3).<br>**ODS 10 (Redução das Desigualdades):** tecnologia de saúde para quem mora onde o serviço chega menos.<br>**ODS 11 (Cidades e Comunidades Sustentáveis):** o microclima do beco vira dado de planejamento urbano. |
+
+**Links da entrega:**
+
 | | |
 |---|---|
-| **Aplicação web** | [viela-tech.vercel.app](https://viela-tech.vercel.app) |
-| **Repositório** | [github.com/miguelMontalvao/Viela-Tech](https://github.com/miguelMontalvao/Viela-Tech) |
-| **Simulação ESP32 (Wokwi)** | [wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793) |
-| **Canal público ThingSpeak** | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |
-| **Vídeo do pitch (YouTube)** | ⏳ pendente (ver [`06-pitch-storytelling/`](06-pitch-storytelling/README.md)) |
+| Aplicação web | [viela-tech.vercel.app](https://viela-tech.vercel.app) |
+| Simulação ESP32 (Wokwi) | [wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793) |
+| Canal público ThingSpeak | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |
+| Vídeo do pitch (YouTube) | pendente (ver [`06-pitch-storytelling/`](06-pitch-storytelling/README.md)) |
 
 ## Sumário
 
@@ -73,7 +88,7 @@ O Viela Tech liga um **sensor de microclima** a uma **aplicação web de triagem
 |---|---|---|
 | 1 | O DHT22 e o LDR são lidos a cada 15 s; o ESP32 calcula o IVM, acende o LED da faixa e mostra no OLED | `01-edge-computing-esp32/` |
 | 2 | A leitura é publicada no ThingSpeak (`field1` a `field4`) | canal 3571901 |
-| 3 | O Python busca as leituras, valida, normaliza, classifica, detecta tendência de piora e exporta o CSV | `02-python-processamento/` |
+| 3 | O Python busca as leituras, valida, normaliza, classifica, detecta tendência de piora e exporta o CSV | `python/` |
 | 4 | A Matemática modela o IVM no tempo, com limites, derivadas e integral do risco acumulado | `03-matematica-modelagem/` |
 | 5 | O morador envia a triagem com consentimento; o banco marca a prioridade | `04-aplicacao-web/` + Supabase |
 | 6 | O ACS muda o status (pendente → em atendimento → coletado → concluído), mesmo offline | `/acs` |
@@ -107,8 +122,8 @@ Detalhes, contrato de dados e camadas da aplicação: [`docs/arquitetura.md`](do
 | # | Disciplina | Pasta | O que entrega |
 |---|---|---|---|
 | 1 | Edge Computing & Computer Systems | [`01-edge-computing-esp32/`](01-edge-computing-esp32/README.md) | Circuito no Wokwi, `main.py` com IVM, 3 faixas, LEDs, OLED e envio ao ThingSpeak |
-| 2 | Computational Thinking with Python | [`02-python-processamento/`](02-python-processamento/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 22 testes |
-| 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 15 testes |
+| 2 | Computational Thinking with Python | [`python/`](python/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 26 testes |
+| 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 16 testes |
 | 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 24 testes |
 | 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Backlog em PDF (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
 | 6 | Storytelling & Inspiração Empreendedora | [`06-pitch-storytelling/`](06-pitch-storytelling/README.md) | Roteiro de 3 minutos com a demonstração real e checklist de gravação |
@@ -121,16 +136,19 @@ O status de cada requisito está em [`docs/matriz-de-conformidade.md`](docs/matr
 ```text
 Viela-Tech/
 ├── 01-edge-computing-esp32/   ESP32 MicroPython: main.py, ssd1306.py, diagram.json, evidencias/
-├── 02-python-processamento/   main.py, test_main.py, historico.json, backup.json, relatorio.csv
+├── python/                    main.py, test_main.py, historico.json, backup.json, relatorio.csv, prompts.md
 ├── 03-matematica-modelagem/   modelo_calculo.py, relatorio_matematica.py, PDF, gráfico, testes
 ├── 04-aplicacao-web/          React + Vite + Tailwind + Supabase (src/, supabase/, public/)
-├── 05-software-tx-design/     VielaTech-Backlog.pdf, histórias novas e relatório de status
+├── 05-software-tx-design/     VielaTech-SoftwareTX-Relatorio.pdf (enviar), backlog original e status
 ├── 06-pitch-storytelling/     roteiro e checklist do vídeo
 ├── docs/                      arquitetura e matriz de conformidade
 ├── AI.md                      registro do uso de IA
 ├── Integrantes.md             equipe, RMs e responsabilidades
+├── prompts.md                 índice dos prompts de IA por entrega
 └── README.md                  este arquivo
 ```
+
+A pasta do Python se chama `python/` porque é o nome que a atividade da disciplina pede; as demais seguem a numeração por entrega.
 
 ## 9. O índice IVM
 
@@ -158,7 +176,7 @@ O IVM é um **indicador ambiental didático** e não mede o risco clínico de um
 # 1 · Edge: abra o link do Wokwi acima e clique em ▶ (ou copie os arquivos de 01-edge-computing-esp32/)
 
 # 2 · Python
-cd 02-python-processamento
+cd python
 pip install -r requirements.txt
 python main.py                 # menu: 1 buscar · 2 analisar · 3 exportar CSV · 4 sair
 
@@ -182,8 +200,8 @@ Execução de 17/11/2026:
 
 | Módulo | Comando | Resultado |
 |---|---|---|
-| Python | `python -m unittest test_main.py` | 22 de 22 passaram |
-| Matemática | `python -m pytest test_modelo_calculo.py` | 15 de 15 passaram |
+| Python | `python -m unittest test_main.py` | 26 de 26 passaram |
+| Matemática | `python -m pytest test_modelo_calculo.py` | 16 de 16 passaram |
 | Aplicação web | `npm test` | 24 de 24 passaram |
 | Aplicação web | `npm run build` | build sem erros |
 | Edge | `ast.parse` do `main.py` | sintaxe válida (a simulação roda no Wokwi) |
@@ -198,7 +216,7 @@ Execução de 17/11/2026:
 
 As demais evidências estão nas pastas de cada entrega:
 
-- a saída real do terminal Python está no [README do Python](02-python-processamento/README.md#evidência-de-execução);
+- a saída real do terminal Python está no [README do Python](python/README.md#evidência-de-execução);
 - o relatório de Matemática é o [`Relatorio_Matematica.pdf`](03-matematica-modelagem/Relatorio_Matematica.pdf);
 - a aplicação está publicada em [viela-tech.vercel.app](https://viela-tech.vercel.app).
 

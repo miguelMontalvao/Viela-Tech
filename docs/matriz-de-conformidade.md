@@ -31,7 +31,7 @@ Legenda:
 | README com problema, funcionamento, links e evidências | APROVADO | [`README.md`](../01-edge-computing-esp32/README.md) |
 | Projeto online atualizado | PENDENTE | A equipe precisa colar o `main.py` e o `diagram.json` novos no Wokwi |
 
-## 2 · Computational Thinking with Python ([`02-python-processamento/`](../02-python-processamento/))
+## 2 · Computational Thinking with Python ([`python/`](../python/))
 
 | Requisito | Status | Evidência / observação |
 |---|---|---|
@@ -39,8 +39,8 @@ Legenda:
 | Estruturas de dados, funções e menu | APROVADO | `CONFIGURACAO` (dicionário), listas de registros, `menu()` com 4 opções |
 | Normalização e validação de parâmetros | APROVADO | `normalizar()` (min-max) e `validar_configuracao()`, que lança `ValueError` |
 | Persistência (JSON e CSV) e fallback | APROVADO | `historico.json`, `backup.json` e `relatorio.csv`; usa o backup quando a API falha ou volta vazia |
-| Testes | APROVADO | `test_main.py`: 22 testes passando, sem rede |
-| Execução real documentada | APROVADO | Saída do terminal no [README](../02-python-processamento/README.md#evidência-de-execução) |
+| Testes | APROVADO | `test_main.py`: 26 testes passando, sem rede |
+| Execução real documentada | APROVADO | Saída do terminal no [README](../python/README.md#evidência-de-execução) |
 | Volume de dados (mínimo de 20 leituras) | PENDENTE | O canal tem 4 leituras. É preciso rodar o Wokwi atualizado por 5 minutos ou mais e executar de novo. |
 
 ## 3 · Differentiated Problem Solving: Matemática ([`03-matematica-modelagem/`](../03-matematica-modelagem/))
@@ -52,7 +52,7 @@ Legenda:
 | Derivadas e taxas de variação | APROVADO | `numpy.gradient` e derivada analítica; pico de 11,19 p.p./h |
 | Integrais | APROVADO | Simpson e trapézio: 1723,54 %·h; 14,17 h em PERIGO |
 | Relatório PDF com capa, interpretação e conclusão | APROVADO | `Relatorio_Matematica.pdf` (6 páginas) |
-| Testes | APROVADO | `test_modelo_calculo.py`: 15 testes passando |
+| Testes | APROVADO | `test_modelo_calculo.py`: 16 testes passando |
 | Dados reais | PARCIAL | Com menos de 20 leituras no CSV, o modelo usa uma simulação de 24 h **identificada como tal**. A troca para o CSV real é automática. |
 
 ## 4 · Front-end Design ([`04-aplicacao-web/`](../04-aplicacao-web/))
@@ -78,8 +78,8 @@ Legenda:
 | Regras de negócio, RF e RNF | APROVADO | PDF, páginas 7 e 8; status da implementação no README |
 | Backlog MoSCoW com critérios de aceite | APROVADO | PDF, páginas 9 a 13, mais US-16 e US-17 em `VielaTech-Backlog.md` |
 | Rastreabilidade | APROVADO | PDF, página 14 |
-| Conclusão | APROVADO | [`README.md` §9](../05-software-tx-design/README.md#9-conclusão); não está no PDF |
-| PDF único com escopo e conclusão | PARCIAL | Se a entrega exigir tudo no PDF, a equipe deve incluir as duas seções na fonte do documento |
+| Conclusão | APROVADO | Seção 13 do relatório único e [`README.md` §9](../05-software-tx-design/README.md#9-conclusão) |
+| Relatório único com capa, nomes, índice, justificativa e conclusão | APROVADO | [`VielaTech-SoftwareTX-Relatorio.pdf`](../05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf), 21 páginas |
 
 ## 6 · Storytelling & Inspiração Empreendedora: Pitch ([`06-pitch-storytelling/`](../06-pitch-storytelling/))
 
