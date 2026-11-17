@@ -350,6 +350,20 @@ def gerar_grafico(dados: DadosMicroclima, resultado: ResultadoCalculo, destino: 
     return fig
 
 
+def _aplicar_timbrado(pdf: Path) -> None:
+    """Coloca o timbrado Viela Tech no PDF (docs/identidade-visual). Exige pymupdf."""
+    import sys
+
+    sys.path.insert(0, str(PASTA_MATH.parent / "docs" / "identidade-visual"))
+    try:
+        from aplicar_timbrado import aplicar
+    except ImportError:
+        print("Aviso: instale pymupdf para aplicar o timbrado ao relatório (pip install pymupdf).")
+        return
+    aplicar(pdf, pdf, documento="Relatório técnico de Cálculo · Differentiated Problem Solving",
+            topo=84, base=780, x0=60, x1=535, pular=set())
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     entrada = parser.add_mutually_exclusive_group()
@@ -373,6 +387,7 @@ def main() -> int:
         figura = gerar_grafico(dados, resultado, grafico)
         limites = calcular_limites()
         gerar_relatorio(dados, resultado, grafico, pdf, limites)
+        _aplicar_timbrado(pdf)
     except (OSError, ValueError) as erro:
         parser.exit(1, f"Erro: {erro}\n")
 
