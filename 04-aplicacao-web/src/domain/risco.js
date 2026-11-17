@@ -24,7 +24,7 @@ export const FAIXAS_IVM = {
   PERIGO: {
     id: 'PERIGO',
     rotulo: 'Perigo',
-    descricao: 'Ambiente favorável à tuberculose. Priorize a busca ativa na área.',
+    descricao: 'Ar úmido e pouca luz por muito tempo. Priorize ventilação, orientação e busca ativa na área.',
     cor: '#DC2626',
   },
 };

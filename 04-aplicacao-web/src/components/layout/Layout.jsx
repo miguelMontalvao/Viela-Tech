@@ -1,10 +1,11 @@
 import { Suspense } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ArrowUp, MapPin, Phone, ShieldCheck, Siren } from 'lucide-react';
 import { UNIDADES_SAUDE } from '../../domain/unidades';
 import { Header } from './Header';
 import { Logo } from '../brand/Logo';
 import { Spinner } from '../ui/Feedback';
+import { ErrorBoundary } from '../ui/ErrorBoundary';
 
 const ANO = new Date().getFullYear();
 
@@ -138,14 +139,17 @@ function PularParaConteudo() {
 }
 
 export function Layout() {
+  const { pathname } = useLocation();
   return (
     <div className="flex min-h-screen flex-col">
       <PularParaConteudo />
       <Header />
       <main id="conteudo" tabIndex={-1} className="flex-1 focus:outline-none">
-        <Suspense fallback={<Spinner texto="Carregando…" className="min-h-[100dvh]" />}>
-          <Outlet />
-        </Suspense>
+        <ErrorBoundary chave={pathname}>
+          <Suspense fallback={<Spinner texto="Carregando…" className="min-h-[100dvh]" />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
       </main>
       <Footer />
     </div>
@@ -154,13 +158,16 @@ export function Layout() {
 
 /** Páginas em tela cheia (login): sem cabeçalho nem rodapé do site. */
 export function TelaCheia() {
+  const { pathname } = useLocation();
   return (
     <>
       <PularParaConteudo />
       <main id="conteudo" tabIndex={-1} className="focus:outline-none">
-        <Suspense fallback={<Spinner texto="Carregando…" className="min-h-[100dvh]" />}>
-          <Outlet />
-        </Suspense>
+        <ErrorBoundary chave={pathname}>
+          <Suspense fallback={<Spinner texto="Carregando…" className="min-h-[100dvh]" />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
       </main>
     </>
   );

@@ -73,9 +73,9 @@ export function ChamadoCard({ chamado, aoAtualizar, atualizando }) {
   return (
     <article
       aria-labelledby={tituloId}
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.06] dark:bg-slate-900 ${
+      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.06] ${
         alerta ? 'border-red-200 dark:border-red-900' : 'border-slate-200 dark:border-slate-800'
-      } ${finalizado ? 'opacity-75 hover:opacity-100' : ''} ${mudou ? 'animate-destaque' : ''}`}
+      } ${finalizado ? 'bg-slate-50 dark:bg-slate-900/70' : 'bg-white dark:bg-slate-900'} ${mudou ? 'animate-destaque' : ''}`}
     >
       {alerta && <span className="absolute inset-y-0 left-0 w-1.5 bg-red-600" aria-hidden="true" />}
 

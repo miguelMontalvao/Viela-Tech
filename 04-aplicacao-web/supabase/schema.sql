@@ -2,6 +2,7 @@
 -- Viela Tech — schema do Supabase (PostgreSQL)
 -- Execute no SQL Editor do projeto Supabase.
 -- As colunas seguem exatamente os contratos de src/services/api.js.
+-- Projetos que já rodaram uma versão anterior: aplique também supabase/migracoes/.
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
@@ -130,13 +131,10 @@ create policy "morador registra triagem" on public.chamados_coleta
   for insert to anon
   with check (status = 'PENDENTE');
 
--- salvarTriagemMorador() faz insert().select().single(), então o anônimo precisa
--- ler a linha recém-criada. A leitura fica limitada aos últimos 2 minutos e a
--- linhas sem dono. Ver "Limitações conhecidas" no README do front-end.
+-- O visitante anônimo NÃO lê nenhuma linha: salvarTriagemMorador() faz insert()
+-- sem .select(). (Uma versão anterior liberava a leitura dos últimos 2 minutos,
+-- o que expunha triagens de outras pessoas; ver migracoes/2026-11-17-auditoria.sql.)
 drop policy if exists "morador confirma envio recente" on public.chamados_coleta;
-create policy "morador confirma envio recente" on public.chamados_coleta
-  for select to anon
-  using (created_at > now() - interval '2 minutes' and morador_id is null);
 
 -- Morador com conta: registra e vê só as próprias triagens.
 drop policy if exists "morador logado registra triagem" on public.chamados_coleta;
@@ -165,6 +163,18 @@ create policy "equipe atualiza chamados por papel" on public.chamados_coleta
   for update to authenticated
   using (public.papel_atual() in ('acs', 'gestor'))
   with check (public.papel_atual() in ('acs', 'gestor'));
+
+-- Exclusão (LGPD, art. 18, VI): o morador apaga as próprias triagens;
+-- o gestor pode remover registros duplicados ou de teste. O ACS não exclui.
+drop policy if exists "morador exclui as proprias triagens" on public.chamados_coleta;
+create policy "morador exclui as proprias triagens" on public.chamados_coleta
+  for delete to authenticated
+  using (morador_id = auth.uid());
+
+drop policy if exists "gestor exclui chamados" on public.chamados_coleta;
+create policy "gestor exclui chamados" on public.chamados_coleta
+  for delete to authenticated
+  using (public.papel_atual() = 'gestor');
 
 -- Microclima: leitura para a equipe. A gravação é feita com a service_role
 -- (script de integração), que ignora RLS.

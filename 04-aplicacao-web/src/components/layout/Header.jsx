@@ -138,6 +138,8 @@ function ProgressoLeitura() {
 export function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
   const [rolou, setRolou] = useState(false);
+  const botaoMenuRef = useRef(null);
+  const menuRef = useRef(null);
   const { pathname } = useLocation();
   const { papel } = useAuth();
   const links = linksDoPapel(papel);
@@ -155,10 +157,17 @@ export function Header() {
   }, []);
 
   // Esc fecha o menu do celular e trava a rolagem enquanto ele está aberto.
+  // Ao abrir, o foco vai para o primeiro link; ao fechar com Esc, volta ao botão.
   useEffect(() => {
     if (!menuAberto) return undefined;
-    const aoTeclar = (e) => e.key === 'Escape' && setMenuAberto(false);
+    const aoTeclar = (e) => {
+      if (e.key !== 'Escape') return;
+      setMenuAberto(false);
+      botaoMenuRef.current?.focus();
+    };
     addEventListener('keydown', aoTeclar);
+    // O efeito roda depois que o menu já está no DOM.
+    menuRef.current?.querySelector('a')?.focus();
     document.body.style.overflow = 'hidden';
     return () => {
       removeEventListener('keydown', aoTeclar);
@@ -214,6 +223,7 @@ export function Header() {
                   <BotaoConta compacto={flutuante} />
                 </div>
                 <button
+                  ref={botaoMenuRef}
                   type="button"
                   className="flex min-h-toque min-w-toque items-center justify-center rounded-full text-slate-950 hover:bg-slate-900/5 dark:text-white dark:hover:bg-white/10 lg:hidden"
                   aria-expanded={menuAberto}
@@ -238,6 +248,7 @@ export function Header() {
 
       {menuAberto && (
         <nav
+          ref={menuRef}
           id="menu-movel"
           aria-label="Principal (celular)"
           className="fixed inset-x-0 bottom-0 top-16 z-30 overflow-y-auto bg-white dark:bg-slate-900 sm:top-[4.5rem] lg:hidden"

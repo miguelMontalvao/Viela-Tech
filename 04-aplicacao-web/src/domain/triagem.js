@@ -6,6 +6,7 @@ export const VALORES_INICIAIS = {
   dias_tosse: '',
   tem_febre: false,
   tem_sudorese: false,
+  consentimento: false,
 };
 
 /**
@@ -27,6 +28,9 @@ export function validarTriagem(valores) {
 
   if (diasTexto === '') erros.dias_tosse = 'Informe há quantos dias está tossindo. Se não tem tosse, coloque 0.';
   else if (!Number.isInteger(dias) || dias < 0 || dias > 365) erros.dias_tosse = 'Use um número inteiro entre 0 e 365.';
+
+  // LGPD, art. 11, I: dado de saúde exige consentimento específico e destacado.
+  if (valores.consentimento !== true) erros.consentimento = 'Para enviar, marque que concorda em compartilhar estes dados com a equipe de saúde.';
 
   return erros;
 }

@@ -50,7 +50,7 @@ const PRIVACIDADE = {
               <strong>Atendimento:</strong> o andamento da visita e da coleta registrado pelo agente de saúde.
             </li>
             <li>
-              <strong>Sensor das vielas:</strong> umidade e luz do ambiente. Esses dados não identificam pessoas.
+              <strong>Sensor das vielas:</strong> umidade, temperatura e luz do ambiente. Esses dados não identificam pessoas.
             </li>
           </ul>
           <p>
@@ -71,7 +71,7 @@ const PRIVACIDADE = {
             <li>Mostrar à gestão números agregados e o microclima das vielas.</li>
           </ul>
           <p>
-            Tratamos os dados de saúde com o seu <strong>consentimento</strong>, dado ao enviar a triagem (art. 11, I), e para a{' '}
+            Tratamos os dados de saúde com o seu <strong>consentimento</strong>, dado ao marcar a caixa de consentimento antes de enviar a triagem (art. 11, I), e para a{' '}
             <strong>tutela da saúde</strong> em procedimento realizado por profissionais e serviços de saúde (art. 11, II, “f”). Os dados da conta
             são tratados para executar o serviço que você pediu (art. 7º, V).
           </p>
@@ -141,7 +141,8 @@ const PRIVACIDADE = {
             <li>retirar o consentimento e pedir a exclusão dos dados tratados com base nele.</li>
           </ul>
           <p>
-            Para exercer qualquer direito, escreva para <a href={`mailto:${CONTATO}`}>{CONTATO}</a>. Se achar que seus direitos não foram
+            Quem tem conta pode <strong>excluir as próprias triagens</strong> direto na Minha área, sem precisar pedir. Para exercer
+            qualquer outro direito, escreva para <a href={`mailto:${CONTATO}`}>{CONTATO}</a>. Se achar que seus direitos não foram
             respeitados, você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).
           </p>
         </>

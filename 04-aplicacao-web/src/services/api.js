@@ -1,8 +1,20 @@
 import { supabase } from './supabaseClient';
 
-const TRIAGENS_KEY = 'canyon_triagens_pendentes';
+// Os nomes das chaves vêm da primeira versão do projeto (CANYON) e foram mantidos
+// para não perder triagens já guardadas nos aparelhos.
+export const TRIAGENS_KEY = 'canyon_triagens_pendentes';
 const SYNC_QUEUE_KEY = 'canyon_sync_queue';
 const CHAMADOS_CACHE_KEY = 'canyon_chamados_locais';
+
+/** Remove do aparelho os dados de saúde em cache da equipe (usado ao sair da conta). */
+export function limparDadosLocaisDaEquipe() {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    localStorage.removeItem(CHAMADOS_CACHE_KEY);
+  } catch (error) {
+    console.error('Não foi possível limpar o cache local.', error);
+  }
+}
 
 /** @typedef {{ id?: string|number, morador_nome: string, setor_viela: string, dias_tosse: number, tem_febre: boolean, tem_sudorese: boolean, prioridade_alta?: boolean, status?: string, created_at?: string, _localId?: string, _offline?: boolean }} Triagem */
 
@@ -55,13 +67,11 @@ export async function salvarTriagemMorador(dados) {
     const triagem = normalizarTriagem(dados);
     if (!estaOnline()) throw new Error('Dispositivo sem conexão.');
 
-    const { data, error } = await supabase
-      .from('chamados_coleta')
-      .insert(triagem)
-      .select()
-      .single();
+    // Sem .select(): quem envia sem conta não tem permissão de leitura (LGPD),
+    // e a tela de resultado usa apenas os dados que o próprio morador digitou.
+    const { error } = await supabase.from('chamados_coleta').insert(triagem);
     if (error) throw error;
-    return { data, error: null, offline: false };
+    return { data: triagem, error: null, offline: false };
   } catch (error) {
     console.error('Falha ao salvar triagem no Supabase; armazenando localmente.', error);
     const pendentes = lerLocal(TRIAGENS_KEY, []);
@@ -151,13 +161,24 @@ export async function sincronizarPendenciasOffline() {
     const pendentes = lerLocal(TRIAGENS_KEY, []);
     const aindaPendentes = [];
     const idsSincronizados = new Map();
+    const filaInicial = lerLocal(SYNC_QUEUE_KEY, []);
+    const idsComStatusNaFila = new Set(filaInicial.map((item) => String(item.id)));
 
     for (const item of pendentes) {
       try {
         const { _localId, _offline, ...registro } = item;
-        const { data, error } = await supabase.from('chamados_coleta').insert(registro).select().single();
-        if (error) throw error;
-        if (_localId) idsSincronizados.set(String(_localId), data.id);
+        if (_localId && idsComStatusNaFila.has(String(_localId))) {
+          // O ACS mudou o status de uma triagem criada sem internet: precisamos do id
+          // definitivo para aplicar a mudança. A equipe tem permissão de leitura.
+          const { data, error } = await supabase.from('chamados_coleta').insert(registro).select('id').single();
+          if (error) throw error;
+          idsSincronizados.set(String(_localId), data.id);
+        } else {
+          // Envio anônimo: sem .select(), não depende de permissão de leitura.
+          const { error } = await supabase.from('chamados_coleta').insert(registro);
+          if (error) throw error;
+          if (_localId) idsSincronizados.set(String(_localId), null);
+        }
         sincronizados += 1;
       } catch (error) {
         console.error('Triagem pendente não foi sincronizada.', error);
@@ -173,8 +194,14 @@ export async function sincronizarPendenciasOffline() {
       try {
         const id = idsSincronizados.get(String(item.id)) ?? item.id;
         if (String(id).startsWith('local-')) throw new Error('O chamado ainda não foi sincronizado.');
-        const { error } = await supabase.from('chamados_coleta').update({ status: item.novoStatus }).eq('id', id);
+        const { data, error } = await supabase
+          .from('chamados_coleta')
+          .update({ status: item.novoStatus })
+          .eq('id', id)
+          .select('id');
         if (error) throw error;
+        // Sem sessão da equipe, o RLS não atualiza nada e também não devolve erro.
+        if (!data?.length) throw new Error('Nenhum chamado foi atualizado (sessão da equipe ausente).');
         idsAtualizados.add(String(item.id));
         sincronizados += 1;
       } catch (error) {
@@ -198,6 +225,24 @@ export async function sincronizarPendenciasOffline() {
   } catch (error) {
     console.error('Falha na sincronização offline.', error);
     return { sincronizados, error };
+  }
+}
+
+/**
+ * Exclui uma triagem do banco (o "D" do CRUD).
+ * O RLS só permite excluir as próprias triagens (morador) ou qualquer uma (gestor).
+ * @param {string|number} id
+ */
+export async function excluirTriagem(id) {
+  try {
+    if (!estaOnline()) throw new Error('Sem conexão. Tente excluir quando a internet voltar.');
+    const { data, error } = await supabase.from('chamados_coleta').delete().eq('id', id).select('id');
+    if (error) throw error;
+    if (!data?.length) throw new Error('A triagem não foi encontrada ou você não tem permissão para excluí-la.');
+    return { data: data[0], error: null };
+  } catch (error) {
+    console.error('Falha ao excluir a triagem.', error);
+    return { data: null, error };
   }
 }
 

@@ -1,51 +1,130 @@
-import { useMemo, useState } from 'react';
-import { Activity, FlaskConical } from 'lucide-react';
+import { useId, useMemo, useState } from 'react';
+import { Activity, FlaskConical, Info } from 'lucide-react';
+import { ESTILO_FAIXA, ICONE_FAIXA } from './MicroclimaPanel';
+import {
+  HORAS_SIMULADAS,
+  LIMIAR_FATOR_ATENCAO,
+  LIMIAR_FATOR_PERIGO,
+  classificarFator,
+  curvaCrescimento,
+  fatorCrescimento,
+  formatoNumero,
+  montarCenario,
+  taxaCrescimento,
+} from '../../domain/simulacao';
 
-// Hipótese didática local: a taxa não existe no modelo Python atual e não é
-// uma estimativa clínica/epidemiológica validada.
-function calcularTaxa(temperatura, umidade) {
-  return 0.01 + Math.max(0, temperatura - 20) * 0.001 + Math.max(0, umidade - 60) * 0.0005;
-}
-
-function classificarFator(fator) {
-  if (fator >= 2) return { nome: 'Crítico', classe: 'bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-100' };
-  if (fator >= 1.5) return { nome: 'Alto', classe: 'bg-orange-100 text-orange-900 dark:bg-orange-950 dark:text-orange-100' };
-  if (fator >= 1.2) return { nome: 'Moderado', classe: 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-100' };
-  return { nome: 'Baixo', classe: 'bg-green-100 text-green-900 dark:bg-green-950 dark:text-green-100' };
-}
-
+/**
+ * Simulador temporal (US-16): projeta um cenário didático de 0 a 24 h a partir do microclima.
+ * Toda a lógica está em domain/simulacao.js (testada); aqui só há apresentação e o estado do controle.
+ */
 export function BacterialSimulator({ leitura }) {
   const [horas, setHoras] = useState(0);
-  const temperatura = Number.isFinite(leitura?.temperatura) ? leitura.temperatura : 27;
-  const umidade = Number.isFinite(leitura?.umidade) ? leitura.umidade : 72;
-  const taxa = useMemo(() => calcularTaxa(temperatura, umidade), [temperatura, umidade]);
-  const fator = Math.exp(taxa * horas);
-  const risco = classificarFator(fator);
-  const pontos = Array.from({ length: 25 }, (_, h) => ({ h, valor: Math.exp(taxa * h) }));
-  const max = Math.exp(taxa * 24);
-  const path = pontos.map(({ h, valor }) => `${(h / 24) * 100},${100 - ((valor - 1) / (max - 1 || 1)) * 100}`).join(' ');
+  const idDescricao = useId();
+  const cenario = useMemo(() => montarCenario(leitura), [leitura]);
+  const taxa = useMemo(() => taxaCrescimento(cenario.temperatura, cenario.umidade), [cenario]);
+  const curva = useMemo(() => curvaCrescimento(taxa), [taxa]);
+  const fator = fatorCrescimento(taxa, horas);
+  const faixa = classificarFator(fator);
+  const IconeFaixa = ICONE_FAIXA[faixa.id];
+  const maximo = curva[curva.length - 1].fator;
+  const y = (valor) => 100 - ((valor - 1) / (maximo - 1 || 1)) * 100;
+  const pontos = curva.map(({ h, fator: f }) => `${(h / HORAS_SIMULADAS) * 100},${y(f)}`).join(' ');
+  const progresso = (horas / HORAS_SIMULADAS) * 100;
 
   return (
     <section className="painel p-6 sm:p-8" aria-labelledby="simulador-titulo">
       <div className="flex items-start gap-3">
-        <span className="rounded-xl bg-sky-100 p-3 text-sky-800 dark:bg-sky-950 dark:text-sky-200"><FlaskConical aria-hidden="true" /></span>
-        <div><p className="text-sm font-medium text-sky-700 dark:text-sky-400">Projeção educativa · 24 horas</p><h2 id="simulador-titulo" className="text-2xl font-semibold">Máquina do tempo bacteriana</h2></div>
+        <span className="rounded-xl bg-sky-100 p-3 text-sky-800 dark:bg-sky-950 dark:text-sky-200">
+          <FlaskConical aria-hidden="true" />
+        </span>
+        <div>
+          <p className="text-sm font-medium text-sky-700 dark:text-sky-400">Cenário didático · 24 horas</p>
+          <h2 id="simulador-titulo" className="text-2xl font-semibold">
+            Máquina do tempo do microclima
+          </h2>
+        </div>
       </div>
-      <p className="mt-4 text-sm texto-suave">Cenário sem ventilação ou limpeza: temperatura {temperatura} °C{leitura?.temperatura == null ? ' (simulada)' : ''} e umidade {umidade}%{leitura?.umidade == null ? ' (simulada)' : ''}.</p>
-      <label htmlFor="tempo-simulacao" className="mt-6 block font-semibold">{horas === 0 ? 'Agora' : `Em ${horas}h`}</label>
-      <input id="tempo-simulacao" className="deslizante mt-4 w-full accent-sky-700" type="range" min="0" max="24" step="1" value={horas} onChange={(event) => setHoras(Number(event.target.value))} aria-valuetext={`${horas} horas`} />
-      <div className="flex justify-between text-xs texto-suave"><span>0h · Agora</span><span>24h</span></div>
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50"><p className="text-sm texto-suave">Taxa estimada r</p><p className="mt-1 text-xl font-semibold">{taxa.toFixed(4)} h⁻¹</p></div>
-        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50"><p className="text-sm texto-suave">Fator do modelo</p><p className="mt-1 text-xl font-semibold">{fator.toFixed(2)}×</p></div>
-        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50"><p className="text-sm texto-suave">Faixa da projeção</p><span className={`mt-1 inline-flex rounded-full px-3 py-1 text-sm font-semibold ${risco.classe}`}>{risco.nome}</span></div>
+
+      {cenario.algumSimulado && (
+        <p className="mt-4 flex gap-2 rounded-2xl bg-amber-50 p-3 text-sm text-amber-950 dark:bg-amber-950/50 dark:text-amber-50">
+          <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          {cenario.semLeitura
+            ? 'Sem leitura do sensor: todos os valores abaixo são simulados.'
+            : 'O sensor não enviou todos os campos; os valores marcados como (simulado) completam o cenário.'}
+        </p>
+      )}
+
+      <p id={idDescricao} className="mt-4 text-sm texto-suave">
+        Cenário sem ventilação nem limpeza, com temperatura de {formatoNumero(cenario.temperatura)} °C
+        {cenario.simulados.temperatura ? ' (simulado)' : ''} e umidade de {formatoNumero(cenario.umidade)}%
+        {cenario.simulados.umidade ? ' (simulado)' : ''}. Arraste para ver como o fator do modelo evolui.
+      </p>
+
+      <label htmlFor="tempo-simulacao" className="mt-6 block font-semibold">
+        Horas à frente: <span className="tabular-nums">{horas === 0 ? 'agora' : `${horas} h`}</span>
+      </label>
+      <input
+        id="tempo-simulacao"
+        className="deslizante mt-4 w-full"
+        style={{ background: `linear-gradient(to right, #0284c7 ${progresso}%, rgb(203 213 225) ${progresso}%)` }}
+        type="range"
+        min="0"
+        max={HORAS_SIMULADAS}
+        step="1"
+        value={horas}
+        onChange={(event) => setHoras(Number(event.target.value))}
+        aria-valuetext={horas === 0 ? 'agora' : `${horas} horas à frente`}
+        aria-describedby={idDescricao}
+      />
+      <div className="mt-1 flex justify-between text-xs texto-suave" aria-hidden="true">
+        <span>Agora</span>
+        <span>24 h</span>
       </div>
+
+      <dl className="mt-6 grid gap-3 sm:grid-cols-3" aria-live="polite">
+        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
+          <dt className="text-sm texto-suave">Taxa do modelo (r)</dt>
+          <dd className="mt-1 text-xl font-semibold tabular-nums">{formatoNumero(taxa, 4)} por hora</dd>
+        </div>
+        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
+          <dt className="text-sm texto-suave">Fator em {horas} h</dt>
+          <dd className="mt-1 text-xl font-semibold tabular-nums">{formatoNumero(fator, 2)}×</dd>
+        </div>
+        <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
+          <dt className="text-sm texto-suave">Faixa da projeção</dt>
+          <dd className={`mt-1 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ring-1 ${ESTILO_FAIXA[faixa.id]}`}>
+            <IconeFaixa className="h-4 w-4" aria-hidden="true" style={{ color: faixa.cor }} />
+            {faixa.rotulo}
+          </dd>
+        </div>
+      </dl>
+
       <div className="mt-6 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
-        <div className="flex items-center gap-2 font-semibold"><Activity className="h-4 w-4 text-sky-700" aria-hidden="true" />Progressão projetada</div>
-        <svg className="mt-3 h-28 w-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label={`Curva de crescimento exponencial estimado, fator ${fator.toFixed(2)} em ${horas} horas`}><polyline points={path} fill="none" stroke="currentColor" strokeWidth="2.5" vectorEffect="non-scaling-stroke" className="text-sky-600" /><circle cx={(horas / 24) * 100} cy={100 - ((fator - 1) / (max - 1 || 1)) * 100} r="2.5" fill="currentColor" className="text-emerald-600" /></svg>
-        <div className="flex justify-between text-xs texto-suave"><span>Agora</span><span>24 horas</span></div>
+        <div className="flex items-center gap-2 font-semibold">
+          <Activity className="h-4 w-4 text-sky-700 dark:text-sky-400" aria-hidden="true" />
+          Progressão projetada
+        </div>
+        <svg
+          className="mt-3 h-28 w-full overflow-visible"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          role="img"
+          aria-label={`Curva exponencial do cenário: fator ${formatoNumero(fator, 2)} em ${horas} horas, chegando a ${formatoNumero(maximo, 2)} em 24 horas.`}
+        >
+          <polyline points={pontos} fill="none" stroke="currentColor" strokeWidth="2.5" vectorEffect="non-scaling-stroke" className="text-sky-600 dark:text-sky-400" />
+          <circle cx={(horas / HORAS_SIMULADAS) * 100} cy={y(fator)} r="2.5" fill={faixa.cor} />
+        </svg>
+        <div className="flex justify-between text-xs texto-suave" aria-hidden="true">
+          <span>Agora</span>
+          <span>24 horas</span>
+        </div>
       </div>
-      <p className="mt-4 text-xs texto-suave">Modelo didático N(t) = N₀ · eʳᵗ, com r = 0,01 + 0,001·máx(T−20, 0) + 0,0005·máx(U−60, 0) por hora. Essa fórmula não está no módulo Python e não representa risco real de tuberculose; serve apenas para explorar um cenário simplificado.</p>
+
+      <p className="mt-4 text-xs texto-suave">
+        Modelo ilustrativo N(t) = N₀ · eʳᵗ, com r = 0,01 + 0,001·máx(T − 20, 0) + 0,0005·máx(U − 60, 0) por hora. Faixas: Normal abaixo de{' '}
+        {formatoNumero(LIMIAR_FATOR_ATENCAO)}× · Atenção até {formatoNumero(LIMIAR_FATOR_PERIGO)}× · Perigo a partir de {formatoNumero(LIMIAR_FATOR_PERIGO)}×. A fórmula é uma
+        hipótese didática, sem calibração científica: não mede bactérias nem o risco de tuberculose. O indicador oficial do projeto é o IVM.
+      </p>
     </section>
   );
 }

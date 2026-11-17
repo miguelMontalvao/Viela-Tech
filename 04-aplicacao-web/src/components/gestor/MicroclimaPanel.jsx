@@ -1,14 +1,14 @@
-import { AlertTriangle, CheckCircle2, CloudSun, Cpu, Droplets, OctagonAlert, RefreshCw, SunDim } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, CloudSun, Cpu, Droplets, OctagonAlert, RefreshCw, SunDim, Thermometer } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { EmptyState, Spinner } from '../ui/Feedback';
 import { Alert } from '../ui/Alert';
 import { FAIXAS_IVM, LIMIAR_ATENCAO, LIMIAR_PERIGO } from '../../domain/risco';
 import { useContador, useNaTela } from '../../hooks/useAnimacao';
 
-const ICONE_FAIXA = { NORMAL: CheckCircle2, ATENCAO: AlertTriangle, PERIGO: OctagonAlert };
+export const ICONE_FAIXA = { NORMAL: CheckCircle2, ATENCAO: AlertTriangle, PERIGO: OctagonAlert };
 
 // Cores de risco só aqui (status), sempre com ícone e rótulo.
-const ESTILO_FAIXA = {
+export const ESTILO_FAIXA = {
   NORMAL: 'bg-green-50 text-green-900 ring-green-200 dark:bg-green-950/60 dark:text-green-100 dark:ring-green-900',
   ATENCAO: 'bg-amber-50 text-amber-900 ring-amber-200 dark:bg-amber-950/60 dark:text-amber-100 dark:ring-amber-900',
   PERIGO: 'bg-red-50 text-red-900 ring-red-200 dark:bg-red-950/60 dark:text-red-100 dark:ring-red-900',
@@ -16,6 +16,10 @@ const ESTILO_FAIXA = {
 
 const formatoHora = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 const fmt = (v) => (v === null || v === undefined ? '—' : `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`);
+const fmtGraus = (v) => (v === null || v === undefined ? '—' : `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} °C`);
+
+/** "Ao vivo" só faz sentido se a leitura for recente (o ESP32 envia a cada 15 s). */
+const RECENTE_MS = 10 * 60 * 1000;
 
 /* Semicírculo: 0 à esquerda, 100 à direita. */
 const CX = 120;
@@ -77,16 +81,16 @@ function MedidorIvm({ ivm, faixa, ativo }) {
   );
 }
 
-function Medida({ icone: Icone, rotulo, valor, ajuda, cor, ativo }) {
+function Medida({ icone: Icone, rotulo, valor, ajuda, cor, ativo, formatar = fmt, largura = valor }) {
   return (
     <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
       <dt className="flex items-center gap-2 text-sm font-semibold texto-suave">
         <Icone className="h-4 w-4 text-sky-700 dark:text-sky-400" aria-hidden="true" />
         {rotulo}
       </dt>
-      <dd className="mt-1 text-2xl font-semibold tabular-nums">{fmt(valor)}</dd>
+      <dd className="mt-1 text-2xl font-semibold tabular-nums">{formatar(valor)}</dd>
       <dd className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700" aria-hidden="true">
-        <span className={`block h-full rounded-full transition-[width] duration-1000 ease-out ${cor}`} style={{ width: ativo && valor != null ? `${valor}%` : '0%' }} />
+        <span className={`block h-full rounded-full transition-[width] duration-1000 ease-out ${cor}`} style={{ width: ativo && largura != null ? `${largura}%` : '0%' }} />
       </dd>
       {ajuda && <dd className="mt-2 text-xs texto-suave">{ajuda}</dd>}
     </div>
@@ -97,6 +101,7 @@ function Medida({ icone: Icone, rotulo, valor, ajuda, cor, ativo }) {
 export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
   const faixa = leitura?.faixa;
   const [ref, naTela] = useNaTela();
+  const recente = Boolean(leitura?.dataHora) && Date.now() - leitura.dataHora.getTime() < RECENTE_MS;
 
   return (
     <section ref={ref} aria-labelledby="microclima-titulo" className="painel p-6 sm:p-8">
@@ -104,7 +109,7 @@ export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
         <div>
           <p className="flex items-center gap-2 text-sm font-medium text-sky-700 dark:text-sky-400">
             <Cpu className="h-4 w-4" aria-hidden="true" /> Sensor ESP32
-            {leitura && (
+            {recente && (
               <span className="inline-flex items-center gap-1.5 texto-suave">
                 <span className="relative flex h-2 w-2" aria-hidden="true">
                   <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60 motion-safe:animate-ping" />
@@ -118,7 +123,7 @@ export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
             Microclima da viela
           </h2>
           <p className="mt-1 text-sm texto-suave">
-            {leitura?.dataHora ? `Última leitura: ${formatoHora.format(leitura.dataHora)} · atualiza a cada minuto` : 'Umidade e luz medidas no beco'}
+            {leitura?.dataHora ? `Última leitura: ${formatoHora.format(leitura.dataHora)} · atualiza a cada minuto` : 'Umidade, luz e temperatura medidas no beco'}
           </p>
         </div>
         <Button variante="secundaria" icone={RefreshCw} carregando={carregando} onClick={aoAtualizar}>
@@ -163,6 +168,19 @@ export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
               ajuda="Quanto menos luz, maior o risco."
               ativo={naTela}
             />
+            {leitura.temperatura !== null && (
+              <Medida
+                icone={Thermometer}
+                rotulo="Temperatura"
+                valor={leitura.temperatura}
+                formatar={fmtGraus}
+                // Barra de 0 a 50 °C, só como referência visual.
+                largura={Math.min(100, Math.max(0, (leitura.temperatura / 50) * 100))}
+                cor="bg-orange-400"
+                ajuda="Medida pelo DHT22. Não entra no IVM."
+                ativo={naTela}
+              />
+            )}
           </dl>
           {leitura.ivmCalculado && <p className="-mt-5 text-xs texto-suave lg:col-start-2">IVM calculado: 0,6 × umidade + 0,4 × (100 − luz).</p>}
         </div>

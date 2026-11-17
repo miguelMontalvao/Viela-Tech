@@ -64,9 +64,10 @@ describe('chamados', () => {
 
 describe('triagem', () => {
   it('valida campos obrigatórios e faixa de dias', () => {
-    expect(Object.keys(validarTriagem({ morador_nome: '', setor_viela: '', dias_tosse: '' }))).toHaveLength(3);
-    expect(validarTriagem({ morador_nome: 'Ana', setor_viela: 'Valão', dias_tosse: '2.5' }).dias_tosse).toBeDefined();
-    expect(validarTriagem({ morador_nome: 'Ana', setor_viela: 'Valão', dias_tosse: '0' })).toEqual({});
+    expect(Object.keys(validarTriagem({ morador_nome: '', setor_viela: '', dias_tosse: '' }))).toHaveLength(4);
+    expect(validarTriagem({ morador_nome: 'Ana', setor_viela: 'Valão', dias_tosse: '2.5', consentimento: true }).dias_tosse).toBeDefined();
+    expect(validarTriagem({ morador_nome: 'Ana', setor_viela: 'Valão', dias_tosse: '0', consentimento: true })).toEqual({});
+    expect(validarTriagem({ morador_nome: 'Ana', setor_viela: 'Valão', dias_tosse: '0' }).consentimento).toBeDefined();
   });
 
   it('monta o payload do contrato e avalia urgência', () => {

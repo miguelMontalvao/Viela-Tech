@@ -1,4 +1,4 @@
-import { sincronizarPendenciasOffline } from './api';
+import { sincronizarPendenciasOffline, TRIAGENS_KEY } from './api';
 
 let emAndamento = null;
 
@@ -16,10 +16,10 @@ export function sincronizarComTrava() {
   return emAndamento;
 }
 
-/** Há triagens do morador guardadas no aparelho? (mesma chave usada em api.js) */
+/** Há triagens do morador guardadas no aparelho? */
 export function existemTriagensPendentes() {
   try {
-    return JSON.parse(localStorage.getItem('canyon_triagens_pendentes') || '[]').length > 0;
+    return JSON.parse(localStorage.getItem(TRIAGENS_KEY) || '[]').length > 0;
   } catch {
     return false;
   }

@@ -43,7 +43,7 @@ export default function MoradorPage() {
             </Alert>
           )}
 
-          <div aria-live="polite">
+          <div>
             {triagem.resultado ? (
               <ResultadoTriagem resultado={triagem.resultado} aoNovaTriagem={triagem.reiniciar} logado={ehMorador} />
             ) : (

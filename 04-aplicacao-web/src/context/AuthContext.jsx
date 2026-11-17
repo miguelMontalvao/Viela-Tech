@@ -104,9 +104,15 @@ export function AuthProvider({ children }) {
   }, [aplicarSessao]);
 
   const logout = useCallback(async () => {
-    const [{ sair }, { esquecerPerfil }] = await Promise.all([carregarAuth(), carregarPerfil()]);
+    const [{ sair }, { esquecerPerfil }, { limparDadosLocaisDaEquipe }] = await Promise.all([
+      carregarAuth(),
+      carregarPerfil(),
+      import('../services/api'),
+    ]);
     await sair();
     esquecerPerfil();
+    // Celulares da equipe podem ser compartilhados: o cache de chamados (dados de saúde) sai junto.
+    limparDadosLocaisDaEquipe();
     userIdRef.current = null;
     setSessao(null);
     setPerfil(null);

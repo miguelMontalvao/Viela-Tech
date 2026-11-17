@@ -17,6 +17,7 @@ import {
   RefreshCw,
   ShieldCheck,
   Siren,
+  Trash2,
   UserRound,
 } from 'lucide-react';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
@@ -29,6 +30,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useEnvioPendente } from '../hooks/useEnvioPendente';
 import { minhasTriagens } from '../services/perfilService';
+import { excluirTriagem } from '../services/api';
 import { existemTriagensPendentes } from '../services/sincronizacao';
 import { PAPEIS, STATUS_PARA_MORADOR } from '../domain/perfis';
 import { ORDEM_STATUS, STATUS } from '../domain/chamados';
@@ -127,8 +129,76 @@ function Sintomas({ t }) {
   );
 }
 
+/**
+ * Exclusão de uma triagem com confirmação na própria tela (sem janela do navegador).
+ * Atende ao direito de eliminação da LGPD (art. 18, VI).
+ */
+function ExcluirTriagem({ t, aoExcluir, compacto = false }) {
+  const [confirmando, setConfirmando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
+  const [erro, setErro] = useState(null);
+  const botaoInicial = useRef(null);
+  const botaoConfirmar = useRef(null);
+
+  useEffect(() => {
+    if (confirmando) botaoConfirmar.current?.focus();
+  }, [confirmando]);
+
+  const cancelar = () => {
+    setConfirmando(false);
+    setErro(null);
+    requestAnimationFrame(() => botaoInicial.current?.focus());
+  };
+
+  const confirmar = async () => {
+    setExcluindo(true);
+    setErro(null);
+    const { error } = await excluirTriagem(t.id);
+    setExcluindo(false);
+    if (error) {
+      setErro(error.message || 'Não foi possível excluir agora. Tente de novo.');
+      return;
+    }
+    aoExcluir(t.id);
+  };
+
+  if (!confirmando) {
+    return (
+      <Button
+        ref={botaoInicial}
+        variante="fantasma"
+        icone={Trash2}
+        onClick={() => setConfirmando(true)}
+        className={compacto ? 'mt-3 self-start !px-3 text-sm' : '!px-3 text-sm'}
+      >
+        Excluir {compacto ? '' : 'esta '}triagem
+      </Button>
+    );
+  }
+
+  return (
+    <div role="group" aria-label="Confirmar exclusão da triagem" className="mt-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-950 dark:border-red-800 dark:bg-red-950/50 dark:text-red-50">
+      <p className="text-sm font-semibold">Excluir a triagem de {formatoCurto.format(new Date(t.created_at))}?</p>
+      <p className="mt-1 text-sm">Ela some para você e para a equipe de saúde. Não dá para desfazer.</p>
+      {erro && (
+        <p role="alert" className="mt-2 text-sm font-semibold">
+          {erro}
+        </p>
+      )}
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button ref={botaoConfirmar} variante="perigo" icone={Trash2} carregando={excluindo} onClick={confirmar} className="!px-4 text-sm">
+          Sim, excluir
+        </Button>
+        <Button variante="secundaria" onClick={cancelar} disabled={excluindo} className="!px-4 text-sm">
+          Cancelar
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 /** A triagem mais recente, em destaque. */
-function TriagemAtual({ t }) {
+function TriagemAtual({ t, aoExcluir }) {
   const urgente = ehUrgente(t);
   const status = statusDe(t);
   return (
@@ -170,13 +240,16 @@ function TriagemAtual({ t }) {
             </span>
           </p>
         </div>
+        <div className="mt-4 flex justify-end">
+          <ExcluirTriagem t={t} aoExcluir={aoExcluir} />
+        </div>
       </div>
     </article>
   );
 }
 
 /** Triagens anteriores, da mais nova para a mais antiga. */
-function Historico({ triagens }) {
+function Historico({ triagens, aoExcluir }) {
   return (
     <section aria-labelledby="historico">
       <div className="flex items-baseline justify-between gap-3">
@@ -208,6 +281,7 @@ function Historico({ triagens }) {
                   <Siren className="h-3.5 w-3.5" aria-hidden="true" /> Prioridade
                 </p>
               )}
+              <ExcluirTriagem t={t} aoExcluir={aoExcluir} compacto />
             </Revelar>
           );
         })}
@@ -289,7 +363,13 @@ function Area() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [pendenteNoAparelho, setPendenteNoAparelho] = useState(() => existemTriagensPendentes());
+  const [aviso, setAviso] = useState('');
   const ultimaBusca = useRef(0);
+
+  const removerDaLista = useCallback((id) => {
+    setTriagens((lista) => lista.filter((t) => t.id !== id));
+    setAviso('Triagem excluída. Ela não aparece mais para você nem para a equipe.');
+  }, []);
 
   const carregar = useCallback(async () => {
     ultimaBusca.current = Date.now();
@@ -353,7 +433,7 @@ function Area() {
       </CabecalhoPainel>
 
       <div className="grid items-start gap-6 py-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="space-y-8" aria-live="polite" aria-busy={carregando}>
+        <div className="space-y-8" aria-busy={carregando}>
           {!online && (
             <Alert tipo="aviso" titulo="Sem conexão">
               Mostrando o que já estava na tela. O andamento atualiza sozinho quando a internet voltar.
@@ -373,6 +453,9 @@ function Area() {
             </Alert>
           )}
           {erro && <Alert tipo="aviso">{erro}</Alert>}
+          <div role="status" aria-live="polite">
+            {aviso && <Alert tipo="sucesso">{aviso}</Alert>}
+          </div>
 
           {carregando && ordenadas.length === 0 ? (
             <div className="painel">
@@ -397,9 +480,9 @@ function Area() {
           ) : (
             <>
               <Revelar>
-                <TriagemAtual t={atual} />
+                <TriagemAtual t={atual} aoExcluir={removerDaLista} />
               </Revelar>
-              {anteriores.length > 0 && <Historico triagens={anteriores} />}
+              {anteriores.length > 0 && <Historico triagens={anteriores} aoExcluir={removerDaLista} />}
             </>
           )}
         </div>

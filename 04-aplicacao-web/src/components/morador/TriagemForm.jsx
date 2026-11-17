@@ -1,4 +1,5 @@
 import { useId, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, MapPin, Send, Siren, UserRound } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Field, ToggleQuestion } from '../ui/Field';
@@ -278,6 +279,43 @@ export function TriagemForm({ valores, erros, enviando, erroEnvio, alterarCampo,
 
       <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
         <Resumo valores={valores} />
+      </div>
+
+      <div>
+        <label
+          htmlFor="consentimento-triagem"
+          className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm transition-colors ${
+            erros.consentimento
+              ? 'border-red-600 bg-red-50 dark:border-red-400 dark:bg-red-950/40'
+              : valores.consentimento
+                ? 'border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30'
+                : 'border-slate-300 hover:border-slate-400 dark:border-slate-600'
+          }`}
+        >
+          <input
+            id="consentimento-triagem"
+            name="consentimento"
+            type="checkbox"
+            checked={valores.consentimento}
+            onChange={(e) => alterarCampo('consentimento', e.target.checked)}
+            aria-invalid={erros.consentimento ? true : undefined}
+            aria-describedby={erros.consentimento ? 'consentimento-erro' : undefined}
+            className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-sky-700"
+          />
+          <span className="leading-relaxed">
+            Concordo em compartilhar meu nome, setor e sintomas com a equipe de saúde da Rocinha para receber
+            orientação e atendimento. Posso pedir a exclusão quando quiser. Veja a{' '}
+            <Link to="/privacidade" target="_blank" className="font-semibold text-sky-700 underline dark:text-sky-400">
+              Política de privacidade
+            </Link>
+            .
+          </span>
+        </label>
+        {erros.consentimento && (
+          <p id="consentimento-erro" className="mt-2 text-sm font-medium text-red-700 dark:text-red-400">
+            {erros.consentimento}
+          </p>
+        )}
       </div>
 
       {erroEnvio && (
