@@ -1,9 +1,9 @@
-"""Relatório técnico reproduzível do módulo de Cálculo do CANYON.
+"""Relatório técnico reproduzível do módulo de Cálculo do Viela Tech.
 
 O gerador recebe os dados já tratados e os resultados já calculados. Ele não
 importa o módulo principal, não recalcula integrais e não exige bibliotecas
 de PDF além do Matplotlib. Campos extensos de origem/observação são abreviados
-na página para manter três páginas A4; o texto integral fica nos metadados.
+na página para manter o layout A4; o texto integral fica nos metadados.
 """
 
 from __future__ import annotations
@@ -33,6 +33,18 @@ class _DadosRelatorio(Protocol):
     observacao: str
 
 
+class _LimitesRelatorio(Protocol):
+    t_referencia: float
+    derivada_exata: float
+    quocientes: list[tuple[float, float, float]]
+    t_canto: float
+    ivm_no_canto: float
+    limite_esquerda_ivm: float
+    limite_direita_ivm: float
+    derivada_esquerda: float
+    derivada_direita: float
+
+
 class _ResultadoRelatorio(Protocol):
     derivada_ivm: np.ndarray
     derivada_umidade: np.ndarray | None
@@ -50,6 +62,8 @@ _AZUL = "#16354A"
 _VERDE = "#087E75"
 _TEXTO = "#243947"
 _CINZA = "#5E6F7A"
+
+_TOTAL_PAGINAS = 6
 
 _INTEGRANTES = (
     "Miguel Menezes Montalvão dos Santos  |  RM573825",
@@ -94,7 +108,7 @@ class _Pagina:
         self._renderer = RendererAgg(round(_LARGURA * 72), round(_ALTURA * 72), 72)
         self.texto(
             10.83,
-            "CANYON / VIELA TECH   •   FIAP   •   1ESSRA   •   GS2026.2",
+            "VIELA TECH   •   FIAP   •   1ESSRA   •   GS2026.2   •   DIFFERENTIATED PROBLEM SOLVING",
             tamanho=8.1,
             cor=_VERDE,
         )
@@ -127,7 +141,7 @@ class _Pagina:
         self.fig.text(
             1 - _MARGEM / _LARGURA,
             0.61 / _ALTURA,
-            f"{numero} / 3",
+            f"{numero} / {_TOTAL_PAGINAS}",
             ha="right",
             va="top",
             fontsize=7.2,
@@ -258,19 +272,69 @@ class _Pagina:
         return y - (len(linhas) + 1) * altura_linha - 0.16
 
 
-def _pagina_contexto(dados: _DadosRelatorio) -> Figure:
+def _pagina_capa(dados: _DadosRelatorio) -> Figure:
     pagina = _Pagina(
         1,
         "Relatório técnico de Cálculo",
-        "Derivadas e integrais na análise temporal do Índice de Vulnerabilidade de Microclima",
+        "Modelagem Matemática Avançada aplicada ao microclima das vielas da Rocinha",
     )
-    y = pagina.secao(9.38, "Equipe")
+    y = pagina.texto(9.25, "Viela Tech", tamanho=30, negrito=True, cor=_AZUL)
+    y = pagina.texto(
+        y - 0.05,
+        "Limites, derivadas e integrais do Índice de Vulnerabilidade de Microclima (IVM)",
+        tamanho=13,
+        cor=_VERDE,
+    )
+    y = pagina.texto(
+        y - 0.25,
+        "FIAP · Engenharia de Software · Turma 1ESSRA · Global Solution 2026.2 — CitizenTech\n"
+        "Disciplina: Differentiated Problem Solving",
+        tamanho=9.6,
+    )
+    y = pagina.secao(y - 0.35, "Equipe")
     for integrante in _INTEGRANTES:
-        y = pagina.texto(y, integrante, tamanho=9.2)
-    y = pagina.secao(y - 0.18, "1. Problema e contexto do projeto")
+        y = pagina.texto(y, integrante, tamanho=9.6)
+    y = pagina.secao(y - 0.35, "Sumário")
+    itens = (
+        ("1. Problema e contexto do projeto", 2),
+        ("2. Modelo matemático e classificação", 2),
+        ("3. Origem e intervalo analisado", 2),
+        ("4. Hipóteses e alcance", 2),
+        ("5. Limites: da taxa média à taxa instantânea", 3),
+        ("6. Derivada: rapidez e direção da mudança", 4),
+        ("7. Integrais e método numérico", 5),
+        ("8. Interpretação e limitações", 5),
+        ("9. Conclusão", 6),
+        ("Referências", 6),
+    )
+    for titulo, numero in itens:
+        pagina.fig.text(
+            (_LARGURA - _MARGEM) / _LARGURA, y / _ALTURA, str(numero),
+            ha="right", va="top", fontsize=9.6, color=_CINZA,
+        )
+        y = pagina.texto(y, titulo, tamanho=9.6) - 0.04
+    simulacao = "simula" in f"{dados.origem} {dados.observacao}".lower()
+    pagina.texto(
+        y - 0.3,
+        ("Dados desta edição: cenário SIMULADO de 24 horas, identificado em todas as páginas."
+         if simulacao else f"Dados desta edição: {_normalizar(dados.origem)}."),
+        tamanho=9.0,
+        negrito=True,
+        cor=_AZUL,
+    )
+    return pagina.fig
+
+
+def _pagina_contexto(dados: _DadosRelatorio) -> Figure:
+    pagina = _Pagina(
+        2,
+        "Problema e modelo",
+        "Do problema territorial ao índice que será analisado com Cálculo",
+    )
+    y = pagina.secao(9.38, "1. Problema e contexto do projeto")
     y = pagina.texto(
         y,
-        "O CANYON organiza séries de umidade e luminosidade para estudar a evolução "
+        "O Viela Tech organiza séries de umidade e luminosidade para estudar a evolução "
         "do microclima em vielas. A hipótese urbana do projeto é que a geometria "
         "desses espaços pode dificultar a entrada de luz solar e a renovação do "
         "ar. Essa hipótese contextualiza o modelo; não constitui uma observação "
@@ -345,6 +409,92 @@ def _pagina_contexto(dados: _DadosRelatorio) -> Figure:
     return pagina.fig
 
 
+def _pagina_limites(limites: _LimitesRelatorio) -> Figure:
+    pagina = _Pagina(
+        3,
+        "Limites",
+        "A taxa instantânea do IVM nasce de um limite; o nascer do sol mostra limites laterais.",
+    )
+    y = pagina.secao(9.38, "5. Limites: da taxa média à taxa instantânea")
+    y = pagina.texto(
+        y,
+        "A taxa média do IVM entre t e t + h é o quociente de diferenças. A derivada "
+        "(taxa instantânea) é o limite desse quociente quando o intervalo h tende a zero:",
+        tamanho=9.1,
+    )
+    y = pagina.formula(
+        y - 0.05,
+        r"$\frac{d\,\mathrm{IVM}}{dt}(t)=\lim_{h\to0}\frac{\mathrm{IVM}(t+h)-\mathrm{IVM}(t)}{h}$",
+        tamanho=14,
+    )
+    y = pagina.texto(
+        y - 0.12,
+        "Como os sensores medem em instantes separados, o código não pode fazer h → 0: "
+        "np.gradient usa o menor h disponível (o intervalo entre leituras). A tabela "
+        "mostra, sobre o modelo analítico U(t) e I(t) da página 2, que o quociente se "
+        f"aproxima da derivada exata em t = {_numero(limites.t_referencia, 0)} h quando h diminui.",
+        tamanho=9.1,
+    )
+    linhas = [
+        (
+            _numero(h, 3),
+            _numero(progressivo, 4),
+            _numero(regressivo, 4),
+            _numero(abs(progressivo - limites.derivada_exata), 4),
+        )
+        for h, progressivo, regressivo in limites.quocientes
+    ]
+    y = pagina.tabela(
+        y - 0.1,
+        ("h (horas)", "[IVM(t+h) − IVM(t)] / h", "[IVM(t) − IVM(t−h)] / h", "Erro do progressivo"),
+        linhas,
+        (0.16, 0.30, 0.30, 0.24),
+        altura_linha=0.34,
+        tamanho=8.2,
+    )
+    y = pagina.texto(
+        y,
+        f"Derivada exata: {_numero(limites.derivada_exata, 4)} p.p./h. O erro cai junto com h: "
+        "este é o significado do limite, e é por isso que leituras mais frequentes "
+        "(o ESP32 envia a cada 15 s) produzem taxas mais fiéis.",
+        tamanho=9.0,
+    )
+    y = pagina.secao(y - 0.18, "Limites laterais no nascer do sol")
+    y = pagina.texto(
+        y,
+        f"Em t = {_numero(limites.t_canto, 0)} h a luminosidade do modelo deixa de ser zero. "
+        "Os limites laterais do IVM coincidem com o valor da função, logo o IVM é contínuo:",
+        tamanho=9.1,
+    )
+    y = pagina.formula(
+        y - 0.05,
+        r"$\lim_{t\to6^-}\mathrm{IVM}(t)=\lim_{t\to6^+}\mathrm{IVM}(t)=\mathrm{IVM}(6)$",
+        tamanho=13,
+    )
+    y = pagina.tabela(
+        y - 0.05,
+        ("Grandeza", "Pela esquerda (t → 6⁻)", "Pela direita (t → 6⁺)"),
+        [
+            ("IVM (%)", _numero(limites.limite_esquerda_ivm, 3), _numero(limites.limite_direita_ivm, 3)),
+            ("Quociente de diferenças (p.p./h)", _numero(limites.derivada_esquerda, 2),
+             _numero(limites.derivada_direita, 2)),
+        ],
+        (0.40, 0.30, 0.30),
+        altura_linha=0.34,
+        tamanho=8.2,
+    )
+    pagina.texto(
+        y,
+        "Já os limites laterais do quociente são diferentes: antes do sol o IVM cai devagar, "
+        "só pela umidade; depois, a luz passa a derrubá-lo bem mais rápido. Como os dois "
+        "limites laterais não são iguais, a derivada não existe em t = 6 h (ponto anguloso). "
+        "Na prática, o nascer do sol é o instante em que a tendência do microclima muda de "
+        "regime, e é nas horas sem sol que a viela acumula vulnerabilidade.",
+        tamanho=9.0,
+    )
+    return pagina.fig
+
+
 def _extremos(serie: np.ndarray, horas: np.ndarray) -> tuple[str, str]:
     menor, maior = int(np.argmin(serie)), int(np.argmax(serie))
     return (
@@ -357,7 +507,7 @@ def _pagina_derivadas(
     dados: _DadosRelatorio, resultado: _ResultadoRelatorio, grafico: Path
 ) -> Figure:
     pagina = _Pagina(
-        2,
+        4,
         "Variação do índice no tempo",
         "O gráfico e os extremos abaixo correspondem à mesma série analisada.",
     )
@@ -370,11 +520,11 @@ def _pagina_derivadas(
     y = pagina.texto(
         5.78,
         "Figura 1. Série temporal, classificação do projeto e taxas de variação. "
-        "Fonte: processamento dos dados identificados na página 1.",
+        "Fonte: processamento dos dados identificados na página 2.",
         tamanho=8.1,
         cor=_CINZA,
     )
-    y = pagina.secao(y - 0.14, "5. Derivada: rapidez e direção da mudança")
+    y = pagina.secao(y - 0.14, "6. Derivada: rapidez e direção da mudança")
     y = pagina.formula(
         y,
         r"$\frac{d\,\mathrm{IVM}}{dt}=0{,}6\,\frac{dU}{dt}-0{,}4\,\frac{dI}{dt}$",
@@ -449,11 +599,11 @@ def _pagina_integrais(
     dados: _DadosRelatorio, resultado: _ResultadoRelatorio
 ) -> Figure:
     pagina = _Pagina(
-        3,
+        5,
         "Acúmulo ambiental no período",
         "A integral combina intensidade do índice e duração, com unidade %·h.",
     )
-    y = pagina.secao(9.37, "6. Integrais e método numérico")
+    y = pagina.secao(9.37, "7. Integrais e método numérico")
     y = pagina.formula(
         y, r"$A_{\mathrm{total}}=\int_{t_0}^{t_f}\mathrm{IVM}(t)\,dt$", tamanho=14
     )
@@ -506,7 +656,7 @@ def _pagina_integrais(
         "por exemplo, acumula 120 %·h; a área não é uma porcentagem isolada.",
         tamanho=9.0,
     )
-    y = pagina.secao(y - 0.16, "7. Interpretação e limitações")
+    y = pagina.secao(y - 0.16, "8. Interpretação e limitações")
     y = pagina.texto(
         y,
         "As taxas localizam mudanças rápidas; as integrais resumem intensidade "
@@ -518,7 +668,44 @@ def _pagina_integrais(
         "Dados simulados não demonstram condições reais de uma comunidade.",
         tamanho=8.8,
     )
-    y = pagina.secao(y - 0.13, "Referências oficiais")
+    return pagina.fig
+
+
+def _pagina_conclusao(dados: _DadosRelatorio, resultado: _ResultadoRelatorio) -> Figure:
+    pagina = _Pagina(
+        6,
+        "Conclusão",
+        "Como limites, derivadas e integrais alimentam os indicadores do Viela Tech",
+    )
+    duracao = float(dados.horas[-1] - dados.horas[0])
+    fracao = 100 * float(resultado.duracao_perigo) / duracao
+    media = float(resultado.area_total) / duracao
+    subida = float(np.max(resultado.derivada_ivm))
+    y = pagina.secao(9.38, "9. Conclusão")
+    paragrafos = (
+        "O IVM é a mesma função em todo o produto: calculado no ESP32, recalculado e "
+        "classificado pelo módulo Python e exibido pela aplicação web com as mesmas faixas "
+        "(NORMAL < 40, ATENÇÃO 40–70, PERIGO ≥ 70). A Matemática dá significado a três "
+        "leituras desse indicador.",
+        "Limites: a taxa instantânea só existe como limite do quociente de diferenças. "
+        "Por isso a frequência de coleta importa, e mudanças bruscas, como o nascer do "
+        "sol, aparecem como limites laterais diferentes.",
+        f"Derivadas: a maior subida observada foi de {_numero(subida)} p.p./h. O módulo Python "
+        "usa uma versão discreta dessa ideia: três aumentos seguidos do IVM (derivada "
+        "positiva persistente) acionam o aviso de tendência PIORANDO.",
+        f"Integrais: o período acumulou {_numero(float(resultado.area_total))} %·h "
+        f"(média de {_numero(media)}%), com {_numero(float(resultado.duracao_perigo))} h em PERIGO "
+        f"({_numero(fracao)}% do tempo). Duas vielas com o mesmo IVM instantâneo podem ter "
+        "exposições acumuladas muito diferentes. A integral é o critério mais justo para "
+        "priorizar ventilação, iluminação e visitas dos agentes de saúde.",
+        "Limitações e próximos passos: os pesos e limiares são hipóteses de projeto, sem "
+        "calibração epidemiológica. O índice é ambiental, não clínico. Com 20 ou mais "
+        "leituras reais no canal ThingSpeak, este mesmo script gera o relatório a partir "
+        "do relatorio.csv do módulo Python, sem mudar o código.",
+    )
+    for paragrafo in paragrafos:
+        y = pagina.texto(y, paragrafo, tamanho=9.4) - 0.14
+    y = pagina.secao(y - 0.1, "Referências")
     for titulo, url in _REFERENCIAS:
         y = pagina.texto(y, titulo, tamanho=7.6)
         y = pagina.texto(y - 0.015, url, tamanho=7.0, cor=_VERDE, url=url) - 0.06
@@ -530,8 +717,9 @@ def gerar_relatorio(
     resultado: _ResultadoRelatorio,
     grafico: Path,
     destino: Path,
+    limites: _LimitesRelatorio,
 ) -> None:
-    """Grava um PDF A4 de três páginas com dados e métricas da execução.
+    """Grava um PDF A4 de seis páginas com dados e métricas da execução.
 
     ``horas`` deve conter ao menos dois tempos finitos estritamente crescentes,
     e as séries devem estar alinhadas e validadas pelo módulo de Cálculo. As
@@ -562,13 +750,13 @@ def gerar_relatorio(
         raise ValueError("As métricas do relatório devem ser finitas.")
     destino.parent.mkdir(parents=True, exist_ok=True)
     metadata = {
-        "Title": "CANYON | Viela Tech - Relatório técnico de Cálculo",
+        "Title": "Viela Tech - Relatório técnico de Cálculo",
         "Author": "; ".join(_INTEGRANTES),
         "Subject": (
             "FIAP / 1ESSRA / GS2026.2. Indicador ambiental didático sem validação clínica. "
             f"Origem: {dados.origem}. Observação: {dados.observacao}"
         ),
-        "Keywords": "CANYON, Viela Tech, IVM, Cálculo, derivadas, integrais, microclima",
+        "Keywords": "Viela Tech, IVM, Cálculo, limites, derivadas, integrais, microclima",
         "Creator": "Viela Tech / Matplotlib PdfPages",
         "CreationDate": None,
         "ModDate": None,
@@ -583,9 +771,12 @@ def gerar_relatorio(
         }
     ):
         try:
+            figuras.append(_pagina_capa(dados))
             figuras.append(_pagina_contexto(dados))
+            figuras.append(_pagina_limites(limites))
             figuras.append(_pagina_derivadas(dados, resultado, grafico))
             figuras.append(_pagina_integrais(dados, resultado))
+            figuras.append(_pagina_conclusao(dados, resultado))
             with PdfPages(destino, metadata=metadata) as pdf:
                 for figura in figuras:
                     pdf.savefig(figura)

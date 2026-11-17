@@ -1,4 +1,4 @@
-"""Derivadas, integrais, gráficos e relatório do microclima do CANYON.
+"""Limites, derivadas, integrais, gráficos e relatório do microclima do Viela Tech.
 
 Execute da raiz: python 03-matematica-modelagem/modelo_calculo.py
 Sem 02-python-processamento/relatorio.csv, utiliza uma simulação explicitamente identificada.
@@ -20,6 +20,9 @@ PASTA_MATH = Path(__file__).resolve().parent
 CSV_PADRAO = PASTA_MATH.parent / "02-python-processamento" / "relatorio.csv"
 LIMIAR_ATENCAO = 40.0
 LIMIAR_PERIGO = 70.0
+# Mesmo mínimo exigido do módulo Python: com menos leituras reais, o relatório
+# padrão usa a simulação identificada (um CSV explícito continua aceito).
+MINIMO_AMOSTRAS_REAIS = 20
 
 
 @dataclass
@@ -45,6 +48,78 @@ class ResultadoCalculo:
     area_perigo: float
     duracao_perigo: float
     metodo_integracao: str
+
+
+@dataclass
+class ResultadoLimites:
+    """Aproximações de limites calculadas sobre o modelo analítico U(t), I(t)."""
+
+    t_referencia: float
+    derivada_exata: float
+    quocientes: list[tuple[float, float, float]]  # (h, progressivo, regressivo)
+    t_canto: float
+    ivm_no_canto: float
+    limite_esquerda_ivm: float
+    limite_direita_ivm: float
+    derivada_esquerda: float
+    derivada_direita: float
+
+
+def umidade_modelo(t: np.ndarray | float) -> np.ndarray | float:
+    """U(t) = 70 + 18 cos(pi t / 12), em %."""
+    return 70 + 18 * np.cos(np.pi * np.asarray(t, dtype=float) / 12)
+
+
+def insolacao_modelo(t: np.ndarray | float) -> np.ndarray | float:
+    """I(t) = 80 max(0, sen(pi (t - 6) / 12)), em %: sol entre 6 h e 18 h."""
+    return 80 * np.maximum(0, np.sin(np.pi * (np.asarray(t, dtype=float) - 6) / 12))
+
+
+def ivm_modelo(t: np.ndarray | float) -> np.ndarray | float:
+    """IVM(t) = 0,6 U(t) + 0,4 (100 - I(t))."""
+    return 0.6 * umidade_modelo(t) + 0.4 * (100 - insolacao_modelo(t))
+
+
+def derivada_ivm_exata(t: float) -> float:
+    """Derivada analítica do IVM do modelo, válida fora de 6 h e 18 h (pontos de canto)."""
+    du = -18 * np.pi / 12 * np.sin(np.pi * t / 12)
+    seno = np.sin(np.pi * (t - 6) / 12)
+    di = 80 * np.pi / 12 * np.cos(np.pi * (t - 6) / 12) if seno > 0 else 0.0
+    return float(0.6 * du - 0.4 * di)
+
+
+def calcular_limites(
+    t_referencia: float = 9.0,
+    t_canto: float = 6.0,
+    passos: tuple[float, ...] = (1.0, 0.5, 0.1, 0.01, 0.001),
+) -> ResultadoLimites:
+    """Mostra a derivada como limite do quociente de diferenças.
+
+    Em t_referencia, os quocientes [IVM(t+h) - IVM(t)] / h e [IVM(t) - IVM(t-h)] / h
+    convergem para a derivada exata quando h -> 0. No nascer do sol (t_canto),
+    os limites laterais do IVM coincidem (função contínua), mas os limites
+    laterais do quociente diferem: o IVM não é derivável nesse instante.
+    """
+    quocientes = [
+        (
+            h,
+            float((ivm_modelo(t_referencia + h) - ivm_modelo(t_referencia)) / h),
+            float((ivm_modelo(t_referencia) - ivm_modelo(t_referencia - h)) / h),
+        )
+        for h in passos
+    ]
+    h = 1e-6
+    return ResultadoLimites(
+        t_referencia=t_referencia,
+        derivada_exata=derivada_ivm_exata(t_referencia),
+        quocientes=quocientes,
+        t_canto=t_canto,
+        ivm_no_canto=float(ivm_modelo(t_canto)),
+        limite_esquerda_ivm=float(ivm_modelo(t_canto - h)),
+        limite_direita_ivm=float(ivm_modelo(t_canto + h)),
+        derivada_esquerda=float((ivm_modelo(t_canto) - ivm_modelo(t_canto - h)) / h),
+        derivada_direita=float((ivm_modelo(t_canto + h) - ivm_modelo(t_canto)) / h),
+    )
 
 
 def validar_dados(dados: DadosMicroclima) -> None:
@@ -76,8 +151,8 @@ def simular_dados() -> DadosMicroclima:
     As curvas são hipóteses didáticas, sem ajuste a medições da Rocinha.
     """
     horas = np.linspace(0, 24, 145)  # Uma amostra a cada 10 minutos.
-    umidade = 70 + 18 * np.cos(np.pi * horas / 12)
-    insolacao = 80 * np.maximum(0, np.sin(np.pi * (horas - 6) / 12))
+    umidade = umidade_modelo(horas)
+    insolacao = insolacao_modelo(horas)
     return DadosMicroclima(
         horas=horas,
         ivm=0.6 * umidade + 0.4 * (100 - insolacao),
@@ -95,11 +170,25 @@ def carregar_dados(caminho: Path | None = None) -> DadosMicroclima:
     ausente ou CSV inválido produz erro, sem substituir medições por simulação.
     Os timestamps são normalizados em UTC; não há extrapolação para 24 horas.
     """
-    arquivo = CSV_PADRAO if caminho is None else Path(caminho)
-    if caminho is None and not arquivo.exists():
-        dados = simular_dados()
-        dados.observacao += " O arquivo 02-python-processamento/relatorio.csv ainda não existe."
+    if caminho is None:
+        if not CSV_PADRAO.exists():
+            dados = simular_dados()
+            dados.observacao += " O arquivo 02-python-processamento/relatorio.csv ainda não existe."
+            return dados
+        dados = ler_csv(CSV_PADRAO)
+        if len(dados.horas) < MINIMO_AMOSTRAS_REAIS:
+            quantidade = len(dados.horas)
+            dados = simular_dados()
+            dados.observacao += (
+                f" O relatorio.csv do módulo Python tem só {quantidade} leituras reais"
+                f" (mínimo {MINIMO_AMOSTRAS_REAIS}); use --csv para analisá-las mesmo assim."
+            )
         return dados
+    return ler_csv(Path(caminho))
+
+
+def ler_csv(arquivo: Path) -> DadosMicroclima:
+    """Converte o CSV exportado pelo Python em série temporal validada."""
     try:
         tabela = pd.read_csv(arquivo, encoding="utf-8-sig")
     except (pd.errors.EmptyDataError, pd.errors.ParserError) as erro:
@@ -225,7 +314,7 @@ def gerar_grafico(dados: DadosMicroclima, resultado: ResultadoCalculo, destino: 
         )
     ax1.axhline(70, color="#DC2626", linestyle="--", label="PERIGO: IVM ≥ 70%")
     ax1.axhline(40, color="#D97706", linestyle=":", label="ATENÇÃO: IVM ≥ 40%")
-    ax1.set(title="CANYON | Índice de Vulnerabilidade de Microclima", ylabel="IVM (%)", ylim=(0, 105))
+    ax1.set(title="Viela Tech | Índice de Vulnerabilidade de Microclima", ylabel="IVM (%)", ylim=(0, 105))
     ax1.legend(loc="upper center", fontsize=8, ncol=2)
 
     ax2.plot(horas, resultado.derivada_ivm, color="#059669", linewidth=2, label="dIVM/dt")
@@ -275,7 +364,8 @@ def main() -> int:
         grafico = args.saida / "grafico_microclima.png"
         pdf = args.saida / "Relatorio_Matematica.pdf"
         figura = gerar_grafico(dados, resultado, grafico)
-        gerar_relatorio(dados, resultado, grafico, pdf)
+        limites = calcular_limites()
+        gerar_relatorio(dados, resultado, grafico, pdf, limites)
     except (OSError, ValueError) as erro:
         parser.exit(1, f"Erro: {erro}\n")
 
@@ -285,6 +375,14 @@ def main() -> int:
     print(f"Integral total ({resultado.metodo_integracao}): {resultado.area_total:.2f} %·h")
     print(f"Área em PERIGO (interpolação linear): {resultado.area_perigo:.2f} %·h")
     print(f"Tempo em PERIGO: {resultado.duracao_perigo:.2f} h")
+    print(
+        f"Limite do quociente em t={limites.t_referencia:g} h: "
+        f"{limites.quocientes[-1][1]:.4f} -> derivada exata {limites.derivada_exata:.4f} p.p./h"
+    )
+    print(
+        f"Nascer do sol (t={limites.t_canto:g} h): derivada lateral esquerda "
+        f"{limites.derivada_esquerda:.2f} | direita {limites.derivada_direita:.2f} p.p./h"
+    )
     print(f"Derivada máxima do IVM: {resultado.derivada_ivm[maior]:.2f} p.p./h em t={dados.horas[maior]:.2f} h")
     print(f"Gráfico: {grafico.resolve()}")
     print(f"Relatório: {pdf.resolve()}")

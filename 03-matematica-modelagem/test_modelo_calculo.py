@@ -129,6 +129,35 @@ class TestModeloCalculo(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 self.modelo.carregar_dados(Path(pasta) / "ausente.csv")
 
+    def test_quociente_de_diferencas_converge_para_derivada(self):
+        limites = self.modelo.calcular_limites(t_referencia=9.0)
+        erros = [abs(prog - limites.derivada_exata) for _, prog, _ in limites.quocientes]
+        self.assertTrue(all(a > b for a, b in zip(erros, erros[1:])))
+        self.assertLess(erros[-1], 2e-3)
+        self.assertAlmostEqual(self.modelo.derivada_ivm_exata(9.0), -7.9231, places=3)
+
+    def test_nascer_do_sol_continuo_mas_sem_derivada(self):
+        limites = self.modelo.calcular_limites(t_canto=6.0)
+        self.assertAlmostEqual(limites.limite_esquerda_ivm, limites.ivm_no_canto, places=4)
+        self.assertAlmostEqual(limites.limite_direita_ivm, limites.ivm_no_canto, places=4)
+        esperado_esquerda = 0.6 * (-18 * np.pi / 12)
+        esperado_direita = esperado_esquerda - 0.4 * 80 * np.pi / 12
+        self.assertAlmostEqual(limites.derivada_esquerda, esperado_esquerda, places=3)
+        self.assertAlmostEqual(limites.derivada_direita, esperado_direita, places=3)
+
+    def test_csv_padrao_com_poucas_leituras_usa_simulacao_identificada(self):
+        caminho = self.csv(
+            "created_at,ivm\n2026-11-09T13:00:00Z,50\n2026-11-09T14:00:00Z,60\n"
+        )
+        original = self.modelo.CSV_PADRAO
+        self.modelo.CSV_PADRAO = caminho
+        self.addCleanup(setattr, self.modelo, "CSV_PADRAO", original)
+        dados = self.modelo.carregar_dados()
+        self.assertIn("simulad", dados.origem.lower())
+        self.assertIn("2 leituras reais", dados.observacao)
+        explicito = self.modelo.carregar_dados(caminho)
+        self.assertEqual(len(explicito.horas), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

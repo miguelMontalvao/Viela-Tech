@@ -1,95 +1,110 @@
-# Matemática e Cálculo do microclima
+# 03 · Differentiated Problem Solving — Modelagem Matemática do Microclima
 
-O módulo aplica derivadas e integrais ao Índice de Vulnerabilidade de
-Microclima (IVM) do projeto CANYON / Viela Tech. Gera o gráfico e um relatório
-técnico A4 de três páginas com os integrantes, RMs e turma 1ESSRA.
+> **Disciplina:** Differentiated Problem Solving · **Atividade:** Modelagem Matemática Avançada
+> **Projeto:** Viela Tech — CitizenTech FIAP Global Solution 2026.2
+
+Este módulo aplica **limites, derivadas (taxas de variação) e integrais** ao Índice de Vulnerabilidade de Microclima (IVM), o mesmo indicador calculado no [ESP32](../01-edge-computing-esp32/README.md), no [Python](../02-python-processamento/README.md) e na [aplicação web](../04-aplicacao-web/README.md). Ele gera um gráfico e um **relatório técnico em PDF**.
+
+| Entregável | Arquivo |
+|---|---|
+| Código do modelo (Python) | [`modelo_calculo.py`](modelo_calculo.py) |
+| Gerador do relatório | [`relatorio_matematica.py`](relatorio_matematica.py) |
+| Testes dos cálculos | [`test_modelo_calculo.py`](test_modelo_calculo.py) (15 testes) |
+| Gráfico | [`grafico_microclima.png`](grafico_microclima.png) |
+| **Relatório técnico em PDF** (6 páginas: capa e sumário, problema, modelo, limites, derivadas, integrais, conclusão) | [`Relatorio_Matematica.pdf`](Relatorio_Matematica.pdf) |
+
+## Problema
+
+Nas vielas da Rocinha, pouca luz e ar úmido persistem por horas. Olhar uma única leitura do sensor não basta para entender esse microclima. É preciso saber **com que rapidez** ele piora (derivada), **quando** muda de comportamento (limites) e **quanto** a viela acumulou de condição desfavorável ao longo do dia (integral).
+
+## Modelo
+
+```text
+IVM(t) = 0,6 · U(t) + 0,4 · (100 − I(t))          U = umidade (%), I = insolação (%), t em horas
+Faixas: NORMAL < 40 ≤ ATENÇÃO < 70 ≤ PERIGO
+```
+
+Cenário analítico de 24 horas (hipótese didática, sem ajuste a medições da Rocinha):
+
+```text
+U(t) = 70 + 18 cos(π t / 12)              umidade maior de madrugada
+I(t) = 80 · max(0, sen(π (t − 6) / 12))   sol entre 6 h e 18 h
+```
+
+## Cálculos
+
+| Conceito | Como é aplicado | Resultado (cenário simulado) |
+|---|---|---|
+| **Limite** | A derivada é `lim h→0 [IVM(t+h) − IVM(t)] / h`. A função `calcular_limites()` mostra o quociente convergindo para a derivada exata quando h vai de 1 h a 0,001 h. | Em t = 9 h: quociente −7,9221 → derivada exata −7,9231 p.p./h |
+| **Limites laterais** | No nascer do sol (t = 6 h), `I(t)` passa a crescer. O IVM é contínuo (limites laterais iguais), mas o quociente tem limites laterais diferentes, então a derivada não existe nesse ponto (ponto anguloso). | Pela esquerda −2,83 p.p./h; pela direita −11,21 p.p./h |
+| **Derivada / taxa de variação** | `numpy.gradient(IVM, horas)`: diferenças centrais no interior e unilaterais nas bordas, com os tempos reais (grade irregular aceita). | Maior subida: +11,19 p.p./h (t ≈ 17,8 h, pôr do sol) |
+| **Integral** | `scipy.integrate.simpson` em grade regular (trapézios se irregular), dando a exposição acumulada `∫ IVM dt` em %·h. Também a área e a duração só onde IVM ≥ 70, com interpolação linear nos cruzamentos. | Área total 1.723,54 %·h; 14,17 h em PERIGO (59,05 % do dia); IVM médio 71,81 % |
+
+### Interpretação
+
+- **Limites:** mostram que uma taxa só é "instantânea" no limite. Por isso a frequência de envio do ESP32 (15 s) importa.
+- **Nascer do sol:** é onde a tendência muda de regime. A viela acumula vulnerabilidade nas horas sem sol.
+- **Derivada:** aponta o momento em que o risco sobe mais rápido. O módulo Python aplica a versão discreta dessa ideia: três altas seguidas do IVM disparam o aviso **PIORANDO**.
+- **Integral:** separa duas vielas com o mesmo IVM instantâneo, mas exposições acumuladas diferentes. É o critério mais justo para priorizar ventilação, iluminação e visitas de ACS.
+
+## Dados: real × simulado
+
+Por padrão, o script lê [`../02-python-processamento/relatorio.csv`](../02-python-processamento/relatorio.csv), exportado pela opção 3 do módulo Python.
+
+- **Quando o CSV tem 20 leituras reais ou mais** (o mesmo mínimo da atividade de Python), o relatório é gerado com os dados reais.
+- **Hoje o CSV tem só 4 leituras reais.** Por isso, o gráfico e o PDF desta versão usam o **cenário simulado**, identificado na capa, nas páginas e no rodapé do gráfico.
+- **Para analisar as 4 leituras mesmo assim:** use `--csv`.
+- **Quando houver 20 leituras ou mais:** depois de rodar o Wokwi, basta executar o script de novo, sem mudar código.
 
 ## Executar
 
-Requer Python 3.10 ou superior. A partir da raiz do repositório:
+Python 3.10 ou superior, a partir da raiz do repositório:
 
 ```bash
-python -m pip install -r math/requirements.txt
-python math/modelo_calculo.py
+python -m pip install -r 03-matematica-modelagem/requirements.txt
+python 03-matematica-modelagem/modelo_calculo.py                 # padrão (CSV real se tiver ≥ 20 leituras)
+python 03-matematica-modelagem/modelo_calculo.py --simular       # força o cenário de 24 h
+python 03-matematica-modelagem/modelo_calculo.py --csv 02-python-processamento/relatorio.csv
+python 03-matematica-modelagem/modelo_calculo.py --saida resultados --mostrar
 ```
 
-Também funciona dentro da pasta `math/`, com `python modelo_calculo.py`.
-Os caminhos padrão são resolvidos pela localização do script.
-
-Os arquivos `math/grafico_microclima.png` e `math/Relatorio_Matematica.pdf`
-são gerados novamente a cada execução. O PDF é montado pelo módulo
-`relatorio_matematica.py`, usando apenas as bibliotecas de `requirements.txt`.
-O gráfico só abre em uma janela quando se usa `--mostrar`.
-
-```bash
-python math/modelo_calculo.py --simular
-python math/modelo_calculo.py --csv python/relatorio.csv
-python math/modelo_calculo.py --saida math/resultados --mostrar
-```
-
-## Entrada e simulação
-
-Por padrão, lê `python/relatorio.csv`, exportado pela opção 3 de
-`python/main.py`. As colunas obrigatórias são `created_at` (data/hora ISO 8601)
-e `ivm` (0 a 100). `umidade` e `insolacao` são opcionais; quando há umidade,
-o gráfico também apresenta sua derivada. Timestamps sem fuso são interpretados
-como UTC. As leituras são ordenadas por data, sem mudar os intervalos reais.
-
-São necessárias pelo menos duas leituras com horários distintos e valores
-finitos de 0 a 100. CSV inválido e caminho explícito inexistente produzem erro;
-não são substituídos silenciosamente por dados sintéticos.
-
-Se o arquivo padrão não existir, usa um cenário determinístico de 24 horas,
-com amostras a cada dez minutos. `--simular` força esse cenário mesmo quando
-há CSV. O gráfico e o PDF identificam a origem dos dados. **Os artefatos
-incluídos inicialmente foram gerados com a simulação**, pois ainda não havia
-`python/relatorio.csv`.
-
-As funções da simulação, com `t` em horas desde 00h, são hipóteses didáticas:
+Saída da última execução (17/11/2026):
 
 ```text
-U(t)   = 70 + 18 cos(pi t / 12)
-I(t)   = 80 max(0, sen(pi (t - 6) / 12))
-IVM(t) = 0,6 U(t) + 0,4 (100 - I(t))
+Origem: Dados simulados de 24 horas (não são medições de campo)
+Amostras: 145 | Período: 24.00 h
+Integral total (Simpson): 1723.54 %·h
+Área em PERIGO (interpolação linear): 1231.44 %·h
+Tempo em PERIGO: 14.17 h
+Limite do quociente em t=9 h: -7.9221 -> derivada exata -7.9231 p.p./h
+Nascer do sol (t=6 h): derivada lateral esquerda -2.83 | direita -11.21 p.p./h
+Derivada máxima do IVM: 11.19 p.p./h em t=17.83 h
 ```
-
-`U` representa a umidade relativa (%) e `I` a luminosidade normalizada
-do projeto (%), usada como aproximação da insolação. A simulação tem maior
-umidade à noite e maior luminosidade ao meio-dia; não foi ajustada a medições
-de campo da Rocinha.
-
-## Cálculos e interpretação
-
-- **Derivada:** `numpy.gradient(valores, horas)`, em pontos percentuais por
-  hora. Usa diferenças centrais no interior e diferenças unilaterais nas
-  bordas. Um IVM crescente pode decorrer de maior umidade ou menor luz.
-- **Integral total:** `scipy.integrate.simpson` em grades regulares com ao
-  menos três amostras; trapézios em grades irregulares ou com duas amostras.
-  Se a área linear em PERIGO exceder a estimativa total de Simpson, o total
-  também usa trapézios para manter a consistência. A unidade é `%·h`,
-  diferente de horas de permanência.
-- **Faixa PERIGO:** duração em horas e área sob o IVM somente nos trechos
-  com IVM ≥ 70%. Os cruzamentos de 70 são interpolados linearmente em cada
-  intervalo. A área inclui todo o índice nesses trechos, não somente o
-  excesso acima de 70; usa trapézios e pode diferir da aproximação de Simpson.
-
-As faixas NORMAL (< 40), ATENÇÃO (40 a < 70) e PERIGO (≥ 70) são regras do
-projeto, sem validação clínica. A integral resume o indicador ambiental no
-período observado, sem medir exposição pessoal, concentração de patógenos ou
-probabilidade de adoecer. Lacunas longas e ruído dos sensores limitam as
-estimativas; o script não transforma uma coleta curta em um dia completo.
-
-A tuberculose tem transmissão aérea entre pessoas; o IVM não permite inferir
-essa transmissão. Referência: [CDC, causas e transmissão da tuberculose](https://www.cdc.gov/tb/causes/index.html).
 
 ## Verificar os cálculos
 
 ```bash
-python -m unittest discover -s math -p "test_*.py" -v
+cd 03-matematica-modelagem
+python -m unittest -v test_modelo_calculo
 ```
 
-Os testes usam funções com resultados conhecidos, cruzamentos de limiar,
-intervalos irregulares e o formato de CSV do módulo Python.
+Os 15 testes cobrem:
 
-Referências dos métodos: [NumPy: gradient](https://numpy.org/doc/stable/reference/generated/numpy.gradient.html)
-e [SciPy: simpson](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simpson.html).
+- funções com resultado conhecido (reta em grade irregular, parábola por Simpson);
+- convergência do quociente de diferenças e os limites laterais no nascer do sol;
+- cruzamentos do limiar 70;
+- lacunas e validação do CSV;
+- a regra de mínimo de 20 leituras.
+
+## Limitações
+
+- Os pesos e limiares são hipóteses de projeto, sem calibração epidemiológica.
+- O IVM é um indicador **ambiental**: não mede bactérias, exposição pessoal nem probabilidade de adoecer.
+- A tuberculose é transmitida pelo ar entre pessoas ([CDC](https://www.cdc.gov/tb/causes/index.html)), e o índice não permite inferir transmissão.
+- Os dados simulados não demonstram as condições reais da Rocinha.
+
+Referências dos métodos: [NumPy `gradient`](https://numpy.org/doc/stable/reference/generated/numpy.gradient.html) · [SciPy `simpson`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.simpson.html).
+
+## Integrantes
+
+Miguel Menezes Montalvão dos Santos (RM 573825) · Pedro Lucas Souza Provadelli (RM 572547) · Vitor Louzano Gomes Mendes (RM 573885)
