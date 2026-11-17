@@ -39,7 +39,7 @@ Legenda:
 | Estruturas de dados, funções e menu | APROVADO | `CONFIGURACAO` (dicionário), listas de registros, `menu()` com 4 opções |
 | Normalização e validação de parâmetros | APROVADO | `normalizar()` (min-max) e `validar_configuracao()`, que lança `ValueError` |
 | Persistência (JSON e CSV) e fallback | APROVADO | `historico.json`, `backup.json` e `relatorio.csv`; usa o backup quando a API falha ou volta vazia |
-| Testes | APROVADO | `test_main.py`: 21 testes passando, sem rede |
+| Testes | APROVADO | `test_main.py`: 22 testes passando, sem rede |
 | Execução real documentada | APROVADO | Saída do terminal no [README](../02-python-processamento/README.md#evidência-de-execução) |
 | Volume de dados (mínimo de 20 leituras) | PENDENTE | O canal tem 4 leituras. É preciso rodar o Wokwi atualizado por 5 minutos ou mais e executar de novo. |
 

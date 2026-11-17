@@ -166,8 +166,12 @@ def simular_dados() -> DadosMicroclima:
 def carregar_dados(caminho: Path | None = None) -> DadosMicroclima:
     """Lê o CSV do módulo Python, preservando os intervalos de created_at.
 
-    Só a ausência do arquivo padrão aciona a simulação. Arquivo explícito
-    ausente ou CSV inválido produz erro, sem substituir medições por simulação.
+    Sem caminho explícito, a simulação identificada é usada em dois casos:
+    o arquivo padrão ainda não existe, ou tem menos de MINIMO_AMOSTRAS_REAIS
+    leituras (poucas para derivar e integrar). A observação do resultado diz qual.
+    Um CSV inválido (por exemplo, com horários repetidos) sempre produz erro:
+    o problema nos dados é mostrado em vez de ser escondido pela simulação.
+    Arquivo explícito ausente também produz erro.
     Os timestamps são normalizados em UTC; não há extrapolação para 24 horas.
     """
     if caminho is None:

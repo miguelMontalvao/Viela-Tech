@@ -1,6 +1,6 @@
 import { useId, useMemo, useState } from 'react';
 import { Activity, FlaskConical, Info } from 'lucide-react';
-import { ESTILO_FAIXA, ICONE_FAIXA } from './MicroclimaPanel';
+import { ESTILO_FAIXA, ICONE_FAIXA } from '../ui/faixas';
 import {
   HORAS_SIMULADAS,
   LIMIAR_FATOR_ATENCAO,

@@ -173,6 +173,12 @@ def calcular_ivm(umidade: float, insolacao: float) -> float:
     nivel_umidade = normalizar(umidade); nivel_falta_de_luz = 100 - normalizar(insolacao);
     IVM = peso_umidade * nivel_umidade + peso_falta_de_luz * nivel_falta_de_luz.
 
+    São duas verificações diferentes:
+    - validade física: as duas medidas são percentuais, então um valor fora de 0–100
+      indica erro do sensor e a leitura é rejeitada;
+    - calibração: CONFIGURACAO["limites"] define a faixa usada na normalização. Um valor
+      válido fora dessa faixa é limitado (clamp) a 0 ou 100 por normalizar().
+
     Args:
         umidade: Umidade relativa medida (%), entre 0 e 100.
         insolacao: Insolação medida (%), entre 0 e 100.
@@ -181,10 +187,12 @@ def calcular_ivm(umidade: float, insolacao: float) -> float:
         IVM entre 0 e 100, arredondado a uma casa decimal (igual ao ESP32 e ao app).
 
     Raises:
-        ValueError: Se as medições estiverem fora da faixa física 0–100.
+        ValueError: Se uma medida estiver fora de 0–100 (erro de sensor) ou se a
+            configuração de pesos e limites for inválida.
     """
     if not (0.0 <= umidade <= 100.0 and 0.0 <= insolacao <= 100.0):
-        raise ValueError("Umidade e insolação devem estar entre 0 e 100")
+        raise ValueError("Umidade e insolação são percentuais: devem estar entre 0 e 100")
+    validar_configuracao()
     limites: dict[str, dict[str, float]] = CONFIGURACAO["limites"]
     pesos: dict[str, float] = CONFIGURACAO["pesos"]
     nivel_umidade: float = normalizar(umidade, limites["umidade"]["min"], limites["umidade"]["max"])
@@ -483,9 +491,8 @@ def menu() -> None:
         None.
 
     Raises:
-        ValueError: Se a configuração do índice for inválida (verificada ao iniciar).
+        Nenhum: a configuração é validada antes, no bloco principal.
     """
-    validar_configuracao()
     registros_atuais: list[dict[str, Any]] = normalizar_registros_salvos(
         carregar_json(ARQUIVO_HISTORICO)
     )
@@ -522,8 +529,11 @@ def menu() -> None:
 
 if __name__ == "__main__":
     try:
-        menu()
+        validar_configuracao()
     except ValueError as erro:
         print(f"Configuração inválida: {erro}")
+        raise SystemExit(1)
+    try:
+        menu()
     except Exception as erro:  # Última barreira para manter a CLI utilizável.
         print(f"Erro inesperado: {erro}")

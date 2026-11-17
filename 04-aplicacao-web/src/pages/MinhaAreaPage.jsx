@@ -363,17 +363,22 @@ function Area() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [pendenteNoAparelho, setPendenteNoAparelho] = useState(() => existemTriagensPendentes());
-  const [aviso, setAviso] = useState('');
+  // `n` muda a cada exclusão para o aviso ser anunciado de novo, mesmo com o mesmo texto.
+  const [aviso, setAviso] = useState({ texto: '', n: 0 });
+  const avisoRef = useRef(null);
   const ultimaBusca = useRef(0);
 
   const removerDaLista = useCallback((id) => {
     setTriagens((lista) => lista.filter((t) => t.id !== id));
-    setAviso('Triagem excluída. Ela não aparece mais para você nem para a equipe.');
+    setAviso((anterior) => ({ texto: 'Triagem excluída. Ela não aparece mais para você nem para a equipe.', n: anterior.n + 1 }));
+    // O botão de confirmação some junto com o card: o foco vai para o aviso, sem cair no <body>.
+    requestAnimationFrame(() => avisoRef.current?.focus());
   }, []);
 
   const carregar = useCallback(async () => {
     ultimaBusca.current = Date.now();
     setCarregando(true);
+    setAviso((anterior) => ({ ...anterior, texto: '' }));
     const { data, error } = await minhasTriagens();
     if (!error) setTriagens(data);
     setErro(error ? 'Não deu para buscar suas triagens agora. Confira a conexão e tente de novo.' : null);
@@ -453,8 +458,12 @@ function Area() {
             </Alert>
           )}
           {erro && <Alert tipo="aviso">{erro}</Alert>}
-          <div role="status" aria-live="polite">
-            {aviso && <Alert tipo="sucesso">{aviso}</Alert>}
+          <div ref={avisoRef} tabIndex={-1} role="status" aria-live="polite" className="focus:outline-none">
+            {aviso.texto && (
+              <Alert key={aviso.n} tipo="sucesso">
+                {aviso.texto}
+              </Alert>
+            )}
           </div>
 
           {carregando && ordenadas.length === 0 ? (
@@ -480,7 +489,7 @@ function Area() {
           ) : (
             <>
               <Revelar>
-                <TriagemAtual t={atual} aoExcluir={removerDaLista} />
+                <TriagemAtual key={atual.id} t={atual} aoExcluir={removerDaLista} />
               </Revelar>
               {anteriores.length > 0 && <Historico triagens={anteriores} aoExcluir={removerDaLista} />}
             </>

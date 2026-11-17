@@ -70,6 +70,14 @@ class TestNormalizacaoEIndice(unittest.TestCase):
         with self.assertRaises(ValueError):
             main.calcular_ivm(120, 50)
 
+    def test_ivm_usa_os_limites_configurados_na_normalizacao(self) -> None:
+        # Com a umidade calibrada entre 30% e 100%, 20% fica abaixo da faixa e vira nível 0.
+        config = copy.deepcopy(main.CONFIGURACAO)
+        config["limites"]["umidade"] = {"min": 30.0, "max": 100.0}
+        with mock.patch.dict(main.CONFIGURACAO, config):
+            self.assertEqual(main.calcular_ivm(20, 50), 20.0)  # 0,6·0 + 0,4·(100 − 50)
+            self.assertEqual(main.calcular_ivm(65, 50), 50.0)  # 0,6·50 + 0,4·50
+
 
 class TestConfiguracao(unittest.TestCase):
     def test_configuracao_padrao_valida(self) -> None:

@@ -34,9 +34,9 @@ python main.py
 python -m unittest -v test_main
 ```
 
-São 21 testes, que não acessam a rede (a API é simulada com `unittest.mock`). Eles cobrem:
+São 22 testes, que não acessam a rede (a API é simulada com `unittest.mock`). Eles cobrem:
 
-- normalização e cálculo do IVM;
+- normalização e cálculo do IVM, incluindo os limites configurados;
 - `ValueError` para configuração inválida;
 - bordas das faixas (39,99 / 40 / 69,99 / 70);
 - tendência e maior episódio em PERIGO;

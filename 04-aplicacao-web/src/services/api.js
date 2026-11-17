@@ -47,6 +47,27 @@ function gravarLocal(key, valor) {
   }
 }
 
+/** Id da conta logada neste aparelho, ou null para quem usa sem conta. */
+async function usuarioAtual() {
+  try {
+    const { data } = (await supabase.auth?.getSession?.()) ?? {};
+    return data?.session?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Papel (morador, acs ou gestor) da conta logada; null quando não dá para saber. */
+async function papelDe(userId) {
+  if (!userId) return null;
+  try {
+    const { data, error } = await supabase.from('perfis').select('papel').eq('id', userId).maybeSingle();
+    return error ? null : data?.papel ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** @returns {string} */
 function novoIdLocal() {
   return `local-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`}`;
@@ -79,6 +100,9 @@ export async function salvarTriagemMorador(dados) {
       ...normalizarTriagem(dados),
       _localId: novoIdLocal(),
       _offline: true,
+      // Quem criou a triagem: só essa mesma conta (ou o uso sem conta) a envia depois,
+      // para a triagem não ficar ligada a outra pessoa num celular compartilhado.
+      _autor: await usuarioAtual(),
       created_at: new Date().toISOString(),
     };
     const salvo = gravarLocal(TRIAGENS_KEY, [...pendentes, local]);
@@ -158,23 +182,28 @@ export async function sincronizarPendenciasOffline() {
   if (!estaOnline()) return { sincronizados: 0, error: new Error('Dispositivo sem conexão.') };
   let sincronizados = 0;
   try {
+    const autor = await usuarioAtual();
     const pendentes = lerLocal(TRIAGENS_KEY, []);
     const aindaPendentes = [];
+    const deOutraConta = [];
     const idsSincronizados = new Map();
-    const filaInicial = lerLocal(SYNC_QUEUE_KEY, []);
-    const idsComStatusNaFila = new Set(filaInicial.map((item) => String(item.id)));
 
     for (const item of pendentes) {
+      const { _localId, _offline, _autor, ...registro } = item;
+      // Triagens antigas não têm `_autor` e seguem o comportamento anterior.
+      if (_autor !== undefined && _autor !== autor) {
+        deOutraConta.push(item);
+        continue;
+      }
       try {
-        const { _localId, _offline, ...registro } = item;
-        if (_localId && idsComStatusNaFila.has(String(_localId))) {
-          // O ACS mudou o status de uma triagem criada sem internet: precisamos do id
-          // definitivo para aplicar a mudança. A equipe tem permissão de leitura.
+        if (autor) {
+          // Com conta, o envio devolve o id definitivo (morador lê as próprias; a equipe lê todas).
+          // Ele é usado pelas mudanças de status feitas antes da sincronização.
           const { data, error } = await supabase.from('chamados_coleta').insert(registro).select('id').single();
           if (error) throw error;
-          idsSincronizados.set(String(_localId), data.id);
+          if (_localId) idsSincronizados.set(String(_localId), data.id);
         } else {
-          // Envio anônimo: sem .select(), não depende de permissão de leitura.
+          // Sem conta: sem .select(), não depende de permissão de leitura.
           const { error } = await supabase.from('chamados_coleta').insert(registro);
           if (error) throw error;
           if (_localId) idsSincronizados.set(String(_localId), null);
@@ -185,11 +214,12 @@ export async function sincronizarPendenciasOffline() {
         aindaPendentes.push(item);
       }
     }
-    gravarLocal(TRIAGENS_KEY, aindaPendentes);
+    gravarLocal(TRIAGENS_KEY, [...aindaPendentes, ...deOutraConta]);
 
     const fila = lerLocal(SYNC_QUEUE_KEY, []);
     const filaRestante = [];
     const idsAtualizados = new Set();
+    let papel;
     for (const item of fila) {
       try {
         const id = idsSincronizados.get(String(item.id)) ?? item.id;
@@ -200,8 +230,18 @@ export async function sincronizarPendenciasOffline() {
           .eq('id', id)
           .select('id');
         if (error) throw error;
-        // Sem sessão da equipe, o RLS não atualiza nada e também não devolve erro.
-        if (!data?.length) throw new Error('Nenhum chamado foi atualizado (sessão da equipe ausente).');
+        if (!data?.length) {
+          // Nada foi atualizado: ou falta a sessão da equipe (o RLS não devolve erro),
+          // ou o chamado foi excluído depois da mudança offline. A equipe lê todos os
+          // chamados, então, com sessão da equipe, dá para saber se ele ainda existe.
+          papel ??= await papelDe(autor);
+          if (papel !== 'acs' && papel !== 'gestor') throw new Error('Nenhum chamado foi atualizado (sessão da equipe ausente).');
+          const { data: existe, error: erroBusca } = await supabase.from('chamados_coleta').select('id').eq('id', id).maybeSingle();
+          if (erroBusca || existe) throw erroBusca ?? new Error('O chamado não pôde ser atualizado.');
+          console.warn(`O chamado ${id} foi excluído; a mudança de status pendente foi descartada.`);
+          idsAtualizados.add(String(item.id));
+          continue;
+        }
         idsAtualizados.add(String(item.id));
         sincronizados += 1;
       } catch (error) {

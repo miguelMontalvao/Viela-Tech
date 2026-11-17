@@ -43,5 +43,5 @@ Todo o código gerado pelo Codex foi revisado, testado no terminal do VS Code, v
   - o backup não é mais apagado por um feed vazio;
   - a temperatura (`field4`) é preservada ao recarregar o histórico;
   - IVM arredondado a 1 casa, como no ESP32 e no app;
-  - 21 testes em `test_main.py`.
+  - 22 testes em `test_main.py`.
 - **Validação humana:** testes executados (`python -m unittest -v test_main`, 21 OK) e execução real contra a API registrada no [README](README.md).

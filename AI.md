@@ -110,7 +110,7 @@ Conforme as diretrizes da FIAP para a Global Solution 2026.2, este documento reg
 - **Python:**
   - adicionou a normalização e a validação da configuração;
   - corrigiu o backup quando o feed vem vazio;
-  - escreveu 21 testes e o README, que traz a saída real do programa.
+  - escreveu 22 testes e o README, que traz a saída real do programa.
 - **Matemática:** adicionou a seção de limites, a capa e a conclusão ao PDF, e mais 3 testes.
 - **Aplicação web:**
   - criou a exclusão de triagens, completando o CRUD;
@@ -122,7 +122,7 @@ Conforme as diretrizes da FIAP para a Global Solution 2026.2, este documento reg
 
 **Como foi validado:**
 
-- todos os testes foram executados (Python 21, Matemática 15, Vitest 24) e o build de produção passou;
+- todos os testes foram executados (Python 22, Matemática 15, Vitest 24) e o build de produção passou;
 - a triagem, o tema e o menu do celular foram conferidos no navegador;
 - as consultas ao ThingSpeak, ao GitHub e ao site foram feitas na hora, e os resultados estão em [`docs/matriz-de-conformidade.md`](docs/matriz-de-conformidade.md).
 

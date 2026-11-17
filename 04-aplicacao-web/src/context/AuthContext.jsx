@@ -109,13 +109,18 @@ export function AuthProvider({ children }) {
       carregarPerfil(),
       import('../services/api'),
     ]);
-    await sair();
-    esquecerPerfil();
-    // Celulares da equipe podem ser compartilhados: o cache de chamados (dados de saúde) sai junto.
-    limparDadosLocaisDaEquipe();
-    userIdRef.current = null;
-    setSessao(null);
-    setPerfil(null);
+    try {
+      await sair();
+    } finally {
+      // Mesmo se o servidor não responder, o aparelho esquece a sessão e os dados de saúde.
+      // Celulares da equipe podem ser compartilhados: o cache de chamados sai junto.
+      // (Triagens ainda não enviadas ficam: só a conta que as criou consegue enviá-las.)
+      esquecerPerfil();
+      limparDadosLocaisDaEquipe();
+      userIdRef.current = null;
+      setSessao(null);
+      setPerfil(null);
+    }
   }, []);
 
   const valor = useMemo(

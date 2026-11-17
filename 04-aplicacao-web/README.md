@@ -159,7 +159,7 @@ O envio anônimo usa `insert()` **sem** `.select()`. Assim quem não tem conta n
 - **Tosse de 21 dias ou mais** é urgente: alerta vermelho para o morador, faixa "URGENTE — TOSSE +21 DIAS" e topo da fila para o ACS. O banco reforça a regra com um gatilho.
 - **Fila do ACS:** urgentes em aberto, depois os demais em aberto e por fim os concluídos. Dentro de cada grupo, quem espera há mais tempo vem antes.
 - **Offline-first (RN-04):** sem sinal, tudo fica no `LocalStorage`. Ao voltar a conexão, a sincronização roda sozinha, e também há o botão **Sincronizar**.
-- **Consentimento (LGPD art. 11, I):** a triagem só é enviada com a caixa de consentimento marcada. O morador com conta pode excluir as próprias triagens (art. 18). Ao sair da conta, o cache local da equipe é apagado do aparelho.
+- **Consentimento (LGPD art. 11, I):** a triagem só é enviada com a caixa de consentimento marcada. O morador com conta pode excluir as próprias triagens (art. 18). Ao sair da conta, o cache local da equipe é apagado do aparelho. Uma triagem guardada sem sinal só é enviada pela mesma conta que a criou (ou sem conta, se foi feita sem login), para não ficar ligada a outra pessoa num celular compartilhado.
 - **Simulador de 24 h e boletim:** usam o IVM oficial e o semáforo de 3 faixas. Quando o sensor não mandou algum campo, o valor aparece como **(simulado)**. A taxa de crescimento do simulador é uma hipótese didática e não mede risco de tuberculose.
 
 ### Interações em JavaScript (Web Development)

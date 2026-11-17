@@ -1,18 +1,11 @@
-import { AlertTriangle, CheckCircle2, CloudSun, Cpu, Droplets, OctagonAlert, RefreshCw, SunDim, Thermometer } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { CloudSun, Cpu, Droplets, RefreshCw, SunDim, Thermometer } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { EmptyState, Spinner } from '../ui/Feedback';
 import { Alert } from '../ui/Alert';
 import { FAIXAS_IVM, LIMIAR_ATENCAO, LIMIAR_PERIGO } from '../../domain/risco';
 import { useContador, useNaTela } from '../../hooks/useAnimacao';
-
-export const ICONE_FAIXA = { NORMAL: CheckCircle2, ATENCAO: AlertTriangle, PERIGO: OctagonAlert };
-
-// Cores de risco só aqui (status), sempre com ícone e rótulo.
-export const ESTILO_FAIXA = {
-  NORMAL: 'bg-green-50 text-green-900 ring-green-200 dark:bg-green-950/60 dark:text-green-100 dark:ring-green-900',
-  ATENCAO: 'bg-amber-50 text-amber-900 ring-amber-200 dark:bg-amber-950/60 dark:text-amber-100 dark:ring-amber-900',
-  PERIGO: 'bg-red-50 text-red-900 ring-red-200 dark:bg-red-950/60 dark:text-red-100 dark:ring-red-900',
-};
+import { ESTILO_FAIXA, ICONE_FAIXA } from '../ui/faixas';
 
 const formatoHora = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 const fmt = (v) => (v === null || v === undefined ? '—' : `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`);
@@ -101,7 +94,13 @@ function Medida({ icone: Icone, rotulo, valor, ajuda, cor, ativo, formatar = fmt
 export function MicroclimaPanel({ leitura, carregando, erro, aoAtualizar }) {
   const faixa = leitura?.faixa;
   const [ref, naTela] = useNaTela();
-  const recente = Boolean(leitura?.dataHora) && Date.now() - leitura.dataHora.getTime() < RECENTE_MS;
+  // Relógio de 30 s: sem ele, o selo "ao vivo" nunca expiraria se nenhuma leitura nova chegasse.
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    const relogio = setInterval(() => setAgora(Date.now()), 30_000);
+    return () => clearInterval(relogio);
+  }, []);
+  const recente = Boolean(leitura?.dataHora) && agora - leitura.dataHora.getTime() < RECENTE_MS;
 
   return (
     <section ref={ref} aria-labelledby="microclima-titulo" className="painel p-6 sm:p-8">

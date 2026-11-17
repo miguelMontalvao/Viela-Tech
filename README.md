@@ -107,7 +107,7 @@ Detalhes, contrato de dados e camadas da aplicação: [`docs/arquitetura.md`](do
 | # | Disciplina | Pasta | O que entrega |
 |---|---|---|---|
 | 1 | Edge Computing & Computer Systems | [`01-edge-computing-esp32/`](01-edge-computing-esp32/README.md) | Circuito no Wokwi, `main.py` com IVM, 3 faixas, LEDs, OLED e envio ao ThingSpeak |
-| 2 | Computational Thinking with Python | [`02-python-processamento/`](02-python-processamento/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 21 testes |
+| 2 | Computational Thinking with Python | [`02-python-processamento/`](02-python-processamento/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 22 testes |
 | 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 15 testes |
 | 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 24 testes |
 | 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Backlog em PDF (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
@@ -182,7 +182,7 @@ Execução de 17/11/2026:
 
 | Módulo | Comando | Resultado |
 |---|---|---|
-| Python | `python -m unittest test_main.py` | 21 de 21 passaram |
+| Python | `python -m unittest test_main.py` | 22 de 22 passaram |
 | Matemática | `python -m pytest test_modelo_calculo.py` | 15 de 15 passaram |
 | Aplicação web | `npm test` | 24 de 24 passaram |
 | Aplicação web | `npm run build` | build sem erros |

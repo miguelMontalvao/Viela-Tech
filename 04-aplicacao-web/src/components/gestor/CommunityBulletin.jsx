@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { MessageCircle, ShieldCheck } from 'lucide-react';
-import { ESTILO_FAIXA, ICONE_FAIXA } from './MicroclimaPanel';
+import { ESTILO_FAIXA, ICONE_FAIXA } from '../ui/faixas';
 import { formatoNumero, gerarRecomendacoes, mensagemBoletim, montarCenario } from '../../domain/simulacao';
 
 /**
