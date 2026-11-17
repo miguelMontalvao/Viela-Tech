@@ -1,13 +1,21 @@
-# Environment secrets and local configuration
+# Segredos e configuração local
 .env
 .env.*
 !.env.example
 
-# Dependencies and build output
+# Dependências e builds
 node_modules/
 dist/
 
-# Front-end (src/Frontend)
-src/Frontend/node_modules/
-src/Frontend/dist/
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Aplicação web (04-aplicacao-web)
+04-aplicacao-web/node_modules/
+04-aplicacao-web/dist/
+
+# Pacote de entrega gerado localmente (git archive)
 Viela-Tech.zip
