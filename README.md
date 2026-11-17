@@ -139,7 +139,7 @@ Viela-Tech/
 ├── python/                    main.py, test_main.py, historico.json, backup.json, relatorio.csv, prompts.md
 ├── 03-matematica-modelagem/   modelo_calculo.py, relatorio_matematica.py, PDF, gráfico, testes
 ├── 04-aplicacao-web/          React + Vite + Tailwind + Supabase (src/, supabase/, public/)
-├── 05-software-tx-design/     VielaTech-Backlog.pdf, histórias novas e relatório de status
+├── 05-software-tx-design/     VielaTech-SoftwareTX-Relatorio.pdf (enviar), backlog original e status
 ├── 06-pitch-storytelling/     roteiro e checklist do vídeo
 ├── docs/                      arquitetura e matriz de conformidade
 ├── AI.md                      registro do uso de IA

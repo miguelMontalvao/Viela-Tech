@@ -10,7 +10,11 @@
 | Pedro Lucas Souza Provadelli | 572547 |
 | Vitor Louzano Gomes Mendes | 573885 |
 
-**Documento principal da entrega:** [`VielaTech-Backlog.pdf`](VielaTech-Backlog.pdf), com 16 páginas: capa, sumário, problema, solução e arquitetura, linguagem visual, personas, regras de negócio, requisitos, backlog MoSCoW, rastreabilidade, roadmap, riscos e referências.
+**Arquivo para enviar:** [`VielaTech-SoftwareTX-Relatorio.pdf`](VielaTech-SoftwareTX-Relatorio.pdf), o relatório único de 21 páginas. Ele reúne a capa com os nomes, o índice, o backlog original (seções 1 a 10) e as seções 11 a 13: escopo e justificativa, status da implementação e conclusão, geradas a partir deste README.
+
+**Fonte do backlog:** [`VielaTech-Backlog.pdf`](VielaTech-Backlog.pdf), mantido sem alteração, com 16 páginas: capa, sumário, problema, solução e arquitetura, linguagem visual, personas, regras de negócio, requisitos, backlog MoSCoW, rastreabilidade, roadmap, riscos e referências.
+
+Para regenerar o relatório depois de editar este README: `python ferramentas/gerar_relatorio_unico.py .` (requer `pymupdf`).
 
 Este README complementa o PDF em três pontos:
 

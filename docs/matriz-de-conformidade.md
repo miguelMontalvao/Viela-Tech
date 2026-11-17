@@ -78,8 +78,8 @@ Legenda:
 | Regras de negócio, RF e RNF | APROVADO | PDF, páginas 7 e 8; status da implementação no README |
 | Backlog MoSCoW com critérios de aceite | APROVADO | PDF, páginas 9 a 13, mais US-16 e US-17 em `VielaTech-Backlog.md` |
 | Rastreabilidade | APROVADO | PDF, página 14 |
-| Conclusão | APROVADO | [`README.md` §9](../05-software-tx-design/README.md#9-conclusão); não está no PDF |
-| PDF único com escopo e conclusão | PARCIAL | Se a entrega exigir tudo no PDF, a equipe deve incluir as duas seções na fonte do documento |
+| Conclusão | APROVADO | Seção 13 do relatório único e [`README.md` §9](../05-software-tx-design/README.md#9-conclusão) |
+| Relatório único com capa, nomes, índice, justificativa e conclusão | APROVADO | [`VielaTech-SoftwareTX-Relatorio.pdf`](../05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf), 21 páginas |
 
 ## 6 · Storytelling & Inspiração Empreendedora: Pitch ([`06-pitch-storytelling/`](../06-pitch-storytelling/))
 
