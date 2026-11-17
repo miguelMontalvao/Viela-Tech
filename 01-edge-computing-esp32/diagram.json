@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "author": "Canyon Team",
+  "author": "Viela Tech",
   "editor": "wokwi",
   "parts": [
     { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
@@ -17,12 +17,45 @@
       "type": "wokwi-led",
       "id": "led_g",
       "top": 102,
-      "left": -82.6,
+      "left": -130.6,
       "attrs": { "color": "green" }
     },
-    { "type": "wokwi-led", "id": "led_r", "top": 102, "left": 157.4, "attrs": { "color": "red" } }
+    {
+      "type": "wokwi-led",
+      "id": "led_y",
+      "top": 102,
+      "left": 157.4,
+      "attrs": { "color": "yellow" }
+    },
+    { "type": "wokwi-led", "id": "led_r", "top": 102, "left": 205.4, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_g",
+      "top": 166.6,
+      "left": -144,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_y",
+      "top": 166.6,
+      "left": 144,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_r",
+      "top": 166.6,
+      "left": 192,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    }
   ],
   "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
     [ "esp:GND.1", "dht1:GND", "black", [ "v0" ] ],
     [ "esp:3V3", "dht1:VCC", "red", [ "v0" ] ],
     [ "esp:15", "dht1:SDA", "green", [ "v0" ] ],
@@ -34,9 +67,14 @@
     [ "esp:21", "oled1:SDA", "blue", [ "v0" ] ],
     [ "esp:22", "oled1:SCL", "yellow", [ "v0" ] ],
     [ "esp:2", "led_g:A", "green", [ "v0" ] ],
-    [ "esp:GND.1", "led_g:C", "black", [ "v0" ] ],
+    [ "led_g:C", "r_g:1", "black", [ "v0" ] ],
+    [ "r_g:2", "esp:GND.1", "black", [ "v0" ] ],
+    [ "esp:5", "led_y:A", "gold", [ "v0" ] ],
+    [ "led_y:C", "r_y:1", "black", [ "v0" ] ],
+    [ "r_y:2", "esp:GND.2", "black", [ "v0" ] ],
     [ "esp:4", "led_r:A", "red", [ "v0" ] ],
-    [ "esp:GND.1", "led_r:C", "black", [ "v0" ] ]
+    [ "led_r:C", "r_r:1", "black", [ "v0" ] ],
+    [ "r_r:2", "esp:GND.2", "black", [ "v0" ] ]
   ],
   "dependencies": {}
 }
