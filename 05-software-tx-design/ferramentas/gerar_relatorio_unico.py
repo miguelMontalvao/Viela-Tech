@@ -199,3 +199,10 @@ final.set_metadata({"title": "Viela Tech: relatório de Software & Total Experie
                     "author": "Miguel Montalvão, Pedro Provadelli, Vitor Mendes"})
 final.save(SAIDA, garbage=4, deflate=True)
 print(final.page_count, "páginas", paginas, "índice:", indice.page_count, "novas:", novas.page_count)
+
+# Timbrado Viela Tech em todas as páginas, menos a capa (arte própria em página cheia).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "docs" / "identidade-visual"))
+from aplicar_timbrado import aplicar  # noqa: E402
+
+aplicar(SAIDA, SAIDA, documento="Software & TX Design · Backlog do Produto",
+        topo=40, base=800, x0=38, x1=558, pular={1})
