@@ -1,7 +1,7 @@
 """Derivadas, integrais, gráficos e relatório do microclima do CANYON.
 
-Execute da raiz: python math/modelo_calculo.py
-Sem python/relatorio.csv, utiliza uma simulação explicitamente identificada.
+Execute da raiz: python 03-matematica-modelagem/modelo_calculo.py
+Sem 02-python-processamento/relatorio.csv, utiliza uma simulação explicitamente identificada.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from scipy.integrate import simpson, trapezoid
 
 
 PASTA_MATH = Path(__file__).resolve().parent
-CSV_PADRAO = PASTA_MATH.parent / "python" / "relatorio.csv"
+CSV_PADRAO = PASTA_MATH.parent / "02-python-processamento" / "relatorio.csv"
 LIMIAR_ATENCAO = 40.0
 LIMIAR_PERIGO = 70.0
 
@@ -98,7 +98,7 @@ def carregar_dados(caminho: Path | None = None) -> DadosMicroclima:
     arquivo = CSV_PADRAO if caminho is None else Path(caminho)
     if caminho is None and not arquivo.exists():
         dados = simular_dados()
-        dados.observacao += " O arquivo python/relatorio.csv ainda não existe."
+        dados.observacao += " O arquivo 02-python-processamento/relatorio.csv ainda não existe."
         return dados
     try:
         tabela = pd.read_csv(arquivo, encoding="utf-8-sig")
@@ -259,7 +259,7 @@ def main() -> int:
     entrada = parser.add_mutually_exclusive_group()
     entrada.add_argument("--csv", type=Path, help="CSV com created_at e ivm; umidade/insolacao opcionais.")
     entrada.add_argument("--simular", action="store_true", help="Usar sempre o cenário sintético de 24 h.")
-    parser.add_argument("--saida", type=Path, default=PASTA_MATH, help="Pasta dos arquivos gerados (padrão: math/).")
+    parser.add_argument("--saida", type=Path, default=PASTA_MATH, help="Pasta dos arquivos gerados (padrão: 03-matematica-modelagem/).")
     parser.add_argument("--mostrar", action="store_true", help="Abrir o gráfico após salvar os arquivos.")
     args = parser.parse_args()
     # O modo padrão também funciona em terminais e computadores sem interface gráfica.

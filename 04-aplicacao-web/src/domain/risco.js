@@ -1,7 +1,7 @@
 /**
  * Regras de risco do Viela Tech.
  * As faixas do IVM e o limite de tosse vêm do backlog (regras de negócio)
- * e já são usados no firmware do ESP32 (wokwi/main.py) e no módulo Python.
+ * e já são usados no firmware do ESP32 (01-edge-computing-esp32/main.py) e no módulo Python.
  */
 
 export const LIMIAR_ATENCAO = 40;
