@@ -108,6 +108,7 @@ src/
 │   ├── useEnvioPendente.js reenvio automático das triagens guardadas no aparelho
 │   ├── useOnlineStatus.js  eventos online/offline
 │   ├── useTheme.js         tema claro/escuro persistido
+│   ├── useAnimacao.js      entrada na tela e contadores (respeita movimento reduzido)
 │   └── useAuth.js          sessão e papel (AuthContext)
 ├── context/AuthContext.jsx
 ├── components/      Apresentação
@@ -261,7 +262,7 @@ Os acentos servem só de decoração. As cores de risco continuam reservadas par
   - a exclusão devolve "sem permissão".
 
   O app funciona nos dois estados.
-- **Origem da tabela `leituras_microclima`:** o ESP32 publica no ThingSpeak, e nenhum script grava essa tabela automaticamente. Até existir essa integração, ela pode ser populada pelo seed do `schema.sql` ou manualmente.
+- **Origem da tabela `leituras_microclima`:** o ESP32 publica no ThingSpeak, e nenhum script grava essa tabela automaticamente. Até existir essa integração, ela pode ser populada manualmente ou pelo exemplo de seed comentado no fim do `schema.sql`.
 - **Offline:** a fila offline funciona depois que o app foi aberto ao menos uma vez com internet. Não há *service worker*, então abrir o site pela primeira vez sem sinal não funciona.
 - **Foto da Home:** é uma ilustração gerada por IA (ver [`AI.md`](../AI.md)), não uma fotografia real da Rocinha.
 - **Sem ESLint configurado:** a qualidade é garantida por testes, build e revisão.

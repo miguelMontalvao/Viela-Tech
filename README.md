@@ -1,183 +1,262 @@
-# Viela Tech — Onde o sol não chega, a saúde chega 
+# Viela Tech: onde o sol não chega, a saúde chega
 
-> **Plataforma Cívica de Inteligência Urbana e Vigilância em Saúde na Favela da Rocinha**  
-> **FIAP Global Solution 2026.2 — CitizenTech**  
-> **Curso:** Engenharia de Software (1º Ano — Semipresencial Rio de Janeiro)  
-> **Turma:** 1ESSRA  
+> **Plataforma cívica de inteligência urbana e vigilância em saúde para a prevenção da tuberculose na Rocinha (RJ)**
+> FIAP · Engenharia de Software · **Global Solution 2026.2: CitizenTech** · Turma 1ESSRA
 
----
+| | |
+|---|---|
+| **Aplicação web** | [viela-tech.vercel.app](https://viela-tech.vercel.app) |
+| **Repositório** | [github.com/miguelMontalvao/Viela-Tech](https://github.com/miguelMontalvao/Viela-Tech) |
+| **Simulação ESP32 (Wokwi)** | [wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793) |
+| **Canal público ThingSpeak** | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |
+| **Vídeo do pitch (YouTube)** | ⏳ pendente (ver [`06-pitch-storytelling/`](06-pitch-storytelling/README.md)) |
 
-##  Ficha da CitizenTech
+## Sumário
 
-| Campo | Descrição |
-| :--- | :--- |
-| **Nome da CitizenTech** | **Viela Tech** |
-| **Cidade e Bairro** | Rio de Janeiro, Favela da Rocinha (Região dos Becos e Vielas) |
-| **Cidadão Beneficiado** | Moradores das vielas de alta densidade/baixa insolação e Agentes Comunitários de Saúde (ACS) |
-| **Problema em Uma Frase** | A alta densidade construtiva dos becos bloqueia o sol e a circulação de ar, criando um microclima de alta umidade que favorece a proliferação da tuberculose e atrasa a triagem de sintomáticos. |
-| **Como Funciona** | Um ESP32 com sensores de umidade e luz calcula o risco de microclima e envia dados ao ThingSpeak; um script em Python analisa a tendência epidemiológica; uma aplicação React/Tailwind com Supabase permite a autotriagem do morador e o gerenciamento *offline-first* das coletas pelos ACS. |
-| **O que cada parte faz** | **Edge:** Coleta telemetria ambiental via ESP32 no Wokwi.<br>**Python:** Processa o IVM, mantém histórico e detecta tendências de piora.<br>**Matemática:** Modelagem das taxas de variação e acúmulo de risco no tempo.<br>**Software Design:** Define requisitos, regras de negócio e backlog MoSCoW.<br>**Front-end:** Interface acessível (WCAG 2.1 AA) em React + Vite + Tailwind CSS.<br>**Web Dev:** Gerencia estado offline (`LocalStorage`) e alternador Light/Dark Mode.<br>**Pitch:** Apresenta a narrativa do produto em vídeo de 3 minutos. |
-| **Aplicação Web (Vercel)** | [viela-tech.vercel.app](https://viela-tech.vercel.app) |
-| **Link do Repositório** | [github.com/miguelMontalvao/Viela-Tech](https://github.com/miguelMontalvao/Viela-Tech) |
-| **Indicador de Impacto** | Redução do tempo médio entre o surgimento dos sintomas respiratórios e a entrega do kit de baciloscopia na Clínica da Família Rinaldo De Lamare. |
-| **ODS Conectados** | **ODS 3** (Saúde e Bem-Estar), **ODS 10** (Redução das Desigualdades), **ODS 11** (Cidades e Comunidades Sustentáveis) |
-
----
-
-##  Integrantes da Equipe
-
-* **Miguel Menezes Montalvão dos Santos** — RM 573825
-* **Pedro Lucas Souza Provadelli** — RM 572547
-* **Vitor Louzano Gomes Mendes** — RM 573885
-
----
-
-##  Estrutura das 7 Disciplinas da Global Solution
-
-### 1. Edge Computing & Computer Systems (Sensor)
-* **Objetivo:** Telemetria em tempo real nos becos da Rocinha via microcontrolador ESP32.
-* **Hardware Simulado:** ESP32 DevKit v4, Sensor DHT22 (Umidade/Temperatura), Sensor LDR (Insolação/Luminosidade), Display OLED SSD1306 (I2C) e LEDs de Status (Verde/Vermelho).
-* **Linguagem:** MicroPython (`main.py` e driver `ssd1306.py`).
-* **Plataforma IoT:** ThingSpeak (Publicação de dados via API HTTP GET).
-* **Links da Disciplina:**
-  *  **Simulação Wokwi:** `[https://wokwi.com/projects/480218232420257793]`
-  *  **Canal Público ThingSpeak:** `[https://thingspeak.mathworks.com/channels/3571901]`
+1. [Integrantes](#1-integrantes)
+2. [Problema](#2-problema)
+3. [Cidadão beneficiado](#3-cidadão-beneficiado)
+4. [Solução](#4-solução)
+5. [Como funciona](#5-como-funciona)
+6. [Arquitetura](#6-arquitetura)
+7. [Entregas por disciplina](#7-entregas-por-disciplina)
+8. [Estrutura do repositório](#8-estrutura-do-repositório)
+9. [O índice IVM](#9-o-índice-ivm)
+10. [Como executar](#10-como-executar)
+11. [Testes](#11-testes)
+12. [Evidências](#12-evidências)
+13. [Segurança e privacidade](#13-segurança-e-privacidade)
+14. [Dados reais e simulados](#14-dados-reais-e-simulados)
+15. [Impacto e ODS](#15-impacto-e-ods)
+16. [Limitações e roadmap](#16-limitações-e-roadmap)
+17. [Uso de IA e referências](#17-uso-de-ia-e-referências)
 
 ---
 
-### 2. Computational Thinking with Python (Lógica)
-* **Objetivo:** "Cérebro" conectado da aplicação que analisa a série temporal de telemetria.
-* **Funcionalidades:**
-  * Consumo da API REST do ThingSpeak com tratamento de exceção (`requests.RequestException`) e *timeout*.
-  * **Plano B:** Fallback automatizado para `backup.json` em caso de falha de conexão.
-  * Cálculo dinâmico do $IVM = 0{,}6 \cdot U_n + 0{,}4 \cdot I_n$.
-  * Análise de tendência de risco (Alerta `PIORANDO` para 3 altas consecutivas).
-  * Persistência histórica em `historico.json` sem duplicatas (`set` de IDs) e exportação em `relatorio.csv`.
-* **Localização:** Pasta `/python` no repositório.
+## 1. Integrantes
 
----
+| Nome | RM |
+|---|---|
+| Miguel Menezes Montalvão dos Santos | 573825 |
+| Pedro Lucas Souza Provadelli | 572547 |
+| Vitor Louzano Gomes Mendes | 573885 |
 
-### 3. Differentiated Problem Solving (Matemática)
-* **Objetivo:** Aplicação de Cálculo Diferencial e Integral na modelagem do microclima urbano.
-* **Modelagem:**
-  * **Taxa de Variação Instantânea (Derivada):** $\frac{d(IVM)}{dt}$ para identificação de variação abrupta de risco.
-  * **Exposição Acumulada (Integral):** $\int_{t_0}^{t_1} IVM(t) \, dt$ para quantificar o indicador ambiental acumulado em `%·h`, com cálculo separado do tempo em zona de `PERIGO`.
-* **Entregáveis:** Script em Python (`/math/modelo_calculo.py`) e Relatório Técnico em PDF.
+Responsabilidades em [`Integrantes.md`](Integrantes.md).
 
----
+## 2. Problema
 
-### 4. Software & Total Experience Design (Experiência)
-* **Objetivo:** Modelagem completa da experiência do usuário, engenharia de requisitos e backlog.
-* **Entregáveis Consolidados:**
-  * Documentação em formato ABNT (`VielaTech_Backlog_ABNT.pdf`).
-  * 3 Personas mapeadas: Morador Sintomático, Agente Comunitário de Saúde (ACS) e Gestor SMS-RJ.
-  * Matriz de 4 Regras de Negócio (RN-01 a RN-04), 6 Requisitos Funcionais (RF-01 a RF-06) e 4 Requisitos Não-Funcionais (RNF-01 a RNF-04).
-  * Backlog do Produto com 15 Histórias de Usuário priorizadas via MoSCoW e Matriz de Rastreabilidade.
+Na Rocinha, os becos estreitos formam **cânions urbanos**: o sol direto não chega ao chão, o ar não circula e a umidade se acumula. Esse ambiente favorece a tuberculose.
 
----
+Em 2013, a Rocinha registrou **372 casos por 100 mil habitantes**. Na cidade do Rio, a taxa foi de 89,7, ou seja, a Rocinha teve **4,1 vezes** mais casos (Betim, *El País Brasil*, 2015).
 
-### 5. Front-end Design (Interface)
-* **Objetivo:** Aplicação web funcional e inclusiva, seguindo as diretrizes de acessibilidade.
-* **Stack:** React 18 + Vite 6 + Tailwind CSS 3 + Lucide React. O código fica em [`src/Frontend/`](src/Frontend/README.md).
-* **O que tem:**
-  * **Mapa da tuberculose:** o Rio por bairros com a Rocinha em destaque (372 casos por 100 mil habitantes em 2013, 4,1 vezes a média da cidade), com fonte citada e as unidades de saúde.
-  * **Dois logins:** um para o morador, com cadastro e uma **Minha área** onde ele acompanha as próprias triagens, e outro para a equipe (ACS e gestor). O papel de cada conta fica no Supabase.
-  * **Área do Morador:** autotriagem com nome, setor/viela, dias de tosse, febre e suor noturno. Tosse há 21 dias ou mais gera um alerta vermelho prioritário e indica a **Clínica da Família Rinaldo De Lamare** e o **CMS Albert Sabin**. A tela deixa claro que a triagem não é diagnóstico.
-  * **Painel ACS:** login, fila com os urgentes no topo e a faixa **URGENTE — TOSSE +21 DIAS**, ações de atendimento (iniciar, registrar coleta, concluir), filtros e busca.
-  * **Dashboard do Gestor:** umidade, insolação e IVM do sensor IoT com as cores semafóricas oficiais, total de triagens, casos urgentes, coletas concluídas e gráficos.
-  * **Simulador preditivo de 24h:** linha do tempo interativa que projeta um fator exponencial de crescimento a partir do microclima, com curva, taxa estimada e faixa visual de risco. A taxa é uma hipótese didática, não calibrada nem equivalente a risco clínico; leituras sem temperatura usam cenário simulado identificado.
-  * **Boletim comunitário inteligente:** diagnóstico ambiental em linguagem simples, três recomendações adaptadas à umidade e temperatura e compartilhamento via WhatsApp. O IVM é um indicador ambiental, não diagnóstico de tuberculose.
-  * Identidade visual oficial (Azul Saúde Cívica `#0284C7`, Verde Esmeralda `#059669`) com elementos cariocas: casas coloridas, calçadão e bandeirinhas. Tem logo vetorizada, tema claro como padrão (o escuro é opcional) e layout responsivo do celular ao monitor grande.
-  * WCAG 2.1 AA: alvos de no mínimo 48px, contraste pensado para uso sob o sol, foco visível, link para pular ao conteúdo, mensagens anunciadas a leitores de tela e gráficos com alternativa em tabela.
+**Em uma frase:** a falta de sol e de ventilação nos becos cria um microclima de risco, e a triagem de quem tosse há semanas chega tarde.
 
-  O backlog original em PDF é binário e não foi editado diretamente nesta atualização. As histórias US-07 e US-08 estão registradas na fonte Markdown [`Doc/VielaTech-Backlog.md`](Doc/VielaTech-Backlog.md), pronta para revisão e exportação.
+## 3. Cidadão beneficiado
 
----
+- **Morador das vielas** de baixa insolação: descobre se deve procurar a Clínica da Família, sem diagnóstico e sem deslocamento desnecessário.
+- **Agente Comunitário de Saúde (ACS):** recebe a fila de visitas priorizada e trabalha mesmo sem sinal.
+- **Gestor da SMS-RJ:** vê o microclima e as triagens agregadas por sub-área para decidir onde agir.
 
-### 6. Web Development (Interação)
-* **Objetivo:** Interatividade em JavaScript, integração com API externa e persistência no navegador.
-* **O que tem:**
-  * **CRUD na API REST do Supabase:** cria triagens, lê a fila e o microclima e atualiza o status dos chamados (`src/Frontend/src/services/api.js`).
-  * O ESP32 envia temperatura do DHT22 como `field4` no ThingSpeak; a coluna opcional `temperatura` em `leituras_microclima` aceita esse dado. Leituras antigas permanecem válidas e recebem temperatura simulada apenas nas projeções que precisam dela.
-  * **Supabase Auth:** e-mail e senha, cadastro e recuperação de senha, com perfis `morador`, `acs` e `gestor`, rotas protegidas por papel e RLS no banco.
-  * **Custom Hooks** (`useTriagem`, `useChamados`, `useMicroclima`, `useOnlineStatus`, `useTheme`, `useAuth`, `useEnvioPendente`) separando a tela da lógica.
-  * **Modo claro/escuro** com `darkMode: 'class'`, salvo no aparelho.
-  * **Offline-first (RN-04):** sem sinal, triagens e atualizações ficam no `LocalStorage`. Quando a conexão volta, tudo é enviado sozinho, e também há o botão **Sincronizar**. O header mostra o status **Online/Offline**.
-  * Regras de negócio puras em `domain/`, com testes unitários em Vitest.
+## 4. Solução
 
----
+O Viela Tech liga um **sensor de microclima** a uma **aplicação web de triagem e gestão**:
 
-### 7. Storytelling & Inspiração Empreendedora (Pitch)
-* **Objetivo:** Apresentação executiva em vídeo demonstrando o produto em funcionamento.
-* **Roteiro de 3 Minutos:**
-  1. *Gancho (0:00 - 0:20):* O efeito canyon e o cenário epidemiológico da tuberculose na Rocinha.
-  2. *O Herói (0:20 - 0:50):* As jornadas do morador e do Agente Comunitário de Saúde.
-  3. *A Virada (0:50 - 1:20):* Apresentação da plataforma VielaTech.
-  4. *A Prova (1:20 - 2:20):* Demonstração integrada (Wokwi $\rightarrow$ Python $\rightarrow$ Front-end React).
-  5. *O Impacto (2:20 - 3:00):* Alinhamento aos ODS 3, 10 e 11 e encerramento.
-* **Link do Vídeo (YouTube - Não Listado):** `[INSIRA_LINK_DO_YOUTUBE_AQUI]`
+1. Um ESP32 mede umidade, luz e temperatura no beco e calcula o **IVM** (Índice de Vulnerabilidade de Microclima).
+2. Os dados vão para o ThingSpeak e são analisados em **Python** (tendência e relatório) e em **Matemática** (derivadas, integrais e limites).
+3. Na aplicação web, o **morador** faz a autotriagem; tosse há 21 dias ou mais vira **prioridade**.
+4. O **ACS** atende a fila na ordem certa, mesmo offline.
+5. O **gestor** acompanha indicadores, mapa e microclima.
 
----
+## 5. Como funciona
 
-##  Como Executar o Projeto
+| Passo | O que acontece | Onde |
+|---|---|---|
+| 1 | O DHT22 e o LDR são lidos a cada 15 s; o ESP32 calcula o IVM, acende o LED da faixa e mostra no OLED | `01-edge-computing-esp32/` |
+| 2 | A leitura é publicada no ThingSpeak (`field1` a `field4`) | canal 3571901 |
+| 3 | O Python busca as leituras, valida, normaliza, classifica, detecta tendência de piora e exporta o CSV | `02-python-processamento/` |
+| 4 | A Matemática modela o IVM no tempo, com limites, derivadas e integral do risco acumulado | `03-matematica-modelagem/` |
+| 5 | O morador envia a triagem com consentimento; o banco marca a prioridade | `04-aplicacao-web/` + Supabase |
+| 6 | O ACS muda o status (pendente → em atendimento → coletado → concluído), mesmo offline | `/acs` |
+| 7 | O gestor vê indicadores, o mapa por sub-área, o simulador de 24 h e o boletim | `/gestor` |
 
-### Pré-requisitos
-* Node.js (v18 ou superior)
-* Python 3.10+
+## 6. Arquitetura
 
-### 1. Executar o Cérebro em Python
-```bash
-cd python
-pip install requests
-python main.py
+```mermaid
+flowchart LR
+  E[ESP32 + DHT22 + LDR<br/>Wokwi] -->|HTTP| T[(ThingSpeak)]
+  T --> P[Python<br/>análise e CSV]
+  P --> M[Matemática<br/>cálculo e PDF]
+  MO[Morador] -->|insert| DB[(Supabase<br/>Postgres + Auth + RLS)]
+  DB --> AC[ACS<br/>offline-first]
+  DB --> GE[Gestor<br/>painel e mapa]
+  T -. carga manual .-> DB
 ```
 
-### 2. Executar o Módulo de Matemática
+Detalhes, contrato de dados e camadas da aplicação: [`docs/arquitetura.md`](docs/arquitetura.md).
 
-```bash
-python -m pip install -r math/requirements.txt
-python math/modelo_calculo.py
-```
-O script lê `python/relatorio.csv` ou usa uma simulação identificada de 24 horas quando o arquivo ainda não existe. Gera `math/grafico_microclima.png` e `math/Relatorio_Matematica.pdf`. Consulte [math/README.md](math/README.md) para os métodos e opções de execução.
+**Stack:**
 
-### 3. Executar a Aplicação Web (React + Vite)
+- **Edge:** MicroPython no ESP32 (Wokwi).
+- **Python:** Python 3.10+ com `requests`.
+- **Matemática:** NumPy, SciPy, pandas e Matplotlib.
+- **Web:** React 18, Vite 6, Tailwind CSS 3, React Router, Lucide e Vitest.
+- **Backend e deploy:** Supabase (Postgres, Auth e RLS) e Vercel.
 
-```bash
-cd src/Frontend
-npm install
-cp .env.example .env   # preencha com a URL e a chave anon do Supabase
-npm run dev            # http://localhost:5173
-npm test               # testes das regras de negócio
-```
+## 7. Entregas por disciplina
 
-Sem o `.env`, o app roda em modo local e guarda as triagens no aparelho. O passo a passo do Supabase (schema SQL, RLS e criação dos usuários da equipe) está em [src/Frontend/README.md](src/Frontend/README.md).
+| # | Disciplina | Pasta | O que entrega |
+|---|---|---|---|
+| 1 | Edge Computing & Computer Systems | [`01-edge-computing-esp32/`](01-edge-computing-esp32/README.md) | Circuito no Wokwi, `main.py` com IVM, 3 faixas, LEDs, OLED e envio ao ThingSpeak |
+| 2 | Computational Thinking with Python | [`02-python-processamento/`](02-python-processamento/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 21 testes |
+| 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 15 testes |
+| 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 24 testes |
+| 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Backlog em PDF (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
+| 6 | Storytelling & Inspiração Empreendedora | [`06-pitch-storytelling/`](06-pitch-storytelling/README.md) | Roteiro de 3 minutos com a demonstração real e checklist de gravação |
+| 7 | Web Development | [`04-aplicacao-web/`](04-aplicacao-web/README.md#interações-em-javascript-web-development) | Interações em JavaScript, persistência no navegador e integração com a API do Supabase |
 
----
+O status de cada requisito está em [`docs/matriz-de-conformidade.md`](docs/matriz-de-conformidade.md).
 
-## 📁 Estrutura do Repositório
+## 8. Estrutura do repositório
 
 ```text
-├── assets/                  # Imagens e evidências da simulação e gráficos
-├── Doc/                     # Documentação ABNT (VielaTech-Backlog.pdf)
-├── math/                    # Scripts de Cálculo Diferencial e Integral
-├── python/                  # Código do cérebro em Python, backup.json e exportações
-│   ├── backup.json
-│   ├── main.py
-│   ├── prompts.md
-│   └── README.md
-├── src/
-│   └── Frontend/            # Aplicação web (React + Vite + Tailwind + Supabase)
-│       ├── src/
-│       │   ├── domain/      # Regras de negócio (IVM, prioridade, fila) + testes
-│       │   ├── services/    # api.js, cliente Supabase e autenticação
-│       │   ├── hooks/       # Custom Hooks
-│       │   ├── components/  # UI, marca, layout, mapa, morador, acs, gestor
-│       │   ├── data/        # Bairros do Rio e números da tuberculose (com fonte)
-│       │   └── pages/       # Início, Morador, Entrar, Equipe, Minha área, Mapa, ACS, Gestor
-│       ├── supabase/schema.sql
-│       └── README.md        # Documentação técnica do front-end
-├── wokwi/                   # Arquivos do circuito ESP32 MicroPython (main.py, ssd1306.py, diagram.json)
-├── AI.md                    # Registro do uso de Inteligência Artificial como copiloto
-├── Integrantes.md           # Identificação oficial da equipe
-└── README.md                # Este arquivo
+Viela-Tech/
+├── 01-edge-computing-esp32/   ESP32 MicroPython: main.py, ssd1306.py, diagram.json, evidencias/
+├── 02-python-processamento/   main.py, test_main.py, historico.json, backup.json, relatorio.csv
+├── 03-matematica-modelagem/   modelo_calculo.py, relatorio_matematica.py, PDF, gráfico, testes
+├── 04-aplicacao-web/          React + Vite + Tailwind + Supabase (src/, supabase/, public/)
+├── 05-software-tx-design/     VielaTech-Backlog.pdf, histórias novas e relatório de status
+├── 06-pitch-storytelling/     roteiro e checklist do vídeo
+├── docs/                      arquitetura e matriz de conformidade
+├── AI.md                      registro do uso de IA
+├── Integrantes.md             equipe, RMs e responsabilidades
+└── README.md                  este arquivo
 ```
+
+## 9. O índice IVM
+
+```text
+IVM = 0,6 × Umidade + 0,4 × (100 − Insolação)
+```
+
+| Faixa | IVM | Cor | Ação |
+|---|---|---|---|
+| **Normal** | abaixo de 40 | verde `#16A34A` | monitoramento de rotina |
+| **Atenção** | de 40 a menos de 70 | âmbar `#D97706` | setor acompanhado pelo gestor |
+| **Perigo** | 70 ou mais | vermelho `#DC2626` | busca ativa e visitas priorizadas |
+
+- A umidade pesa mais (0,6) porque é a variável mais ligada à proliferação do patógeno.
+- `100 − Insolação` representa a **falta** de sol.
+- A mesma fórmula e as mesmas faixas estão no ESP32, no Python, na Matemática e no app.
+
+O IVM é um **indicador ambiental didático** e não mede o risco clínico de uma pessoa.
+
+## 10. Como executar
+
+**Pré-requisitos:** Python 3.10+ e Node.js 18+.
+
+```bash
+# 1 · Edge: abra o link do Wokwi acima e clique em ▶ (ou copie os arquivos de 01-edge-computing-esp32/)
+
+# 2 · Python
+cd 02-python-processamento
+pip install -r requirements.txt
+python main.py                 # menu: 1 buscar · 2 analisar · 3 exportar CSV · 4 sair
+
+# 3 · Matemática
+cd ../03-matematica-modelagem
+pip install -r requirements.txt
+python modelo_calculo.py       # gera grafico_microclima.png e Relatorio_Matematica.pdf
+
+# 4 · Aplicação web
+cd ../04-aplicacao-web
+npm install
+cp .env.example .env           # URL e chave anon do Supabase (opcional: sem .env roda em modo local)
+npm run dev                    # http://localhost:5173
+```
+
+Como configurar o Supabase (schema, migração e usuários da equipe): [`04-aplicacao-web/README.md`](04-aplicacao-web/README.md#configurando-o-supabase).
+
+## 11. Testes
+
+Execução de 17/11/2026:
+
+| Módulo | Comando | Resultado |
+|---|---|---|
+| Python | `python -m unittest test_main.py` | 21 de 21 passaram |
+| Matemática | `python -m pytest test_modelo_calculo.py` | 15 de 15 passaram |
+| Aplicação web | `npm test` | 24 de 24 passaram |
+| Aplicação web | `npm run build` | build sem erros |
+| Edge | `ast.parse` do `main.py` | sintaxe válida (a simulação roda no Wokwi) |
+
+## 12. Evidências
+
+| ESP32 no Wokwi | Campos no ThingSpeak |
+|---|---|
+| ![ESP32 rodando no Wokwi](01-edge-computing-esp32/evidencias/esp32-wokwi-funcionando.png) | ![Gráficos do canal no ThingSpeak](01-edge-computing-esp32/evidencias/thingspeak-campos.png) |
+
+![Modelo matemático do microclima](03-matematica-modelagem/grafico_microclima.png)
+
+As demais evidências estão nas pastas de cada entrega:
+
+- a saída real do terminal Python está no [README do Python](02-python-processamento/README.md#evidência-de-execução);
+- o relatório de Matemática é o [`Relatorio_Matematica.pdf`](03-matematica-modelagem/Relatorio_Matematica.pdf);
+- a aplicação está publicada em [viela-tech.vercel.app](https://viela-tech.vercel.app).
+
+## 13. Segurança e privacidade
+
+- **RLS no Supabase:**
+  - quem não tem conta só consegue **enviar** uma triagem, nunca ler;
+  - o morador lê e exclui as próprias triagens;
+  - ACS e gestor acessam a fila conforme o papel.
+- **LGPD:** consentimento explícito antes do envio (art. 11, I), exclusão pelo próprio morador (art. 18) e coleta mínima (nome, setor e sintomas, sem endereço). A política fica em `/privacidade`.
+- **No aparelho:** ao sair da conta, o cache local de chamados é apagado.
+- **Segredos:** nenhuma chave no código. O `.env` é ignorado pelo git, e a chave do ThingSpeak é um marcador. A chave usada antes desta auditoria aparece no histórico e **deve ser trocada**.
+- **Mapa público:** só números agregados de fontes citadas. O mapa por sub-área é restrito à equipe.
+
+## 14. Dados reais e simulados
+
+| Dado | Origem | Situação |
+|---|---|---|
+| Leituras do sensor | ThingSpeak, canal 3571901 | **reais (simuladas no Wokwi)**: 4 leituras até 17/11/2026 |
+| Gráfico e PDF de Matemática | simulação de 24 h identificada | o modelo passa a usar o CSV real quando houver 20 leituras ou mais |
+| Taxas de tuberculose | Betim (2015) e boletim SMS-RJ (2023) | públicas, com fonte e ano na tela |
+| Simulador de 24 h e boletim | leitura do sensor e cenário padrão | campos sem leitura aparecem como "(simulado)" |
+| Foto da Home | ilustração gerada por IA | identificada no `AI.md` |
+
+## 15. Impacto e ODS
+
+- **Indicador de impacto:** tempo médio entre o início da tosse e a entrega do exame na Clínica da Família Rinaldo De Lamare.
+- **ODS 3 (Saúde e Bem-Estar):** triagem precoce da tuberculose.
+- **ODS 10 (Redução das Desigualdades):** tecnologia de saúde para quem mora onde a cidade não enxerga.
+- **ODS 11 (Cidades e Comunidades Sustentáveis):** o microclima urbano como dado de planejamento.
+
+## 16. Limitações e roadmap
+
+**Limitações atuais:**
+
+- A carga ThingSpeak → Supabase (`leituras_microclima`) ainda é manual.
+- O canal tem poucas leituras, e a calibração do IVM com dados reais está pendente.
+- Não há *service worker*: o modo offline funciona depois que o app foi aberto com internet.
+- O ACS ainda vê a fila inteira, sem filtro por microárea.
+
+**Próximos passos:**
+
+1. Script agendado que copia as leituras do ThingSpeak para o Supabase.
+2. RLS por microárea do ACS.
+3. Controle de alto contraste e tamanho de fonte (US-07).
+4. Painel em tempo real (Supabase Realtime).
+5. Testes de usabilidade com moradores e ACS da Rocinha.
+
+**Pendências da equipe para a submissão:** ver a [matriz de conformidade](docs/matriz-de-conformidade.md).
+
+## 17. Uso de IA e referências
+
+O uso de IA (Gemini, Codex e Claude Code), com os prompts e a forma de validação, está registrado em [`AI.md`](AI.md).
+
+**Referências:**
+
+- BETIM, Felipe. Tuberculose na Rocinha expõe o Brasil que estacionou no século XIX. *El País Brasil*, 12 set. 2015. [Republicação no IHU Unisinos](https://ihu.unisinos.br/noticias/546729-tuberculose-na-rocinha-expoe-o-brasil-que-estacionou-no-seculo-xix).
+- RIO DE JANEIRO (Município). Secretaria Municipal de Saúde. [*Boletim Epidemiológico: Tuberculose no Município do Rio de Janeiro*](https://epirio.svs.rio.br/wp-content/uploads/2023/03/BOLETIM_epidemiologico_TUBERCULOSE_MIOLO_2023_FINAL_v2.pdf), 2. ed., mar. 2023.
+- BRASIL. Lei nº 13.709, de 14 de agosto de 2018 (LGPD).
+- W3C. Web Content Accessibility Guidelines (WCAG) 2.1, 2018.
+- NAÇÕES UNIDAS BRASIL. [Objetivos de Desenvolvimento Sustentável](https://brasil.un.org/pt-br/sdgs).
