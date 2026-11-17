@@ -154,7 +154,7 @@ O envio anônimo usa `insert()` **sem** `.select()`. Assim quem não tem conta n
 
 ### Regras de negócio
 
-- **IVM** = 0,6 × Umidade + 0,4 × (100 − Insolação), a mesma fórmula do [ESP32](../01-edge-computing-esp32/main.py), do [Python](../02-python-processamento/main.py) e da [Matemática](../03-matematica-modelagem/README.md).
+- **IVM** = 0,6 × Umidade + 0,4 × (100 − Insolação), a mesma fórmula do [ESP32](../01-edge-computing-esp32/main.py), do [Python](../python/main.py) e da [Matemática](../03-matematica-modelagem/README.md).
 - **Faixas:** Normal abaixo de 40% (`#16A34A`) · Atenção de 40% a menos de 70% (`#D97706`) · Perigo a partir de 70% (`#DC2626`).
 - **Tosse de 21 dias ou mais** é urgente: alerta vermelho para o morador, faixa "URGENTE — TOSSE +21 DIAS" e topo da fila para o ACS. O banco reforça a regra com um gatilho.
 - **Fila do ACS:** urgentes em aberto, depois os demais em aberto e por fim os concluídos. Dentro de cada grupo, quem espera há mais tempo vem antes.

@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,8 @@ PASTA_DADOS: Path = Path(__file__).resolve().parent
 ARQUIVO_BACKUP: Path = PASTA_DADOS / "backup.json"
 ARQUIVO_HISTORICO: Path = PASTA_DADOS / "historico.json"
 ARQUIVO_CSV: Path = PASTA_DADOS / "relatorio.csv"
+
+FAIXAS: tuple[str, str, str] = ("NORMAL", "ATENÇÃO", "PERIGO")
 
 # Configuração centralizada: toda regra de negócio ajustável mora aqui.
 CONFIGURACAO: dict[str, Any] = {
@@ -50,12 +53,17 @@ CONFIGURACAO: dict[str, Any] = {
         "perigo": 70.0,
     },
     "leituras_para_tendencia": 3,   # altas consecutivas que indicam piora
+    # Aviso exibido ao cidadão conforme a faixa da leitura mais recente.
+    # Os mesmos textos orientam o boletim da aplicação web.
+    "avisos": {
+        "NORMAL": "Ventilação em dia. Mantenha portas e janelas abertas quando possível.",
+        "ATENÇÃO": "Ar úmido e pouca luz: abra janelas em lados opostos e observe quem está com tosse.",
+        "PERIGO": "Ar parado e úmido: ventile a casa e, se a tosse passar de 3 semanas, procure a Clínica da Família.",
+    },
 }
 
-FAIXAS: tuple[str, str, str] = ("NORMAL", "ATENÇÃO", "PERIGO")
-CAMPOS_CSV: list[str] = [
-    "entry_id", "created_at", "umidade", "temperatura", "insolacao", "ivm", "faixa_risco"
-]
+# O CSV é a versão "achatada" do modelo de leitura (ver criar_leitura).
+CAMPOS_CSV: list[str] = ["id", "horario", "umidade", "insolacao", "temperatura", "ivm", "faixa"]
 
 
 def validar_configuracao(config: dict[str, Any] = CONFIGURACAO) -> None:
@@ -69,12 +77,14 @@ def validar_configuracao(config: dict[str, Any] = CONFIGURACAO) -> None:
 
     Raises:
         ValueError: Se os pesos não somarem 1, algum peso for negativo, algum
-            limite tiver min >= max ou os limiares estiverem fora de ordem.
+            limite tiver min >= max, os limiares estiverem fora de ordem ou
+            faltar o aviso de alguma faixa.
     """
     try:
         pesos: dict[str, float] = config["pesos"]
         limites: dict[str, dict[str, float]] = config["limites"]
         limiares: dict[str, float] = config["limiares"]
+        avisos: dict[str, str] = config["avisos"]
     except (KeyError, TypeError) as erro:
         raise ValueError(f"Configuração incompleta: {erro}") from erro
 
@@ -87,6 +97,9 @@ def validar_configuracao(config: dict[str, Any] = CONFIGURACAO) -> None:
             raise ValueError(f"Limite inválido para {nome}: min deve ser menor que max")
     if not 0 < limiares["atencao"] < limiares["perigo"] <= 100:
         raise ValueError("Limiares inválidos: use 0 < atenção < perigo <= 100")
+    faixas_sem_aviso: list[str] = [faixa for faixa in FAIXAS if not str(avisos.get(faixa, "")).strip()]
+    if faixas_sem_aviso:
+        raise ValueError(f"Falta o aviso das faixas: {', '.join(faixas_sem_aviso)}")
 
 
 def normalizar(valor: float, minimo: float, maximo: float) -> float:
@@ -246,20 +259,48 @@ def converter_opcional(valor: Any) -> float | None:
 
 
 def chave_ordenacao(registro: dict[str, Any]) -> tuple[int, Any]:
-    """Ordena numericamente pelo entry_id quando possível (ordem temporal da API)."""
-    entry_id: str = str(registro["entry_id"])
-    return (0, int(entry_id)) if entry_id.isdigit() else (1, entry_id)
+    """Ordena numericamente pelo id (entry_id do ThingSpeak), que segue a ordem temporal."""
+    identificador: str = str(registro["id"])
+    return (0, int(identificador)) if identificador.isdigit() else (1, identificador)
+
+
+def criar_leitura(
+    identificador: str, horario: str, umidade: float, insolacao: float, temperatura: float | None
+) -> dict[str, Any]:
+    """Monta o modelo de uma leitura: {id, horario, medidas, ivm, faixa}.
+
+    Args:
+        identificador: entry_id do ThingSpeak.
+        horario: created_at da leitura (ISO 8601, UTC).
+        umidade: Umidade relativa (%).
+        insolacao: Insolação (%).
+        temperatura: Temperatura (°C) ou None quando o sensor não enviou.
+
+    Returns:
+        Dicionário com as medidas agrupadas, o IVM e a faixa de risco.
+
+    Raises:
+        ValueError: Se as medidas estiverem fora da faixa física (via calcular_ivm).
+    """
+    ivm: float = calcular_ivm(umidade, insolacao)
+    return {
+        "id": identificador,
+        "horario": horario,
+        "medidas": {"umidade": umidade, "insolacao": insolacao, "temperatura": temperatura},
+        "ivm": ivm,
+        "faixa": classificar_risco(ivm),
+    }
 
 
 def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Valida e enriquece feeds do ThingSpeak com IVM e faixa de risco.
+    """Valida os feeds do ThingSpeak e os converte no modelo de leitura.
 
     Args:
-        leituras: Dicionários contendo entry_id, created_at, field1, field2 e,
-            opcionalmente, field4 (temperatura).
+        leituras: Dicionários da API com entry_id, created_at, field1 (umidade),
+            field2 (insolação) e, opcionalmente, field4 (temperatura).
 
     Returns:
-        Registros válidos e ordenados pelo entry_id crescente.
+        Leituras válidas no formato de criar_leitura, ordenadas pelo id.
 
     Raises:
         ValueError: Erros de medição por registro são capturados e descartados.
@@ -270,19 +311,14 @@ def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
             identificador: str = str(leitura["entry_id"]).strip()
             if not identificador:
                 raise ValueError("entry_id ausente")
-            umidade: float = float(leitura["field1"])
-            insolacao: float = float(leitura["field2"])
-            ivm: float = calcular_ivm(umidade, insolacao)
             resultado.append(
-                {
-                    "entry_id": identificador,
-                    "created_at": str(leitura.get("created_at", "")),
-                    "umidade": umidade,
-                    "temperatura": converter_opcional(leitura.get("field4")),
-                    "insolacao": insolacao,
-                    "ivm": ivm,
-                    "faixa_risco": classificar_risco(ivm),
-                }
+                criar_leitura(
+                    identificador,
+                    str(leitura.get("created_at", "")),
+                    float(leitura["field1"]),
+                    float(leitura["field2"]),
+                    converter_opcional(leitura.get("field4")),
+                )
             )
         except (KeyError, TypeError, ValueError, OverflowError) as erro:
             print(f"Aviso: leitura inválida ignorada ({erro}).")
@@ -291,13 +327,16 @@ def normalizar_leituras(leituras: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def normalizar_registros_salvos(registros: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Valida registros já processados, carregados do backup ou do histórico.
+    """Valida leituras carregadas do backup ou do histórico.
+
+    Aceita o modelo atual ({id, horario, medidas}) e o formato antigo, com os
+    campos soltos (entry_id, created_at, umidade, insolacao, temperatura).
 
     Args:
-        registros: Lista com campos entry_id, umidade, insolacao e temperatura.
+        registros: Lista de leituras salvas em JSON.
 
     Returns:
-        Registros válidos, recalculados com a configuração atual e ordenados.
+        Leituras válidas, recalculadas com a configuração atual e ordenadas.
 
     Raises:
         ValueError: Registros com valores inválidos são descartados individualmente.
@@ -305,16 +344,17 @@ def normalizar_registros_salvos(registros: list[dict[str, Any]]) -> list[dict[st
     feeds: list[dict[str, Any]] = []
     for item in registros:
         try:
+            medidas: dict[str, Any] = item.get("medidas", item)
             feeds.append(
                 {
-                    "entry_id": item["entry_id"],
-                    "created_at": item.get("created_at", ""),
-                    "field1": item["umidade"],
-                    "field2": item["insolacao"],
-                    "field4": item.get("temperatura"),
+                    "entry_id": item.get("id", item.get("entry_id")),
+                    "created_at": item.get("horario", item.get("created_at", "")),
+                    "field1": medidas["umidade"],
+                    "field2": medidas["insolacao"],
+                    "field4": medidas.get("temperatura"),
                 }
             )
-        except (KeyError, TypeError):
+        except (KeyError, TypeError, AttributeError):
             print("Aviso: registro local sem campos obrigatórios ignorado.")
     return normalizar_leituras(feeds)
 
@@ -365,49 +405,74 @@ def atualizar_historico(novas_leituras: list[dict[str, Any]]) -> int:
     Raises:
         OSError: Falhas de leitura/gravação são tratadas e retornam zero.
     """
-    historico: list[dict[str, Any]] = normalizar_registros_salvos(
-        carregar_json(ARQUIVO_HISTORICO)
-    )
-    ids_existentes: set[str] = {str(item["entry_id"]) for item in historico}
+    salvos: list[dict[str, Any]] = carregar_json(ARQUIVO_HISTORICO)
+    # Um histórico gravado no formato antigo é regravado no modelo atual.
+    formato_antigo: bool = any("medidas" not in item for item in salvos)
+    historico: list[dict[str, Any]] = normalizar_registros_salvos(salvos)
+    ids_existentes: set[str] = {str(item["id"]) for item in historico}
     adicionadas: int = 0
     for leitura in novas_leituras:
-        entry_id: str = str(leitura["entry_id"])
-        if entry_id not in ids_existentes:
+        identificador: str = str(leitura["id"])
+        if identificador not in ids_existentes:
             historico.append(leitura)
-            ids_existentes.add(entry_id)
+            ids_existentes.add(identificador)
             adicionadas += 1
     historico.sort(key=chave_ordenacao)
-    if adicionadas and not salvar_json(ARQUIVO_HISTORICO, historico):
+    if (adicionadas or formato_antigo) and not salvar_json(ARQUIVO_HISTORICO, historico):
         return 0
     return adicionadas
 
 
+def ler_horario(texto: Any) -> datetime | None:
+    """Converte o horário ISO 8601 do ThingSpeak; devolve None se for inválido."""
+    try:
+        return datetime.fromisoformat(str(texto).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def duracao_minutos(inicio: Any, fim: Any) -> float | None:
+    """Minutos entre dois horários de leitura, ou None se algum for inválido."""
+    comeco: datetime | None = ler_horario(inicio)
+    termino: datetime | None = ler_horario(fim)
+    if comeco is None or termino is None:
+        return None
+    return (termino - comeco).total_seconds() / 60
+
+
 def analisar_leituras(registros: list[dict[str, Any]]) -> dict[str, Any]:
-    """Calcula contagens por faixa, tendência e maior sequência em PERIGO.
+    """Resume o risco: contagem por faixa, média, pico, tendência e episódios de PERIGO.
+
+    Um episódio é uma sequência contínua de leituras em PERIGO. A duração vai da
+    primeira à última leitura do episódio.
 
     Args:
-        registros: Leituras processadas em ordem temporal.
+        registros: Leituras no modelo de criar_leitura, em ordem temporal.
 
     Returns:
-        Dicionário com contagens por faixa, tendência e maior episódio PERIGO.
+        Dicionário com contagens, média, pico (valor e horário), tendência,
+        número de episódios, maior episódio (leituras e minutos) e o aviso da
+        faixa da leitura mais recente.
 
     Raises:
         ValueError: Se algum registro não tiver IVM numérico válido.
     """
     contagens: dict[str, int] = {faixa: 0 for faixa in FAIXAS}
     ivms: list[float] = []
-    maior_perigo: int = 0
-    perigo_atual: int = 0
+    episodios: list[list[dict[str, Any]]] = []
+    episodio_atual: list[dict[str, Any]] = []
     for registro in registros:
         ivm: float = float(registro["ivm"])
         faixa: str = classificar_risco(ivm)
         contagens[faixa] += 1
         ivms.append(ivm)
         if faixa == "PERIGO":
-            perigo_atual += 1
-            maior_perigo = max(maior_perigo, perigo_atual)
-        else:
-            perigo_atual = 0
+            episodio_atual.append(registro)
+        elif episodio_atual:
+            episodios.append(episodio_atual)
+            episodio_atual = []
+    if episodio_atual:
+        episodios.append(episodio_atual)
 
     altas_necessarias: int = CONFIGURACAO["leituras_para_tendencia"]
     aumentos_consecutivos: int = 0
@@ -419,12 +484,22 @@ def analisar_leituras(registros: list[dict[str, Any]]) -> dict[str, Any]:
                 piorando = True
         else:
             aumentos_consecutivos = 0
+
+    maior: list[dict[str, Any]] = max(episodios, key=len, default=[])
+    pico: dict[str, Any] | None = max(registros, key=lambda r: float(r["ivm"]), default=None)
+    ultimo: float | None = ivms[-1] if ivms else None
     return {
         "contagens": contagens,
-        "tendencia": "PIORANDO" if piorando else "ESTÁVEL/SEM PIORA CONFIRMADA",
-        "maior_episodio_perigo": maior_perigo,
         "total": len(registros),
-        "ultimo_ivm": ivms[-1] if ivms else None,
+        "media_ivm": round(sum(ivms) / len(ivms), 1) if ivms else None,
+        "pico_ivm": float(pico["ivm"]) if pico else None,
+        "pico_horario": pico.get("horario") if pico else None,
+        "tendencia": "PIORANDO" if piorando else "ESTÁVEL/SEM PIORA CONFIRMADA",
+        "episodios_perigo": len(episodios),
+        "maior_episodio_perigo": len(maior),
+        "maior_episodio_minutos": duracao_minutos(maior[0].get("horario"), maior[-1].get("horario")) if maior else None,
+        "ultimo_ivm": ultimo,
+        "aviso": CONFIGURACAO["avisos"][classificar_risco(ultimo)] if ultimo is not None else None,
     }
 
 
@@ -444,11 +519,31 @@ def exportar_csv(registros: list[dict[str, Any]]) -> bool:
         with ARQUIVO_CSV.open("w", newline="", encoding="utf-8-sig") as arquivo:
             escritor: csv.DictWriter = csv.DictWriter(arquivo, fieldnames=CAMPOS_CSV)
             escritor.writeheader()
-            escritor.writerows({campo: item.get(campo, "") for campo in CAMPOS_CSV} for item in registros)
+            for item in registros:
+                medidas: dict[str, Any] = item["medidas"]
+                escritor.writerow(
+                    {
+                        "id": item["id"],
+                        "horario": item["horario"],
+                        "umidade": medidas["umidade"],
+                        "insolacao": medidas["insolacao"],
+                        "temperatura": "" if medidas.get("temperatura") is None else medidas["temperatura"],
+                        "ivm": item["ivm"],
+                        "faixa": item["faixa"],
+                    }
+                )
         return True
-    except (OSError, csv.Error) as erro:
+    except (OSError, csv.Error, KeyError, TypeError) as erro:
         print(f"Erro ao exportar CSV: {erro}")
         return False
+
+
+def formatar_horario(texto: Any) -> str:
+    """Mostra o horário UTC do ThingSpeak como dd/mm hh:mm no fuso de Brasília (UTC−3)."""
+    momento: datetime | None = ler_horario(texto)
+    if momento is None:
+        return "horário desconhecido"
+    return momento.astimezone(timezone(timedelta(hours=-3))).strftime("%d/%m %H:%M")
 
 
 def exibir_analise(registros: list[dict[str, Any]]) -> None:
@@ -469,14 +564,24 @@ def exibir_analise(registros: list[dict[str, Any]]) -> None:
         print(f"Leituras analisadas: {analise['total']}")
         if analise["total"] < CONFIGURACAO["api"]["minimo_leituras"]:
             print(f"Aviso: menos de {CONFIGURACAO['api']['minimo_leituras']} leituras no histórico.")
+        if analise["ultimo_ivm"] is None:
+            print("Sem leituras para analisar.")
+            return
+        print(f"Risco médio: {analise['media_ivm']:.1f} · pico {analise['pico_ivm']:.1f} em {formatar_horario(analise['pico_horario'])}")
         for faixa, quantidade in analise["contagens"].items():
             print(f"{faixa}: {quantidade}")
-        print(f"Tendência: {analise['tendencia']}")
-        print(f"Maior episódio contínuo em PERIGO: {analise['maior_episodio_perigo']} leitura(s)")
-        if analise["ultimo_ivm"] is not None:
-            print(f"Último IVM: {analise['ultimo_ivm']:.1f} ({classificar_risco(analise['ultimo_ivm'])})")
+        if analise["episodios_perigo"]:
+            minutos: float | None = analise["maior_episodio_minutos"]
+            duracao: str = f", {minutos:.0f} min" if minutos is not None else ""
+            print(
+                f"Episódios em PERIGO: {analise['episodios_perigo']}; o maior teve "
+                f"{analise['maior_episodio_perigo']} leitura(s){duracao}"
+            )
         else:
-            print("Sem leituras para analisar.")
+            print("Episódios em PERIGO: nenhum")
+        print(f"Tendência: {analise['tendencia']}")
+        print(f"Último IVM: {analise['ultimo_ivm']:.1f} ({classificar_risco(analise['ultimo_ivm'])})")
+        print(f"AVISO: {analise['aviso']}")
     except (KeyError, TypeError, ValueError) as erro:
         print(f"Não foi possível analisar os dados: {erro}")
 

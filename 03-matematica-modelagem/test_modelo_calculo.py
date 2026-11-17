@@ -94,6 +94,16 @@ class TestModeloCalculo(unittest.TestCase):
         np.testing.assert_allclose(dados.umidade, [50, 60, 70])
         self.assertEqual(str(dados.inicio), "2026-11-09 13:00:00+00:00")
 
+    def test_csv_atual_do_python_com_coluna_horario(self):
+        caminho = self.csv(
+            "id,horario,umidade,insolacao,temperatura,ivm,faixa\n"
+            "1,2026-11-09T13:00:00Z,50,25,,60,ATENÇÃO\n"
+            "2,2026-11-09T14:00:00Z,70,10,26.5,78,PERIGO\n"
+        )
+        dados = self.modelo.carregar_dados(caminho)
+        np.testing.assert_allclose(dados.horas, [0, 1])
+        np.testing.assert_allclose(dados.ivm, [60, 78])
+
     def test_csv_invalido_e_rejeitado_sem_simulacao_silenciosa(self):
         textos = [
             "ivm\n50\n60\n",

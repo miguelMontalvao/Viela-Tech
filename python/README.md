@@ -1,7 +1,8 @@
-# 02 · Computational Thinking with Python — O Cérebro Conectado
+# Computational Thinking with Python: O Cérebro Conectado
 
 > **Disciplina:** Computational Thinking with Python · **Atividade:** O Cérebro Conectado
-> **Projeto:** Viela Tech — CitizenTech FIAP Global Solution 2026.2
+> **Projeto:** Viela Tech, CitizenTech FIAP Global Solution 2026.2
+> **Pasta:** `python/`, como pede a atividade
 
 Programa de terminal que busca as leituras do ESP32 no ThingSpeak, guarda backup e histórico, calcula o **Índice de Vulnerabilidade de Microclima (IVM)** de cada leitura, analisa risco e tendência e exporta um relatório CSV. O CSV gerado aqui é a entrada do modelo de [Matemática](../03-matematica-modelagem/README.md).
 
@@ -12,7 +13,7 @@ Programa de terminal que busca as leituras do ESP32 no ThingSpeak, guarda backup
 Requisitos: Python 3.10 ou superior.
 
 ```bash
-cd 02-python-processamento
+cd python
 python -m venv .venv
 # Windows: .venv\Scripts\activate   |   Linux/macOS: source .venv/bin/activate
 python -m pip install -r requirements.txt
@@ -24,7 +25,7 @@ python main.py
 | Opção | O que faz |
 |---|---|
 | `[1]` Buscar e processar | Pede até 100 leituras ao ThingSpeak (`results=100`, mínimo exigido: 20), valida, calcula IVM e faixa, atualiza `backup.json` e acrescenta ao `historico.json` só o que é novo. Sem internet, usa o backup. |
-| `[2]` Análise de risco | Contagem por faixa, tendência de piora, maior episódio contínuo em PERIGO e último IVM. |
+| `[2]` Análise de risco | Risco médio, pico com horário, contagem por faixa, episódios em PERIGO (com duração), tendência de piora e o aviso da faixa atual. |
 | `[3]` Exportar CSV | Grava `relatorio.csv` com cabeçalho (UTF-8 com BOM, abre direto no Excel). |
 | `[4]` Sair | Encerra o loop. `Ctrl+C` também encerra sem erro. |
 
@@ -34,12 +35,13 @@ python main.py
 python -m unittest -v test_main
 ```
 
-São 22 testes, que não acessam a rede (a API é simulada com `unittest.mock`). Eles cobrem:
+São 26 testes, que não acessam a rede (a API é simulada com `unittest.mock`). Eles cobrem:
 
 - normalização e cálculo do IVM, incluindo os limites configurados;
 - `ValueError` para configuração inválida;
 - bordas das faixas (39,99 / 40 / 69,99 / 70);
-- tendência e maior episódio em PERIGO;
+- modelo da leitura `{id, horario, medidas, faixa}` e leitura do formato antigo;
+- média, pico, aviso, tendência e episódios em PERIGO com duração;
 - histórico sem duplicatas;
 - backup quando a API cai, devolve erro HTTP ou feed vazio;
 - temperatura preservada;
@@ -52,7 +54,7 @@ São 22 testes, que não acessam a rede (a API é simulada com `unittest.mock`).
 | [`main.py`](main.py) | Programa principal |
 | [`test_main.py`](test_main.py) | Testes automáticos (unittest) |
 | [`backup.json`](backup.json) | Última resposta válida da API, já processada. É usado quando a API falha. |
-| [`historico.json`](historico.json) | Todas as leituras já vistas, sem repetição de `entry_id` |
+| [`historico.json`](historico.json) | Todas as leituras já vistas, sem repetição de `id` (o `entry_id` do ThingSpeak) |
 | [`relatorio.csv`](relatorio.csv) | Exportação da opção 3 |
 | [`prompts.md`](prompts.md) | Prompts de IA usados nesta entrega |
 | [`requirements.txt`](requirements.txt) | Dependência: `requests` |
@@ -72,23 +74,47 @@ flowchart LR
 
 O Python **recalcula** o IVM a partir de `field1` e `field2` em vez de confiar no `field3`. Assim a regra fica auditável em um só lugar, e uma leitura corrompida no caminho não passa adiante.
 
+## Modelo de dados
+
+Cada leitura é um dicionário no formato pedido pela atividade, `{id, horario, medidas, faixa}`, mais o IVM calculado:
+
+```json
+{
+  "id": "4",
+  "horario": "2026-11-09T14:41:09Z",
+  "medidas": { "umidade": 79.5, "insolacao": 95.091576, "temperatura": null },
+  "ivm": 49.7,
+  "faixa": "ATENÇÃO"
+}
+```
+
+Limites, pesos, limiares **e avisos** ficam no dicionário `CONFIGURACAO`:
+
+| Faixa | Aviso exibido |
+|---|---|
+| NORMAL | Ventilação em dia. Mantenha portas e janelas abertas quando possível. |
+| ATENÇÃO | Ar úmido e pouca luz: abra janelas em lados opostos e observe quem está com tosse. |
+| PERIGO | Ar parado e úmido: ventile a casa e, se a tosse passar de 3 semanas, procure a Clínica da Família. |
+
 ## Como o código atende a atividade
 
 | Requisito | Onde está |
 |---|---|
 | Menu em loop com saída | `menu()`: `while True` com opção 4 |
 | Funções com type hints, docstrings e uma responsabilidade cada | Todas as funções do `main.py` |
-| Dicionários e configuração centralizada | `CONFIGURACAO` (API, limites, pesos, limiares, tendência) |
+| Leitura como dicionário `{id, horario, medidas, faixa}` | `criar_leitura()` |
+| Dicionários e configuração centralizada | `CONFIGURACAO` (API, limites, pesos, limiares, tendência e avisos) |
 | ≥ 20 leituras, ≥ 2 campos | `results=100`. Usa umidade (`field1`), insolação (`field2`) e temperatura (`field4`) |
 | Timeout, verificação HTTP, `RequestException` | `buscar_leituras()`: `timeout=5`, `raise_for_status()`, `except requests.exceptions.RequestException` |
 | Backup automático e uso do backup na falha | `buscar_leituras()`. O backup só é substituído quando chegam dados válidos |
-| Histórico sem duplicação (`entry_id` + `set`) | `atualizar_historico()`: `ids_existentes: set[str]` |
+| Histórico sem duplicação (`entry_id` + `set`) | `atualizar_historico()`: `ids_existentes: set[str]` com o `id` de cada leitura |
 | CSV com cabeçalho | `exportar_csv()`: `csv.DictWriter` + `writeheader()` |
 | Normalização e índice de risco | `normalizar()` e `calcular_ivm()` |
-| `ValueError` para configuração inválida | `validar_configuracao()`, chamada ao iniciar o `menu()` |
+| `ValueError` para configuração inválida | `validar_configuracao()`: pesos que não somam 1, mínimo ≥ máximo, limiares fora de ordem ou aviso faltando. Chamada antes do menu e a cada cálculo do IVM |
 | Classificação NORMAL / ATENÇÃO / PERIGO | `classificar_risco()` |
 | Tendência após três altas seguidas | `analisar_leituras()`: `leituras_para_tendencia = 3` |
-| Maior episódio em PERIGO e contagem por faixa | `analisar_leituras()` |
+| Episódios em PERIGO, contagem por faixa, média e pico | `analisar_leituras()` |
+| Aviso ao cidadão | `CONFIGURACAO["avisos"]`, exibido por `exibir_analise()` |
 
 ## Metodologia do índice
 
@@ -122,20 +148,26 @@ Execução real em **17/11/2026** contra o canal público 3571901. Comandos usad
 
 ```text
 === Viela Tech | Monitoramento de Microclima ===
+[1] Buscar e Processar Leituras do ThingSpeak / Backup
+[2] Exibir Análise de Risco e Tendência Atual
+[3] Exportar Relatório CSV
+[4] Sair do Programa
 Escolha uma opção: 4 leitura(s) obtida(s) de ThingSpeak; 0 nova(s) adicionada(s) ao histórico.
 Histórico acumulado: 4 leitura(s).
 
 --- Análise de risco e tendência ---
 Leituras analisadas: 4
 Aviso: menos de 20 leituras no histórico.
+Risco médio: 55.8 · pico 62.0 em 09/11 10:26
 NORMAL: 0
 ATENÇÃO: 4
 PERIGO: 0
+Episódios em PERIGO: nenhum
 Tendência: ESTÁVEL/SEM PIORA CONFIRMADA
-Maior episódio contínuo em PERIGO: 0 leitura(s)
 Último IVM: 49.7 (ATENÇÃO)
+AVISO: Ar úmido e pouca luz: abra janelas em lados opostos e observe quem está com tosse.
 
-Relatório exportado: ...\02-python-processamento\relatorio.csv (4 linha(s)).
+Relatório exportado: ...\python\relatorio.csv (4 linha(s)).
 Até logo!
 ```
 
@@ -149,17 +181,17 @@ API indisponível ou resposta inválida (HTTPSConnectionPool(host='api.thingspea
 `relatorio.csv` gerado:
 
 ```csv
-entry_id,created_at,umidade,temperatura,insolacao,ivm,faixa_risco
-1,2026-11-09T13:26:01Z,53.0,,24.444444,62.0,ATENÇÃO
-2,2026-11-09T13:26:27Z,53.0,,24.444444,62.0,ATENÇÃO
-3,2026-11-09T13:26:47Z,79.5,,95.531132,49.5,ATENÇÃO
-4,2026-11-09T14:41:09Z,79.5,,95.091576,49.7,ATENÇÃO
+id,horario,umidade,insolacao,temperatura,ivm,faixa
+1,2026-11-09T13:26:01Z,53.0,24.444444,,62.0,ATENÇÃO
+2,2026-11-09T13:26:27Z,53.0,24.444444,,62.0,ATENÇÃO
+3,2026-11-09T13:26:47Z,79.5,95.531132,,49.5,ATENÇÃO
+4,2026-11-09T14:41:09Z,79.5,95.091576,,49.7,ATENÇÃO
 ```
 
 ### Situação dos dados
 
 - O canal tinha **apenas 4 leituras reais** em 17/11/2026 (`last_entry_id: 4`, de 09/11/2026). O código já pede até 100, mas a atividade exige no mínimo **20**. A equipe precisa rodar a simulação do Wokwi por pelo menos 5 minutos (um envio a cada 15 s) e depois executar de novo as opções 1 e 3.
-- As leituras 1 a 4 vieram da primeira versão do firmware, que tratava o LDR ao contrário: a insolação registrada era, na prática, a falta de luz. O firmware atual ([`../01-edge-computing-esp32`](../01-edge-computing-esp32/README.md)) já corrige isso. O campo `temperatura` passou a ser enviado depois dessas leituras, por isso está vazio no CSV.
+- As leituras 1 a 4 vieram da primeira versão do firmware, que tratava o LDR ao contrário: a insolação registrada era, na prática, a falta de luz. O firmware atual ([`../01-edge-computing-esp32`](../01-edge-computing-esp32/README.md)) já corrige isso. O campo `temperatura` passou a ser enviado depois dessas leituras, por isso está vazio no CSV. O horário do pico aparece no fuso de Brasília (UTC−3).
 
 ## Integrantes
 

@@ -44,7 +44,7 @@ A mesma regra está implementada em quatro lugares:
 | Onde | Arquivo |
 |---|---|
 | ESP32 | [`01-edge-computing-esp32/main.py`](../01-edge-computing-esp32/main.py) (`calcular_ivm`, `classificar_ivm`) |
-| Python | [`02-python-processamento/main.py`](../02-python-processamento/main.py) (`calcular_ivm`, `classificar_risco`) |
+| Python | [`python/main.py`](../python/main.py) (`calcular_ivm`, `classificar_risco`) |
 | Matemática | [`03-matematica-modelagem/modelo_calculo.py`](../03-matematica-modelagem/modelo_calculo.py) |
 | Aplicação web | [`04-aplicacao-web/src/domain/risco.js`](../04-aplicacao-web/src/domain/risco.js) (`calcularIVM`, `classificarIVM`) |
 

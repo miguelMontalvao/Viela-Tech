@@ -32,7 +32,7 @@ O PDF foi mantido sem alteração. As histórias novas estão em [`VielaTech-Bac
 8. [Experiência (TX) e acessibilidade](#8-experiência-tx-e-acessibilidade)
 9. [Conclusão](#9-conclusão)
 
-Legenda de status: ✅ implementado · 🟡 parcial · ⬜ não implementado · ⛔ fora do escopo (WON'T)
+Legenda de status: Implementado · Parcial · Não implementado · Fora do escopo (WON'T)
 
 ---
 
@@ -85,30 +85,30 @@ O diagrama não tem ligação entre o ThingSpeak e a tabela `leituras_microclima
 
 | ID | Regra | Status | Evidência |
 |---|---|---|---|
-| RN-01 | IVM = 0,6·U + 0,4·(100 − I), com as faixas Normal < 40 ≤ Atenção < 70 ≤ Perigo. A falta de insolação foi fixada como `100 − I`, como o PDF recomendava. | ✅ | `01-edge-computing-esp32/main.py`, `02-python-processamento/main.py`, `03-matematica-modelagem/modelo_calculo.py`, `04-aplicacao-web/src/domain/risco.js` (mesma fórmula nos quatro) |
-| RN-02 | Tosse por 21 dias ou mais gera prioridade alta | ✅ | `src/domain/risco.js`, gatilho em `supabase/schema.sql`, testes em `src/domain/domain.test.js` |
-| RN-03 | Privacidade (LGPD): só dados agregados no público, consentimento, exclusão | ✅ | RLS em `supabase/schema.sql`, consentimento em `TriagemForm.jsx`, exclusão em `MinhaAreaPage.jsx`, `/privacidade` |
-| RN-04 | Persistência local do ACS sem rede | ✅ | `src/services/api.js` (fila no `LocalStorage`), `src/services/sincronizacao.js` |
+| RN-01 | IVM = 0,6·U + 0,4·(100 − I), com as faixas Normal < 40 ≤ Atenção < 70 ≤ Perigo. A falta de insolação foi fixada como `100 − I`, como o PDF recomendava. | Implementado | `01-edge-computing-esp32/main.py`, `python/main.py`, `03-matematica-modelagem/modelo_calculo.py`, `04-aplicacao-web/src/domain/risco.js` (mesma fórmula nos quatro) |
+| RN-02 | Tosse por 21 dias ou mais gera prioridade alta | Implementado | `src/domain/risco.js`, gatilho em `supabase/schema.sql`, testes em `src/domain/domain.test.js` |
+| RN-03 | Privacidade (LGPD): só dados agregados no público, consentimento, exclusão | Implementado | RLS em `supabase/schema.sql`, consentimento em `TriagemForm.jsx`, exclusão em `MinhaAreaPage.jsx`, `/privacidade` |
+| RN-04 | Persistência local do ACS sem rede | Implementado | `src/services/api.js` (fila no `LocalStorage`), `src/services/sincronizacao.js` |
 
 ## 5. Requisitos funcionais
 
 | ID | O sistema deve… | Status | Evidência / observação |
 |---|---|---|---|
-| RF-01 | Consumir umidade e insolação do ESP32/ThingSpeak | 🟡 | O Python consome a API (`02-python-processamento/main.py`). O app lê `leituras_microclima`, mas a carga ThingSpeak → Supabase ainda é manual. |
-| RF-02 | Autotriagem em até 4 etapas | ✅ | `TriagemForm.jsx`: 3 perguntas e o consentimento, com indicador "x de 3 respostas" |
-| RF-03 | Indicar os pontos de coleta | 🟡 | `src/domain/unidades.js` lista as 2 unidades de referência. Não há ordenação por distância. |
-| RF-04 | Chamados com status dinâmico | ✅ | `src/domain/chamados.js`: `PENDENTE → EM_ANDAMENTO → COLETADO → CONCLUÍDO` |
-| RF-05 | Painel com indicadores e mapa de risco | ✅ | `src/pages/GestorPage.jsx`, `MapaRocinha.jsx` (agregado por sub-área) |
-| RF-06 | Acesso seguro de ACS e gestor | ✅ | Supabase Auth + papel em `perfis` + `ProtectedRoute.jsx` + RLS |
+| RF-01 | Consumir umidade e insolação do ESP32/ThingSpeak | Parcial | O Python consome a API (`python/main.py`). O app lê `leituras_microclima`, mas a carga ThingSpeak → Supabase ainda é manual. |
+| RF-02 | Autotriagem em até 4 etapas | Implementado | `TriagemForm.jsx`: 3 perguntas e o consentimento, com indicador "x de 3 respostas" |
+| RF-03 | Indicar os pontos de coleta | Parcial | `src/domain/unidades.js` lista as 2 unidades de referência. Não há ordenação por distância. |
+| RF-04 | Chamados com status dinâmico | Implementado | `src/domain/chamados.js`: `PENDENTE → EM_ANDAMENTO → COLETADO → CONCLUÍDO` |
+| RF-05 | Painel com indicadores e mapa de risco | Implementado | `src/pages/GestorPage.jsx`, `MapaRocinha.jsx` (agregado por sub-área) |
+| RF-06 | Acesso seguro de ACS e gestor | Implementado | Supabase Auth + papel em `perfis` + `ProtectedRoute.jsx` + RLS |
 
 ## 6. Requisitos não funcionais
 
 | ID | Requisito | Status | Evidência / observação |
 |---|---|---|---|
-| RNF-01 | WCAG 2.1 AA, toque ≥ 48 px, HTML semântico | 🟡 | Alvos de 48 px (`min-h-toque`), foco visível, `aria-*`, contraste AA nos botões. Falta o controle de alto contraste e fonte ajustável (US-07). |
-| RNF-02 | Página inicial em < 2 s no 3G | 🟡 | Rotas sob demanda e imagens AVIF/WebP. A equipe registrou Lighthouse mobile de 94 a 99 em desempenho (ver `04-aplicacao-web/README.md`). A medição não foi refeita nesta auditoria. |
-| RNF-03 | Funções do ACS sem internet | ✅ | Fila offline e sincronização automática. Limitação: não há *service worker*, então o app precisa ter sido aberto antes com internet. |
-| RNF-04 | Android 8.0+ e iOS | ⬜ | Layout responsivo testado a partir de 360 px no navegador. Não houve teste em aparelhos reais. |
+| RNF-01 | WCAG 2.1 AA, toque ≥ 48 px, HTML semântico | Parcial | Alvos de 48 px (`min-h-toque`), foco visível, `aria-*`, contraste AA nos botões. Falta o controle de alto contraste e fonte ajustável (US-07). |
+| RNF-02 | Página inicial em < 2 s no 3G | Parcial | Rotas sob demanda e imagens AVIF/WebP. A equipe registrou Lighthouse mobile de 94 a 99 em desempenho (ver `04-aplicacao-web/README.md`). A medição não foi refeita nesta auditoria. |
+| RNF-03 | Funções do ACS sem internet | Implementado | Fila offline e sincronização automática. Limitação: não há *service worker*, então o app precisa ter sido aberto antes com internet. |
+| RNF-04 | Android 8.0+ e iOS | Não implementado | Layout responsivo testado a partir de 360 px no navegador. Não houve teste em aparelhos reais. |
 
 ## 7. Backlog do produto e status
 
@@ -118,43 +118,43 @@ Priorização MoSCoW do PDF (15 histórias), mais duas histórias adicionadas du
 
 | História | Prioridade | Status | Evidência / observação |
 |---|---|---|---|
-| US-01 Coleta dos sensores ESP32 | MUST | 🟡 | O ESP32 publica no ThingSpeak e o Python consome, com fallback. Não grava em `leituras_microclima` automaticamente. |
-| US-02 Cálculo automático do IVM | MUST | ✅ | Testes nas fronteiras 40/70 em `02-python-processamento/test_main.py` e `src/domain/domain.test.js`. Sentido de Iₙ documentado. |
-| US-03 Histórico e backup | SHOULD | ✅ | `historico.json` e `backup.json`. Com a API fora do ar, usa o backup (testado com mock). |
-| US-04 Exportação CSV | COULD | 🟡 | `relatorio.csv` com data, umidade, insolação, temperatura, IVM e risco. Não tem setor nem filtro por período. |
+| US-01 Coleta dos sensores ESP32 | MUST | Parcial | O ESP32 publica no ThingSpeak e o Python consome, com fallback. Não grava em `leituras_microclima` automaticamente. |
+| US-02 Cálculo automático do IVM | MUST | Implementado | Testes nas fronteiras 40/70 em `python/test_main.py` e `src/domain/domain.test.js`. Sentido de Iₙ documentado. |
+| US-03 Histórico e backup | SHOULD | Implementado | `historico.json` e `backup.json`. Com a API fora do ar, usa o backup (testado com mock). |
+| US-04 Exportação CSV | COULD | Parcial | `relatorio.csv` com data, umidade, insolação, temperatura, IVM e risco. Não tem setor nem filtro por período. |
 
 ### E2 · Autotriagem do morador
 
 | História | Prioridade | Status | Evidência / observação |
 |---|---|---|---|
-| US-05 Formulário de autotriagem | MUST | ✅ | `TriagemForm.jsx`: tosse, febre e suor noturno; tosse ≥ 21 dias gera prioridade alta; fluxo por teclado |
-| US-06 Localizador de pontos de coleta | MUST | 🟡 | Lista as unidades de referência sem ordenar por distância (decisão de não pedir localização, por privacidade) |
-| US-07 Alto contraste e ampliação de texto | SHOULD | ⬜ | Não implementado. O contraste AA padrão está garantido, mas não existe o controle de um clique. |
-| US-08 Tema claro/escuro | COULD | ✅ | `src/hooks/useTheme.js`: troca manual persistente. Diferença do critério: o padrão é o tema claro, e não o do sistema, por legibilidade sob sol. |
+| US-05 Formulário de autotriagem | MUST | Implementado | `TriagemForm.jsx`: tosse, febre e suor noturno; tosse ≥ 21 dias gera prioridade alta; fluxo por teclado |
+| US-06 Localizador de pontos de coleta | MUST | Parcial | Lista as unidades de referência sem ordenar por distância (decisão de não pedir localização, por privacidade) |
+| US-07 Alto contraste e ampliação de texto | SHOULD | Não implementado | Não implementado. O contraste AA padrão está garantido, mas não existe o controle de um clique. |
+| US-08 Tema claro/escuro | COULD | Implementado | `src/hooks/useTheme.js`: troca manual persistente. Diferença do critério: o padrão é o tema claro, e não o do sistema, por legibilidade sob sol. |
 
 ### E3 · Painel do ACS offline
 
 | História | Prioridade | Status | Evidência / observação |
 |---|---|---|---|
-| US-09 Autenticação do ACS | MUST | 🟡 | Login e papel implementados. A RLS libera a fila inteira para a equipe; ainda não há filtro por microárea. |
-| US-10 Gestão de chamados por setor | MUST | ✅ | `src/domain/chamados.js` (urgentes no topo, em vermelho) e `ChamadosFilter.jsx` |
-| US-11 Registro de coleta offline | MUST | ✅ | `api.js`, com o selo "Aguardando sincronização" em `ChamadoCard.jsx` |
-| US-12 Sincronização automática | SHOULD | ✅ | `sincronizarPendenciasOffline()`: IDs gerados no cliente, a fila mantém as falhas e uma trava impede envios simultâneos |
+| US-09 Autenticação do ACS | MUST | Parcial | Login e papel implementados. A RLS libera a fila inteira para a equipe; ainda não há filtro por microárea. |
+| US-10 Gestão de chamados por setor | MUST | Implementado | `src/domain/chamados.js` (urgentes no topo, em vermelho) e `ChamadosFilter.jsx` |
+| US-11 Registro de coleta offline | MUST | Implementado | `api.js`, com o selo "Aguardando sincronização" em `ChamadoCard.jsx` |
+| US-12 Sincronização automática | SHOULD | Implementado | `sincronizarPendenciasOffline()`: IDs gerados no cliente, a fila mantém as falhas e uma trava impede envios simultâneos |
 
 ### E4 · Dashboard epidemiológico
 
 | História | Prioridade | Status | Evidência / observação |
 |---|---|---|---|
-| US-13 Painel de indicadores | MUST | 🟡 | Indicadores agregados em `GestorPage.jsx`. A atualização é por consulta periódica (60 s no microclima), não por Realtime. |
-| US-14 Mapa de calor combinado | SHOULD | ✅ | `MapaRocinha.jsx` com a paleta semafórica, sem pontos individuais |
-| US-15 Notificações automáticas por WhatsApp | WON'T | ⛔ | Fora do MVP, como no PDF |
+| US-13 Painel de indicadores | MUST | Parcial | Indicadores agregados em `GestorPage.jsx`. A atualização é por consulta periódica (60 s no microclima), não por Realtime. |
+| US-14 Mapa de calor combinado | SHOULD | Implementado | `MapaRocinha.jsx` com a paleta semafórica, sem pontos individuais |
+| US-15 Notificações automáticas por WhatsApp | WON'T | Fora do escopo | Fora do MVP, como no PDF |
 
 ### Histórias adicionadas na implementação
 
 | História | Prioridade proposta | Status | Evidência / observação |
 |---|---|---|---|
-| US-16 Simulador temporal de 24 h | COULD | ✅ | `BacterialSimulator.jsx` + `src/domain/simulacao.js` (testado). Cenário didático, rotulado como tal. |
-| US-17 Boletim comunitário e WhatsApp | COULD | ✅ | `CommunityBulletin.jsx`: gera o texto e um link `wa.me` que o gestor compartilha manualmente |
+| US-16 Simulador temporal de 24 h | COULD | Implementado | `BacterialSimulator.jsx` + `src/domain/simulacao.js` (testado). Cenário didático, rotulado como tal. |
+| US-17 Boletim comunitário e WhatsApp | COULD | Implementado | `CommunityBulletin.jsx`: gera o texto e um link `wa.me` que o gestor compartilha manualmente |
 
 **Por que a US-17 não contradiz a US-15:** a US-15 (WON'T) previa **notificações automáticas** pela API oficial de mensageria, com dados do exame de cada morador. A US-17 só monta um texto com dados ambientais agregados e abre o WhatsApp; quem decide enviar é a pessoa. Não há integração, envio automático nem dado pessoal.
 

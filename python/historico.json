@@ -1,0 +1,46 @@
+[
+  {
+    "id": "1",
+    "horario": "2026-11-09T13:26:01Z",
+    "medidas": {
+      "umidade": 53.0,
+      "insolacao": 24.444444,
+      "temperatura": null
+    },
+    "ivm": 62.0,
+    "faixa": "ATENÇÃO"
+  },
+  {
+    "id": "2",
+    "horario": "2026-11-09T13:26:27Z",
+    "medidas": {
+      "umidade": 53.0,
+      "insolacao": 24.444444,
+      "temperatura": null
+    },
+    "ivm": 62.0,
+    "faixa": "ATENÇÃO"
+  },
+  {
+    "id": "3",
+    "horario": "2026-11-09T13:26:47Z",
+    "medidas": {
+      "umidade": 79.5,
+      "insolacao": 95.531132,
+      "temperatura": null
+    },
+    "ivm": 49.5,
+    "faixa": "ATENÇÃO"
+  },
+  {
+    "id": "4",
+    "horario": "2026-11-09T14:41:09Z",
+    "medidas": {
+      "umidade": 79.5,
+      "insolacao": 95.091576,
+      "temperatura": null
+    },
+    "ivm": 49.7,
+    "faixa": "ATENÇÃO"
+  }
+]

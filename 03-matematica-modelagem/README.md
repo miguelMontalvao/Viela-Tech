@@ -3,13 +3,13 @@
 > **Disciplina:** Differentiated Problem Solving · **Atividade:** Modelagem Matemática Avançada
 > **Projeto:** Viela Tech — CitizenTech FIAP Global Solution 2026.2
 
-Este módulo aplica **limites, derivadas (taxas de variação) e integrais** ao Índice de Vulnerabilidade de Microclima (IVM), o mesmo indicador calculado no [ESP32](../01-edge-computing-esp32/README.md), no [Python](../02-python-processamento/README.md) e na [aplicação web](../04-aplicacao-web/README.md). Ele gera um gráfico e um **relatório técnico em PDF**.
+Este módulo aplica **limites, derivadas (taxas de variação) e integrais** ao Índice de Vulnerabilidade de Microclima (IVM), o mesmo indicador calculado no [ESP32](../01-edge-computing-esp32/README.md), no [Python](../python/README.md) e na [aplicação web](../04-aplicacao-web/README.md). Ele gera um gráfico e um **relatório técnico em PDF**.
 
 | Entregável | Arquivo |
 |---|---|
 | Código do modelo (Python) | [`modelo_calculo.py`](modelo_calculo.py) |
 | Gerador do relatório | [`relatorio_matematica.py`](relatorio_matematica.py) |
-| Testes dos cálculos | [`test_modelo_calculo.py`](test_modelo_calculo.py) (15 testes) |
+| Testes dos cálculos | [`test_modelo_calculo.py`](test_modelo_calculo.py) (16 testes) |
 | Gráfico | [`grafico_microclima.png`](grafico_microclima.png) |
 | **Relatório técnico em PDF** (6 páginas: capa e sumário, problema, modelo, limites, derivadas, integrais, conclusão) | [`Relatorio_Matematica.pdf`](Relatorio_Matematica.pdf) |
 
@@ -49,7 +49,7 @@ I(t) = 80 · max(0, sen(π (t − 6) / 12))   sol entre 6 h e 18 h
 
 ## Dados: real × simulado
 
-Por padrão, o script lê [`../02-python-processamento/relatorio.csv`](../02-python-processamento/relatorio.csv), exportado pela opção 3 do módulo Python.
+Por padrão, o script lê [`../python/relatorio.csv`](../python/relatorio.csv), exportado pela opção 3 do módulo Python.
 
 - **Quando o CSV tem 20 leituras reais ou mais** (o mesmo mínimo da atividade de Python), o relatório é gerado com os dados reais.
 - **Hoje o CSV tem só 4 leituras reais.** Por isso, o gráfico e o PDF desta versão usam o **cenário simulado**, identificado na capa, nas páginas e no rodapé do gráfico.
@@ -64,7 +64,7 @@ Python 3.10 ou superior, a partir da raiz do repositório:
 python -m pip install -r 03-matematica-modelagem/requirements.txt
 python 03-matematica-modelagem/modelo_calculo.py                 # padrão (CSV real se tiver ≥ 20 leituras)
 python 03-matematica-modelagem/modelo_calculo.py --simular       # força o cenário de 24 h
-python 03-matematica-modelagem/modelo_calculo.py --csv 02-python-processamento/relatorio.csv
+python 03-matematica-modelagem/modelo_calculo.py --csv python/relatorio.csv
 python 03-matematica-modelagem/modelo_calculo.py --saida resultados --mostrar
 ```
 
@@ -88,7 +88,7 @@ cd 03-matematica-modelagem
 python -m unittest -v test_modelo_calculo
 ```
 
-Os 15 testes cobrem:
+Os 16 testes cobrem:
 
 - funções com resultado conhecido (reta em grade irregular, parábola por Simpson);
 - convergência do quociente de diferenças e os limites laterais no nascer do sol;
