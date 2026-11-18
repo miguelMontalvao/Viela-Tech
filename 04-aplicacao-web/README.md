@@ -10,7 +10,7 @@ Aplicação web do Viela Tech:
 - **Dashboard do Gestor:** microclima medido pelo sensor IoT (umidade, insolação, temperatura e IVM), indicadores, gráficos, o mapa das sub-áreas da Rocinha, o simulador didático de 24 h e o boletim comunitário para WhatsApp.
 - **Mapa da tuberculose (público):** o Rio por bairros com a Rocinha em destaque, comparação com a cidade e o Brasil e o que fazer. Só usa números com fonte citada.
 
-**Em produção:** [viela-tech.vercel.app](https://viela-tech.vercel.app), conectado ao Supabase. Na Vercel, o *Root Directory* do projeto é `04-aplicacao-web`.
+**Em produção:** [viela-tech.vercel.app](https://viela-tech.vercel.app), conectado ao Supabase. A publicação é manual, pela CLI da Vercel, a partir desta pasta (ver [Publicar na Vercel](#publicar-na-vercel)).
 
 Stack: **React 18 + Vite 6 + Tailwind CSS 3 + Supabase + Lucide React**, com React Router e Vitest.
 
@@ -56,6 +56,39 @@ O app abre normalmente e avisa que está em **modo local**. As triagens ficam no
 VITE_SUPABASE_URL=https://seu-projeto.supabase.co
 VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica
 ```
+
+## Publicar na Vercel
+
+O site `viela-tech.vercel.app` pertence ao escopo `provadelli` na Vercel. O projeto **não está ligado ao GitHub** (o repositório é de outra conta e o app da Vercel só se liga a uma conta), então um merge na `main` **não atualiza o site sozinho**. A publicação é feita pela CLI.
+
+**Pré-requisitos:** Node.js 18+, a CLI (`npm i -g vercel`) e login na conta dona do projeto (`vercel login`).
+
+1. Atualize a `main` e entre na pasta do app:
+   ```bash
+   git checkout main && git pull
+   cd 04-aplicacao-web
+   ```
+2. Confira que os testes e o build passam antes de publicar:
+   ```bash
+   npm install
+   npm test
+   npm run build
+   ```
+3. Publique em produção. A pasta já está ligada ao projeto `viela-tech` (arquivo `.vercel/`, que não vai para o Git; em outra máquina rode `vercel link --scope provadelli` e escolha `viela-tech`):
+   ```bash
+   vercel deploy --prod --scope provadelli
+   ```
+4. Verifique: o comando mostra o status e a URL. Abra `https://viela-tech.vercel.app`, atualize com `Ctrl+F5` e teste a Home, `/acs` e `/gestor`.
+
+**Regras importantes:**
+
+- Rode o comando **de dentro de `04-aplicacao-web/`**. O *Root Directory* do projeto na Vercel é `.` (a própria pasta). Se ele for trocado para `04-aplicacao-web`, a CLI passa a procurar `04-aplicacao-web/04-aplicacao-web` e o deploy falha.
+- O Supabase entra **na hora do build**. As variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` ficam em *Settings → Environment Variables* do projeto (marcadas para *Production*). Depois de mudá-las é preciso publicar de novo; sem um build novo elas não valem.
+- Use só a chave `anon` ou `publishable`. A `service_role` é secreta e nunca vai para o front-end.
+- Para voltar a uma versão anterior: *Deployments* → escolha o deploy bom → *Promote to Production*.
+
+**Como ficou o deploy automático:** só funciona se o projeto for importado por quem é dono do repositório, no Vercel dele, com *Root Directory* `04-aplicacao-web` e as duas variáveis acima. Foi o que se tentou no `viela-tech-three.vercel.app`, mas esse projeto ficou sem as variáveis no build e não é o endereço oficial da entrega.
+
 
 ---
 
