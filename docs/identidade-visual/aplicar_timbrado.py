@@ -28,7 +28,7 @@ RECURSOS = Path(__file__).resolve().parent / "recursos"
 MARCA = "timbrado-vielatech"
 MM = 72 / 25.4
 
-SITE, EMAIL = "viela-tech.vercel.app", "vielatech@hotmail.com"
+SITE, EMAIL = "viela-tech-three.vercel.app", "vielatech@hotmail.com"
 AZUL_ESC, VERDE, CINZA, CLARO = "0369A1", "059669", "475569", "94A3B8"
 
 # Área útil do timbrado (mm): abaixo do cabeçalho e acima da linha do rodapé.

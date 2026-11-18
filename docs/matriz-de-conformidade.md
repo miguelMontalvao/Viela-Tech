@@ -113,5 +113,5 @@ Legenda:
 | ZIP do repositório | APROVADO | `Viela-Tech.zip` regenerado em 18/11 do último commit com `git archive` (o arquivo não é versionado; deve ser anexado no Teams) |
 | LGPD (consentimento, exclusão, mínimo de dados) | APROVADO | Implementado no código e na RLS de produção (migração aplicada em 18/11) |
 | Conta de avaliação | ATENÇÃO | O README do app publica uma conta de gestor para os avaliadores. Trocar a senha depois da avaliação. |
-| PDFs com o link antigo no rodapé | ATENÇÃO | Os PDFs de Software & TX e de Matemática citam `viela-tech.vercel.app` (projeto de apoio, ainda no ar e com o mesmo banco). Não é erro, mas o endereço oficial é `viela-tech-three.vercel.app`. |
+| PDFs com o link do site no rodapé | APROVADO | Os PDFs de Software & TX (20 de 21 páginas) e de Matemática (6 de 6) foram regenerados em 18/11 com `viela-tech-three.vercel.app` no rodapé. A constante está em `docs/identidade-visual/aplicar_timbrado.py`. |
 | Merge na `main` e submissão no Teams | PENDENTE | Feito pela equipe |
