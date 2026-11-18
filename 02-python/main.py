@@ -475,15 +475,12 @@ def analisar_leituras(registros: list[dict[str, Any]]) -> dict[str, Any]:
         episodios.append(episodio_atual)
 
     altas_necessarias: int = CONFIGURACAO["leituras_para_tendencia"]
+    # Conta as altas seguidas que terminam na leitura mais recente: a piora só
+    # vale enquanto o IVM continua subindo (uma queda zera a contagem).
     aumentos_consecutivos: int = 0
-    piorando: bool = False
     for anterior, atual in zip(ivms, ivms[1:]):
-        if atual > anterior:
-            aumentos_consecutivos += 1
-            if aumentos_consecutivos >= altas_necessarias:
-                piorando = True
-        else:
-            aumentos_consecutivos = 0
+        aumentos_consecutivos = aumentos_consecutivos + 1 if atual > anterior else 0
+    piorando: bool = aumentos_consecutivos >= altas_necessarias
 
     maior: list[dict[str, Any]] = max(episodios, key=len, default=[])
     pico: dict[str, Any] | None = max(registros, key=lambda r: float(r["ivm"]), default=None)

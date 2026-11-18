@@ -134,6 +134,11 @@ class TestAnalise(unittest.TestCase):
         analise = main.analisar_leituras(self.registros([30, 35, 45, 50]))
         self.assertEqual(analise["tendencia"], "PIORANDO")
 
+    def test_piora_antiga_nao_vale_depois_de_uma_queda(self) -> None:
+        # Três altas no começo e uma queda no fim: a situação já não está piorando.
+        analise = main.analisar_leituras(self.registros([30, 35, 45, 50, 40]))
+        self.assertEqual(analise["tendencia"], "ESTÁVEL/SEM PIORA CONFIRMADA")
+
     def test_duas_altas_nao_confirmam_piora(self) -> None:
         analise = main.analisar_leituras(self.registros([30, 35, 45, 40, 41]))
         self.assertEqual(analise["tendencia"], "ESTÁVEL/SEM PIORA CONFIRMADA")
