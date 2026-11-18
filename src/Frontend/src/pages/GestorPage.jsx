@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 import { ClipboardList, FlaskConical, Siren, Timer } from 'lucide-react';
 import { CabecalhoPainel } from '../components/painel/Painel';
 import { Revelar } from '../components/home/Efeitos';
@@ -11,7 +11,7 @@ import { useChamados } from '../hooks/useChamados';
 import { useMicroclima } from '../hooks/useMicroclima';
 import { resumirChamados } from '../domain/chamados';
 import { PAPEIS } from '../domain/perfis';
-import { MapaRocinha } from '../components/mapa/MapaRocinha';
+const MapaRocinha = lazy(() => import('../components/mapa/MapaRocinha').then((m) => ({ default: m.MapaRocinha })));
 
 function Dashboard() {
   const microclima = useMicroclima();
@@ -65,7 +65,9 @@ function Dashboard() {
 
         {temDados ? (
           <Revelar>
-            <MapaRocinha chamados={chamados} />
+            <Suspense fallback={<Spinner texto="Carregando mapa…" />}>
+              <MapaRocinha chamados={chamados} ivmReferencia={microclima.leitura?.ivm ?? null} />
+            </Suspense>
           </Revelar>
         ) : (
           !carregando && (

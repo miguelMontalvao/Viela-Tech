@@ -237,11 +237,17 @@
 .holofote:hover::before { opacity: 1; }
 .dark .holofote::before { background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), rgb(56 189 248 / 0.12), transparent 45%); }
 /* Palavra que troca */
-@keyframes trocaPalavra {
-  from { opacity: 0; transform: translateY(60%); filter: blur(4px); }
-  to { opacity: 1; transform: none; filter: none; }
+/* Todas as palavras na mesma célula: largura/altura fixas, só opacidade e transform animam */
+.troca-grupo { display: inline-grid; vertical-align: top; padding-bottom: 0.12em; }
+.troca-palavra {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(0.35em);
+  transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.troca-palavra { display: inline-block; animation: trocaPalavra 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.troca-palavra[data-ativa='true'] { opacity: 1; transform: none; }
+.troca-palavra[data-ativa='false'] { transform: translateY(-0.35em); }
 /* Barra de progresso das abas */
 @keyframes encher { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .encher { transform-origin: left; animation: encher linear forwards; }
@@ -277,7 +283,7 @@
 /* ---------- Header ---------- */
 @keyframes descer { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
 .animate-descer { animation: descer 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-html.com-intro .animate-descer { animation-delay: 1.45s; }
+html.com-intro .animate-descer { animation-delay: 0.8s; }
 @keyframes girarEntrar { from { opacity: 0; transform: rotate(-90deg) scale(0.6); } to { opacity: 1; transform: none; } }
 .animate-girar-entrar { display: inline-flex; animation: girarEntrar 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 @media (prefers-reduced-motion: reduce) { .animate-descer, .animate-girar-entrar { animation: none; } }
@@ -305,11 +311,11 @@ html.com-intro .animate-descer { animation-delay: 1.45s; }
 .texto-revelado .palavra {
   display: inline-block;
   opacity: 0;
-  transform: translateY(0.4em);
-  filter: blur(10px);
-  transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.8s ease;
+  transform: translateY(0.3em);
+  padding-bottom: 0.1em; /* não corta acentos e descendentes do degradê */
+  transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.texto-revelado.visivel .palavra { opacity: 1; transform: none; filter: blur(0); }
+.texto-revelado.visivel .palavra { opacity: 1; transform: none; }
 .texto-brilho {
   background-image: linear-gradient(100deg, #0369a1 0%, #0284c7 30%, #059669 55%, #0284c7 80%, #0369a1 100%);
   background-size: 220% 100%;
@@ -321,9 +327,10 @@ html.com-intro .animate-descer { animation-delay: 1.45s; }
 .dark .texto-brilho { background-image: linear-gradient(100deg, #38bdf8 0%, #7dd3fc 30%, #34d399 55%, #7dd3fc 80%, #38bdf8 100%); }
 @keyframes brilhoTexto { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
 /* Foto do hero: abre de baixo para cima e respira devagar */
-.foto-abrir { animation: fotoAbrir 1.2s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.foto-abrir { animation: fotoAbrir 0.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
 @keyframes fotoAbrir { from { clip-path: inset(100% 0 0 0 round 1.5rem); } to { clip-path: inset(0 0 0 0 round 1.5rem); } }
 @media (prefers-reduced-motion: reduce) {
-  .texto-revelado .palavra { opacity: 1; transform: none; filter: none; transition: none; }
+  .texto-revelado .palavra { opacity: 1; transform: none; transition: none; }
+  .troca-palavra { transition: none; }
   .texto-brilho, .foto-abrir { animation: none; }
 }

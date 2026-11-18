@@ -3,7 +3,7 @@ import { ArrowRight, CalendarClock, CloudOff, Droplets, MapPin, Siren, Thermomet
 import { Button } from '../ui/Button';
 import { EtapasAtendimento } from '../painel/Painel';
 import { LIMITE_TOSSE_DIAS, ehUrgente } from '../../domain/risco';
-import { estaFinalizado, idDoChamado, proximasAcoes, rotuloStatus, STATUS } from '../../domain/chamados';
+import { estaFinalizado, idDoChamado, proximasAcoes, rotuloStatus, STATUS, tempoRelativo } from '../../domain/chamados';
 import { iniciais } from '../../domain/cadastro';
 
 const ESTILO_STATUS = {
@@ -143,6 +143,7 @@ export function ChamadoCard({ chamado, aoAtualizar, atualizando }) {
             <span className="inline-flex items-center gap-1.5">
               <CalendarClock className="h-4 w-4" aria-hidden="true" />
               Triagem em {formatoData.format(new Date(chamado.created_at))}
+              {tempoRelativo(chamado.created_at) && ` · ${tempoRelativo(chamado.created_at)}`}
             </span>
           )}
           {chamado._offline && (
