@@ -1,6 +1,6 @@
 # Viela Tech: histórias adicionadas ao backlog
 
-Este arquivo registra as histórias criadas durante a implementação. O [`VielaTech-Backlog.pdf`](VielaTech-Backlog.pdf) original (US-01 a US-15) foi mantido sem alteração.
+Este arquivo registra as histórias criadas durante a implementação. O backlog original (US-01 a US-15) está nas seções 1 a 10 do [relatório](VielaTech-SoftwareTX-Relatorio.pdf).
 
 As novas histórias continuam a numeração do PDF (US-16 e US-17) para não colidir com a US-07 (acessibilidade) e a US-08 (tema) que já existem. Elas entram no épico **E4 · Dashboard epidemiológico**. O status de todas as histórias está no [README desta pasta](README.md#7-backlog-do-produto-e-status).
 

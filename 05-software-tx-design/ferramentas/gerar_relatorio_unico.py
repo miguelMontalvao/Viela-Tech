@@ -13,7 +13,9 @@ from pathlib import Path
 import pymupdf
 
 PASTA = Path(sys.argv[1])
-ORIGINAL = PASTA / "VielaTech-Backlog.pdf"
+ORIGINAL = PASTA / "VielaTech-Backlog.pdf"  # removido do repositório; recuperar do histórico do Git
+if not ORIGINAL.exists():
+    sys.exit(f"Falta {ORIGINAL.name}. Recupere-o do histórico: git log -- 05-software-tx-design/VielaTech-Backlog.pdf")
 SAIDA = PASTA / "VielaTech-SoftwareTX-Relatorio.pdf"
 README = (PASTA / "README.md").read_text(encoding="utf-8")
 RODAPE = "Viela Tech · Backlog do Produto · FIAP GS 2026.2"
