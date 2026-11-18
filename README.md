@@ -16,7 +16,7 @@ Plataforma cívica de inteligência urbana e vigilância em saúde para a **prev
 ![Tailwind](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20RLS-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/deploy-Vercel-000000?style=flat-square&logo=vercel)
-![Testes](https://img.shields.io/badge/testes-78%20passando-16A34A?style=flat-square)
+![Testes](https://img.shields.io/badge/testes-79%20passando-16A34A?style=flat-square)
 ![FIAP](https://img.shields.io/badge/FIAP-Global%20Solution%202026.2-ED145B?style=flat-square)
 
 [Aplicação](https://viela-tech-three.vercel.app) · [Simulação no Wokwi](https://wokwi.com/projects/480218232420257793) · [Canal ThingSpeak](https://thingspeak.mathworks.com/channels/3571901) · [Arquitetura](docs/arquitetura.md) · [Conformidade](docs/matriz-de-conformidade.md) · [Integrantes](Integrantes.md)
@@ -198,7 +198,7 @@ Detalhes, contrato de dados e camadas da aplicação: [`docs/arquitetura.md`](do
 | # | Disciplina | Pasta | O que entrega |
 |---|---|---|---|
 | 1 | Edge Computing & Computer Systems | [`01-edge-computing-esp32/`](01-edge-computing-esp32/README.md) | Circuito no Wokwi, `main.py` com IVM, 3 faixas, LEDs, OLED e envio ao ThingSpeak |
-| 2 | Computational Thinking with Python | [`02-python/`](02-python/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 26 testes |
+| 2 | Computational Thinking with Python | [`02-python/`](02-python/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 27 testes |
 | 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 16 testes |
 | 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 36 testes |
 | 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Relatório único em PDF com timbrado (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
@@ -276,7 +276,7 @@ Execução de 18/11/2026:
 
 | Módulo | Comando | Resultado |
 |---|---|---|
-| Python | `python -m unittest test_main.py` | 26 de 26 passaram |
+| Python | `python -m unittest test_main.py` | 27 de 27 passaram |
 | Matemática | `python -m pytest test_modelo_calculo.py` | 16 de 16 passaram |
 | Aplicação web | `npm test` | 36 de 36 passaram |
 | Aplicação web | `npm run build` | build sem erros |
@@ -311,7 +311,7 @@ As demais evidências estão nas pastas de cada entrega:
 
 | Dado | Origem | Situação |
 |---|---|---|
-| Leituras do sensor | ThingSpeak, canal 3571901 | **reais (simuladas no Wokwi)**: 4 leituras até 17/11/2026 |
+| Leituras do sensor | ThingSpeak, canal 3571901 | **reais (simuladas no Wokwi)**: 4 leituras (última em 09/11/2026, conferido em 18/11) |
 | Gráfico e PDF de Matemática | simulação de 24 h identificada | o modelo passa a usar o CSV real quando houver 20 leituras ou mais |
 | Taxas de tuberculose | Betim (2015) e boletim SMS-RJ (2023) | públicas, com fonte e ano na tela |
 | Simulador de 24 h e boletim | leitura do sensor e cenário padrão | campos sem leitura aparecem como "(simulado)" |

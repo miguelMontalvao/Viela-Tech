@@ -109,6 +109,21 @@ VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica
 
 O papel vem da tabela `perfis` e só muda pelo Supabase. A RLS garante no banco o que a tela mostra: o morador lê apenas as próprias triagens, e só `acs` e `gestor` leem a fila completa e o microclima. Depois do login, cada perfil vai para a sua área. Quem tenta abrir a área de outro perfil vê uma explicação no lugar da página.
 
+### Acesso para avaliação
+
+Para ver todas as páginas, entre como **gestor** em [`/equipe`](https://viela-tech-three.vercel.app/equipe):
+
+| Campo | Valor |
+|---|---|
+| **Endereço** | [viela-tech-three.vercel.app/equipe](https://viela-tech-three.vercel.app/equipe) |
+| **E-mail** | `vielatech@hotmail.com` |
+| **Senha** | `Vielatech@2026` |
+| **Papel** | gestor |
+
+O perfil de gestor abre `/gestor` (dashboard, mapa das sub-áreas, simulador de 24 h e boletim) e `/acs` (fila de visitas). As demais páginas (`/`, `/morador`, `/mapa`, `/privacidade`, `/termos`) são públicas. Para ver `/minha-area`, crie uma conta de morador em `/entrar`.
+
+> Esta conta foi criada para a avaliação do projeto. Use-a só para conhecer as telas.
+
 ---
 
 ## Arquitetura
