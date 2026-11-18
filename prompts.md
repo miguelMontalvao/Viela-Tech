@@ -7,7 +7,7 @@ Os combinados da GS pedem que a equipe registre os prompts em um arquivo `prompt
 | Problema e contexto | Gemini 3 Flash | [`AI.md` §2.A](AI.md#a-definição-do-problema-e-contexto-urbano-gemini) |
 | Software & TX Design (backlog) | Gemini 3 Flash | [`AI.md` §2.B](AI.md#b-requisitos-e-backlog-do-produto-gemini) |
 | Edge (ESP32) | Gemini 3 Flash | [`AI.md` §2.C](AI.md#c-erro-no-micropython-gemini) |
-| Python | Codex e Gemini 3 Flash | [`python/prompts.md`](python/prompts.md) |
+| Python | Codex e Gemini 3 Flash | [`02-python/prompts.md`](02-python/prompts.md) |
 | Matemática | Codex | [`AI.md` §2.D](AI.md#d-cálculo-diferencial-e-integral-do-microclima-codex) |
 | Front-end e Web Dev | Claude Code | [`AI.md` §2.E](AI.md#e-interface-react-claude-code) |
 | Simulador e boletim | a registrar pela equipe | [`AI.md` §2.F](AI.md#f-simulador-de-24-h-e-boletim-comunitário) |
@@ -25,7 +25,7 @@ Os combinados da GS pedem que a equipe registre os prompts em um arquivo `prompt
 > "O circuito ESP32 no Wokwi com tela OLED SSD1306 apresentou o erro AttributeError: 'module' object has no attribute 'MONO_VLSB0'. Como corrigir no driver ssd1306.py?"
 
 **Python (Codex):**
-> "Escreva o código completo de python/main.py para consumir a API REST pública do ThingSpeak (Channel 3571901), processar os campos de umidade e insolação, aplicar a fórmula do IVM, tratar fallback via backup.json e manter histórico sem duplicatas em historico.json."
+> "Escreva o código completo de 02-python/main.py para consumir a API REST pública do ThingSpeak (Channel 3571901), processar os campos de umidade e insolação, aplicar a fórmula do IVM, tratar fallback via backup.json e manter histórico sem duplicatas em historico.json."
 
 **Matemática (Codex), versão resumida:**
 > "Crie o módulo de Matemática em Python com NumPy, pandas, SciPy e Matplotlib. Leia o relatorio.csv do Python ou simule 24 horas de microclima usando IVM(t) = 0,6 U(t) + 0,4 (100 − I(t)). Calcule as derivadas do IVM e da umidade, a integral do IVM e o tempo na faixa PERIGO. Gere o código, o gráfico e um relatório PDF com fórmulas, resultados, interpretação e os integrantes."

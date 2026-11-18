@@ -4,7 +4,7 @@
 > **Disciplina:** Computational Thinking with Python  
 > **Turma:** 1ESSRA — FIAP GS 2026.2  
 
-Este documento registra os prompts utilizados com ferramentas de IA Generativa (Codex / Gemini) para o desenvolvimento da engine de lógica em Python (`python/main.py`).
+Este documento registra os prompts utilizados com ferramentas de IA Generativa (Codex / Gemini) para o desenvolvimento da engine de lógica em Python (`02-python/main.py`).
 
 ---
 
@@ -18,7 +18,7 @@ Este documento registra os prompts utilizados com ferramentas de IA Generativa (
 ## 2. Principais Prompts e Finalidades
 
 ### A. Engine Principal e Consumo de API (`main.py`)
-- **Prompt:** *"Escreva o código completo de python/main.py para consumir a API REST pública do ThingSpeak (Channel 3571901), processar os campos de umidade e insolação, aplicar a fórmula do IVM, tratar fallback via backup.json e manter histórico sem duplicatas em historico.json."*
+- **Prompt:** *"Escreva o código completo de 02-python/main.py para consumir a API REST pública do ThingSpeak (Channel 3571901), processar os campos de umidade e insolação, aplicar a fórmula do IVM, tratar fallback via backup.json e manter histórico sem duplicatas em historico.json."*
 - **Resultado Obtido:** Estrutura completa do programa com tratamento de `requests.exceptions.RequestException`, plano B offline e persistência tratada via `set(entry_id)`.
 
 ### B. Algoritmo de Tendência e Validação de Regras

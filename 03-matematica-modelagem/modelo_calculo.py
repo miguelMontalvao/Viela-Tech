@@ -1,7 +1,7 @@
 """Limites, derivadas, integrais, gráficos e relatório do microclima do Viela Tech.
 
 Execute da raiz: python 03-matematica-modelagem/modelo_calculo.py
-Sem python/relatorio.csv, utiliza uma simulação explicitamente identificada.
+Sem 02-python/relatorio.csv, utiliza uma simulação explicitamente identificada.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from scipy.integrate import simpson, trapezoid
 
 
 PASTA_MATH = Path(__file__).resolve().parent
-CSV_PADRAO = PASTA_MATH.parent / "python" / "relatorio.csv"
+CSV_PADRAO = PASTA_MATH.parent / "02-python" / "relatorio.csv"
 LIMIAR_ATENCAO = 40.0
 LIMIAR_PERIGO = 70.0
 # Mesmo mínimo exigido do módulo Python: com menos leituras reais, o relatório
@@ -177,7 +177,7 @@ def carregar_dados(caminho: Path | None = None) -> DadosMicroclima:
     if caminho is None:
         if not CSV_PADRAO.exists():
             dados = simular_dados()
-            dados.observacao += " O arquivo python/relatorio.csv ainda não existe."
+            dados.observacao += " O arquivo 02-python/relatorio.csv ainda não existe."
             return dados
         dados = ler_csv(CSV_PADRAO)
         if len(dados.horas) < MINIMO_AMOSTRAS_REAIS:

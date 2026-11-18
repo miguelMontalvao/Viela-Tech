@@ -2,7 +2,7 @@
 
 > **Disciplina:** Computational Thinking with Python · **Atividade:** O Cérebro Conectado
 > **Projeto:** Viela Tech, CitizenTech FIAP Global Solution 2026.2
-> **Pasta:** `python/`, como pede a atividade
+> **Pasta:** `02-python/` (entrega 2 da numeração do repositório)
 
 Programa de terminal que busca as leituras do ESP32 no ThingSpeak, guarda backup e histórico, calcula o **Índice de Vulnerabilidade de Microclima (IVM)** de cada leitura, analisa risco e tendência e exporta um relatório CSV. O CSV gerado aqui é a entrada do modelo de [Matemática](../03-matematica-modelagem/README.md).
 
