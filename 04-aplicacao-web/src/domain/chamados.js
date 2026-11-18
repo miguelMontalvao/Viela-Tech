@@ -80,6 +80,41 @@ export function filtrarChamados(chamados, { busca = '', filtro = 'abertos' } = {
   });
 }
 
+export const GRUPOS_FILA = [
+  { id: 'urgentes', rotulo: 'Urgentes', descricao: 'Tosse há 21 dias ou mais' },
+  { id: 'atendimento', rotulo: 'Em atendimento', descricao: 'Visita iniciada ou amostra colhida' },
+  { id: 'aguardando', rotulo: 'Aguardando visita', descricao: 'Ainda sem atendimento' },
+  { id: 'concluidos', rotulo: 'Concluídos', descricao: 'Chamados encerrados' },
+];
+
+/** Grupo da fila em que o chamado se encaixa (urgência só vale enquanto está aberto). */
+export function grupoDoChamado(chamado) {
+  if (estaFinalizado(chamado)) return 'concluidos';
+  if (ehUrgente(chamado)) return 'urgentes';
+  if (chamado.status === STATUS.EM_ANDAMENTO || chamado.status === STATUS.COLETADO) return 'atendimento';
+  return 'aguardando';
+}
+
+/** Agrupa a lista na ordem de GRUPOS_FILA, omitindo grupos vazios. */
+export function agruparChamados(chamados) {
+  const mapa = new Map(GRUPOS_FILA.map((g) => [g.id, []]));
+  for (const c of ordenarPorPrioridade(chamados)) mapa.get(grupoDoChamado(c)).push(c);
+  return GRUPOS_FILA.map((g) => ({ ...g, itens: mapa.get(g.id) })).filter((g) => g.itens.length > 0);
+}
+
+/** "agora", "há 5 min", "há 3 h", "há 2 dias"; vazio se a data for inválida. */
+export function tempoRelativo(data, agora = Date.now()) {
+  const t = data ? new Date(data).getTime() : NaN;
+  if (Number.isNaN(t)) return '';
+  const min = Math.max(0, Math.floor((agora - t) / 60000));
+  if (min < 1) return 'agora';
+  if (min < 60) return `há ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `há ${h} h`;
+  const d = Math.floor(h / 24);
+  return `há ${d} ${d === 1 ? 'dia' : 'dias'}`;
+}
+
 /** Indicadores agregados para o dashboard do gestor. */
 export function resumirChamados(chamados) {
   const porStatus = Object.fromEntries(ORDEM_STATUS.map((s) => [s, 0]));
