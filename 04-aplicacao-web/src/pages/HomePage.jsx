@@ -23,7 +23,7 @@ import { useContador, useNaTela } from '../hooks/useAnimacao';
 const MiniMapa = lazy(() => import('../components/home/MiniMapa'));
 const fmt = (n, casas = 0) => n.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
 // Com a abertura na tela, o hero espera a cortina subir para animar.
-const ATRASO_INTRO = typeof document !== 'undefined' && document.documentElement.classList.contains('com-intro') ? 1350 : 0;
+const ATRASO_INTRO = typeof document !== 'undefined' && document.documentElement.classList.contains('com-intro') ? 800 : 0;
 const atraso = (ms) => ({ animationDelay: `${ATRASO_INTRO + ms}ms` });
 const menosMovimento = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -38,26 +38,27 @@ function Hero() {
       </div>
 
       <div className="container-app grid min-h-[calc(100svh-4.5rem)] items-center gap-14 py-16 lg:grid-cols-2 lg:gap-16 lg:py-20">
-        <div>
+        <div className="min-w-0">
 
           <TextoRevelado
             as="h1"
             imediato
-            atraso={ATRASO_INTRO + 120}
-            passo={80}
-            className="text-5xl font-semibold leading-[0.98] tracking-[-0.035em] sm:text-6xl xl:text-7xl"
+            atraso={ATRASO_INTRO + 60}
+            passo={45}
+            className="text-4xl font-semibold leading-[1.08] tracking-[-0.03em] min-[400px]:text-5xl sm:text-6xl lg:text-5xl xl:text-6xl 2xl:text-7xl"
             segmentos={[{ texto: 'Onde o sol não chega,' }, { texto: 'a saúde chega.', className: 'texto-brilho', quebra: true }]}
           />
 
-          <p className="animate-surgir mt-7 max-w-lg text-lg leading-relaxed texto-suave sm:text-xl" style={atraso(700)}>
+          <p className="animate-surgir mt-7 max-w-lg text-lg leading-relaxed texto-suave sm:text-xl" style={atraso(350)}>
             Triagem de tosse, sensor nas vielas e a fila dos agentes de saúde num só lugar. Feito para{' '}
             <PalavraQueTroca
               palavras={['os moradores.', 'os agentes de saúde.', 'a gestão.']}
+              atrasoInicial={ATRASO_INTRO + 1800}
               className="font-semibold text-slate-900 dark:text-white"
             />
           </p>
 
-          <div className="animate-surgir mt-10 flex flex-col gap-3 sm:flex-row" style={atraso(820)}>
+          <div className="animate-surgir mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap" style={atraso(420)}>
             <Link
               to="/morador"
               className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-sky-700 px-7 text-base font-semibold text-white shadow-lg shadow-sky-700/25 transition hover:-translate-y-0.5 hover:bg-sky-800 dark:bg-sky-500 dark:text-slate-950 dark:hover:bg-sky-400"
@@ -74,7 +75,7 @@ function Hero() {
             </Link>
           </div>
 
-          <p className="animate-surgir mt-10 flex items-center gap-2.5 text-sm font-medium texto-suave" style={atraso(950)}>
+          <p className="animate-surgir mt-10 flex items-center gap-2.5 text-sm font-medium texto-suave" style={atraso(480)}>
             <span className="relative flex h-2 w-2" aria-hidden="true">
               <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75 motion-safe:animate-ping" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
@@ -88,9 +89,9 @@ function Hero() {
           <div
             aria-hidden="true"
             className="animate-surgir absolute -bottom-4 -right-4 left-4 top-4 rounded-3xl border-2 border-sky-200 dark:border-sky-900 sm:-bottom-6 sm:-right-6 sm:left-6 sm:top-6"
-            style={atraso(900)}
+            style={atraso(450)}
           />
-          <figure className="foto-abrir group relative overflow-hidden rounded-3xl bg-slate-900 shadow-2xl shadow-slate-900/20" style={atraso(250)}>
+          <figure className="foto-abrir group relative overflow-hidden rounded-3xl bg-slate-900 shadow-2xl shadow-slate-900/20" style={atraso(100)}>
             <Foto
               nome="rocinha-por-do-sol"
               alt="Vista do alto da favela ao pôr do sol: casas de tijolo, roupa no varal, gente na rua e o Morro Dois Irmãos com o mar ao fundo"

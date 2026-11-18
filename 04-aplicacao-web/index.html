@@ -28,7 +28,7 @@
         l.as = 'image';
         l.type = 'image/avif';
         l.setAttribute('imagesrcset', '/img/rocinha-por-do-sol-400.avif 400w, /img/rocinha-por-do-sol-640.avif 640w, /img/rocinha-por-do-sol-960.avif 960w, /img/rocinha-por-do-sol-1024.avif 1024w');
-        l.setAttribute('imagesizes', '(min-width: 1024px) 576px, 100vw');
+        l.setAttribute('imagesizes', '(min-width: 1024px) 544px, 100vw');
         l.setAttribute('fetchpriority', 'high');
         document.head.appendChild(l);
       }
@@ -51,18 +51,18 @@
         position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
         background: radial-gradient(ellipse at 50% 40%, #0c4a6e 0%, #020617 60%); color: #fff;
         font-family: 'Inter', system-ui, sans-serif;
-        animation: introSai 0.85s cubic-bezier(0.76, 0, 0.24, 1) 1.2s forwards;
+        animation: introSai 0.6s cubic-bezier(0.76, 0, 0.24, 1) 0.7s forwards;
       }
       #intro svg { width: 92px; height: auto; overflow: visible; }
-      #intro path { opacity: 0; transform-box: fill-box; transform-origin: center; animation: introPeca 0.6s cubic-bezier(0.2, 0.8, 0.2, 1.2) forwards; }
-      #intro .p1 { animation-delay: 0.05s; --de: translate(-40%, 30%); }
-      #intro .p2 { animation-delay: 0.2s; --de: translate(40%, -40%); }
-      #intro .p3 { animation-delay: 0.35s; --de: translate(0, 50%); }
-      #intro .nome { font-size: 28px; letter-spacing: 0.4em; font-weight: 300; opacity: 0; animation: introNome 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.45s forwards; }
+      #intro path { opacity: 0; transform-box: fill-box; transform-origin: center; animation: introPeca 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2) forwards; }
+      #intro .p1 { animation-delay: 0.03s; --de: translate(-40%, 30%); }
+      #intro .p2 { animation-delay: 0.12s; --de: translate(40%, -40%); }
+      #intro .p3 { animation-delay: 0.21s; --de: translate(0, 50%); }
+      #intro .nome { font-size: 28px; letter-spacing: 0.4em; font-weight: 300; opacity: 0; animation: introNome 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) 0.25s forwards; }
       #intro .nome b { font-weight: 600; }
       #intro .nome span { color: #38bdf8; }
       #intro .barra { width: 160px; height: 2px; border-radius: 2px; background: rgba(255,255,255,0.12); overflow: hidden; }
-      #intro .barra i { display: block; height: 100%; background: linear-gradient(90deg, #0284c7, #10b981); transform: scaleX(0); transform-origin: left; animation: introBarra 1.1s cubic-bezier(0.6, 0, 0.2, 1) forwards; }
+      #intro .barra i { display: block; height: 100%; background: linear-gradient(90deg, #0284c7, #10b981); transform: scaleX(0); transform-origin: left; animation: introBarra 0.65s cubic-bezier(0.6, 0, 0.2, 1) forwards; }
       @keyframes introPeca { from { opacity: 0; transform: var(--de) scale(0.6); } to { opacity: 1; transform: none; } }
       @keyframes introNome { from { opacity: 0; letter-spacing: 0.4em; } to { opacity: 1; letter-spacing: -0.01em; } }
       @keyframes introBarra { to { transform: scaleX(1); } }
