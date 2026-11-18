@@ -122,7 +122,7 @@ Para ver todas as páginas, entre como **gestor** em [`/equipe`](https://viela-t
 
 O perfil de gestor abre `/gestor` (dashboard, mapa das sub-áreas, simulador de 24 h e boletim) e `/acs` (fila de visitas). As demais páginas (`/`, `/morador`, `/mapa`, `/privacidade`, `/termos`) são públicas. Para ver `/minha-area`, crie uma conta de morador em `/entrar`.
 
-> Esta conta existe só para a avaliação. As triagens do banco são de teste, e o aviso de privacidade do app explica o tratamento dos dados.
+> Esta conta foi criada para a avaliação do projeto. Use-a só para conhecer as telas.
 
 ---
 
