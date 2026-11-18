@@ -15,7 +15,6 @@ Cores (as mesmas do app, em `04-aplicacao-web/tailwind.config.js`): Azul Saúde 
 
 - `03-matematica-modelagem/Relatorio_Matematica.pdf`: aplicado por `modelo_calculo.py` ao gerar o relatório.
 - `05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf`: aplicado por `ferramentas/gerar_relatorio_unico.py`, em todas as páginas menos a capa, que tem arte própria em página cheia.
-- `05-software-tx-design/VielaTech-Backlog.pdf` é a fonte do relatório único e fica sem alteração.
 
 ## Um documento novo
 

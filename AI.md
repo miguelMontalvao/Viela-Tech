@@ -30,7 +30,7 @@ Conforme as diretrizes da FIAP para a Global Solution 2026.2, este documento reg
 ### B. Requisitos e backlog do produto (Gemini)
 
 - **Prompt:** *"Gere a estrutura de Backlog do Produto MoSCoW e matriz de requisitos para uma plataforma web em React + Tailwind + Supabase focada na triagem de tuberculose e operação offline para Agentes Comunitários de Saúde."*
-- **Resultado:** base do documento [`VielaTech-Backlog.pdf`](05-software-tx-design/VielaTech-Backlog.pdf), incluindo a formulação do IVM.
+- **Resultado:** base do documento [`VielaTech-SoftwareTX-Relatorio.pdf`](05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf), incluindo a formulação do IVM.
 - **Validação:** a equipe revisou e reescreveu o documento. O próprio PDF aponta o risco do sentido da insolação, depois corrigido para `100 − I`.
 
 ### C. Erro no MicroPython (Gemini)

@@ -24,6 +24,8 @@
 | Aplicação web | [viela-tech.vercel.app](https://viela-tech.vercel.app) |
 | Simulação ESP32 (Wokwi) | [wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793) |
 | Canal público ThingSpeak | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |
+| Código Python (análise do IVM) | [`python/`](python/README.md) |
+| Relatório de Software & TX Design (PDF com timbrado) | [`05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf`](05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf) |
 | Vídeo do pitch (YouTube) | pendente (ver [`06-pitch-storytelling/`](06-pitch-storytelling/README.md)) |
 
 ## Sumário
@@ -125,7 +127,7 @@ Detalhes, contrato de dados e camadas da aplicação: [`docs/arquitetura.md`](do
 | 2 | Computational Thinking with Python | [`python/`](python/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 26 testes |
 | 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 16 testes |
 | 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 24 testes |
-| 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Backlog em PDF (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
+| 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Relatório único em PDF com timbrado (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
 | 6 | Storytelling & Inspiração Empreendedora | [`06-pitch-storytelling/`](06-pitch-storytelling/README.md) | Roteiro de 3 minutos com a demonstração real e checklist de gravação |
 | 7 | Web Development | [`04-aplicacao-web/`](04-aplicacao-web/README.md#interações-em-javascript-web-development) | Interações em JavaScript, persistência no navegador e integração com a API do Supabase |
 
@@ -139,7 +141,7 @@ Viela-Tech/
 ├── python/                    main.py, test_main.py, historico.json, backup.json, relatorio.csv, prompts.md
 ├── 03-matematica-modelagem/   modelo_calculo.py, relatorio_matematica.py, PDF, gráfico, testes
 ├── 04-aplicacao-web/          React + Vite + Tailwind + Supabase (src/, supabase/, public/)
-├── 05-software-tx-design/     VielaTech-SoftwareTX-Relatorio.pdf (enviar), backlog original e status
+├── 05-software-tx-design/     VielaTech-SoftwareTX-Relatorio.pdf (único PDF, com timbrado), README com escopo e status
 ├── 06-pitch-storytelling/     roteiro e checklist do vídeo
 ├── docs/                      arquitetura e matriz de conformidade
 ├── AI.md                      registro do uso de IA

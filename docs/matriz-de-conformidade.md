@@ -72,12 +72,12 @@ Legenda:
 
 | Requisito | Status | Evidência / observação |
 |---|---|---|
-| Capa, integrantes e sumário | APROVADO | PDF, páginas 1 e 2 |
+| Capa, integrantes e sumário | APROVADO | Relatório, backlog original, páginas 1 e 2 |
 | Escopo | APROVADO | [`README.md` §1](../05-software-tx-design/README.md#1-escopo); não está no PDF |
-| Personas e jornada | APROVADO | PDF, página 6 |
-| Regras de negócio, RF e RNF | APROVADO | PDF, páginas 7 e 8; status da implementação no README |
-| Backlog MoSCoW com critérios de aceite | APROVADO | PDF, páginas 9 a 13, mais US-16 e US-17 em `VielaTech-Backlog.md` |
-| Rastreabilidade | APROVADO | PDF, página 14 |
+| Personas e jornada | APROVADO | Relatório, backlog original, página 6 |
+| Regras de negócio, RF e RNF | APROVADO | Relatório, backlog original, páginas 7 e 8; status da implementação no README |
+| Backlog MoSCoW com critérios de aceite | APROVADO | Relatório, backlog original, páginas 9 a 13, mais US-16 e US-17 em `VielaTech-Backlog.md` |
+| Rastreabilidade | APROVADO | Relatório, backlog original, página 14 |
 | Conclusão | APROVADO | Seção 13 do relatório único e [`README.md` §9](../05-software-tx-design/README.md#9-conclusão) |
 | Relatório único com capa, nomes, índice, justificativa e conclusão | APROVADO | [`VielaTech-SoftwareTX-Relatorio.pdf`](../05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf), 21 páginas |
 
