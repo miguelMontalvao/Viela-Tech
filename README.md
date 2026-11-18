@@ -1,7 +1,81 @@
-# Viela Tech: onde o sol não chega, a saúde chega
+<div align="center">
 
-> **Plataforma cívica de inteligência urbana e vigilância em saúde para a prevenção da tuberculose na Rocinha (RJ)**
-> FIAP · Engenharia de Software · **Global Solution 2026.2: CitizenTech** · Turma 1ESSRA
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="04-aplicacao-web/src/assets/brand/logo-horizontal-escuro.svg">
+  <img src="04-aplicacao-web/src/assets/brand/logo-horizontal.svg" alt="Viela Tech, inteligência urbana" width="360" />
+</picture>
+
+### Onde o sol não chega, a saúde chega
+
+Plataforma cívica de inteligência urbana e vigilância em saúde para a **prevenção da tuberculose na Rocinha (RJ)**. Um sensor mede o ar do beco, o morador faz a triagem pelo celular e o Agente Comunitário de Saúde recebe a fila de visitas na ordem certa, mesmo sem internet.
+
+[![Produção](https://img.shields.io/badge/produção-viela--tech--three.vercel.app-0284C7?style=flat-square)](https://viela-tech-three.vercel.app)
+![ESP32](https://img.shields.io/badge/Edge-ESP32%20MicroPython-E7352C?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
+![React](https://img.shields.io/badge/React-18%20%2B%20Vite-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20RLS-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
+![Vercel](https://img.shields.io/badge/deploy-Vercel-000000?style=flat-square&logo=vercel)
+![Testes](https://img.shields.io/badge/testes-78%20passando-16A34A?style=flat-square)
+![FIAP](https://img.shields.io/badge/FIAP-Global%20Solution%202026.2-ED145B?style=flat-square)
+
+[Aplicação](https://viela-tech-three.vercel.app) · [Simulação no Wokwi](https://wokwi.com/projects/480218232420257793) · [Canal ThingSpeak](https://thingspeak.mathworks.com/channels/3571901) · [Arquitetura](docs/arquitetura.md) · [Conformidade](docs/matriz-de-conformidade.md) · [Integrantes](Integrantes.md)
+
+<br/>
+
+<img src="04-aplicacao-web/public/og-image.jpg" alt="Viela Tech: onde o sol não chega, a saúde chega. Triagem de tuberculose e apoio aos ACS na Rocinha, Rio de Janeiro." width="860" />
+
+<br/>
+
+**FIAP · Engenharia de Software · Global Solution 2026.2: CitizenTech · Turma 1ESSRA**
+
+</div>
+
+---
+
+## Visão geral
+
+Nos becos da Rocinha o sol direto não chega ao chão e o ar quase não circula. A umidade fica, e isso favorece a tuberculose: em 2013 a comunidade registrou **372 casos por 100 mil habitantes**, cerca de **4 vezes** a taxa da cidade. Quem tosse há semanas demora a ser triado.
+
+O Viela Tech liga **medição do ambiente** a **triagem e gestão**, em três passos:
+
+1. **Medir:** um ESP32 lê umidade, luz e temperatura no beco e calcula o **IVM** (Índice de Vulnerabilidade de Microclima).
+2. **Triar:** o morador responde a autotriagem no site; tosse há 21 dias ou mais vira prioridade.
+3. **Agir:** o ACS atende a fila priorizada, e o gestor da SMS-RJ vê o risco por sub-área para decidir onde agir.
+
+> O IVM descreve condições ambientais da viela. Ele não diagnostica tuberculose.
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**🏠 Morador**
+
+- Autotriagem com consentimento (LGPD)
+- Resultado claro sobre procurar a Clínica da Família
+- Histórico e exclusão das próprias triagens
+
+</td>
+<td width="33%" valign="top">
+
+**🩺 Agente Comunitário (ACS)**
+
+- Fila de visitas priorizada
+- Muda o status do chamado em campo
+- Funciona offline e sincroniza depois
+
+</td>
+<td width="33%" valign="top">
+
+**📊 Gestor da SMS-RJ**
+
+- Indicadores e mapa de calor da Rocinha
+- Microclima e triagens agregadas por sub-área
+- Simulador de 24 h e boletim para WhatsApp
+
+</td>
+</tr>
+</table>
 
 ## Ficha da CitizenTech
 
@@ -21,10 +95,10 @@
 
 | | |
 |---|---|
-| Aplicação web | [viela-tech.vercel.app](https://viela-tech.vercel.app) |
+| Aplicação web | [viela-tech-three.vercel.app](https://viela-tech-three.vercel.app) |
 | Simulação ESP32 (Wokwi) | [wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793) |
 | Canal público ThingSpeak | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |
-| Código Python (análise do IVM) | [`python/`](python/README.md) |
+| Código Python (análise do IVM) | [`02-python/`](02-python/README.md) |
 | Relatório de Software & TX Design (PDF com timbrado) | [`05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf`](05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf) |
 | Vídeo do pitch (YouTube) | pendente (ver [`06-pitch-storytelling/`](06-pitch-storytelling/README.md)) |
 
@@ -90,7 +164,7 @@ O Viela Tech liga um **sensor de microclima** a uma **aplicação web de triagem
 |---|---|---|
 | 1 | O DHT22 e o LDR são lidos a cada 15 s; o ESP32 calcula o IVM, acende o LED da faixa e mostra no OLED | `01-edge-computing-esp32/` |
 | 2 | A leitura é publicada no ThingSpeak (`field1` a `field4`) | canal 3571901 |
-| 3 | O Python busca as leituras, valida, normaliza, classifica, detecta tendência de piora e exporta o CSV | `python/` |
+| 3 | O Python busca as leituras, valida, normaliza, classifica, detecta tendência de piora e exporta o CSV | `02-python/` |
 | 4 | A Matemática modela o IVM no tempo, com limites, derivadas e integral do risco acumulado | `03-matematica-modelagem/` |
 | 5 | O morador envia a triagem com consentimento; o banco marca a prioridade | `04-aplicacao-web/` + Supabase |
 | 6 | O ACS muda o status (pendente → em atendimento → coletado → concluído), mesmo offline | `/acs` |
@@ -124,9 +198,9 @@ Detalhes, contrato de dados e camadas da aplicação: [`docs/arquitetura.md`](do
 | # | Disciplina | Pasta | O que entrega |
 |---|---|---|---|
 | 1 | Edge Computing & Computer Systems | [`01-edge-computing-esp32/`](01-edge-computing-esp32/README.md) | Circuito no Wokwi, `main.py` com IVM, 3 faixas, LEDs, OLED e envio ao ThingSpeak |
-| 2 | Computational Thinking with Python | [`python/`](python/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 26 testes |
+| 2 | Computational Thinking with Python | [`02-python/`](02-python/README.md) | Consumo da API, validação, normalização, tendência, histórico, backup, CSV e 26 testes |
 | 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 16 testes |
-| 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 24 testes |
+| 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 36 testes |
 | 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Relatório único em PDF com timbrado (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
 | 6 | Storytelling & Inspiração Empreendedora | [`06-pitch-storytelling/`](06-pitch-storytelling/README.md) | Roteiro de 3 minutos com a demonstração real e checklist de gravação |
 | 7 | Web Development | [`04-aplicacao-web/`](04-aplicacao-web/README.md#interações-em-javascript-web-development) | Interações em JavaScript, persistência no navegador e integração com a API do Supabase |
@@ -138,7 +212,7 @@ O status de cada requisito está em [`docs/matriz-de-conformidade.md`](docs/matr
 ```text
 Viela-Tech/
 ├── 01-edge-computing-esp32/   ESP32 MicroPython: main.py, ssd1306.py, diagram.json, evidencias/
-├── python/                    main.py, test_main.py, historico.json, backup.json, relatorio.csv, prompts.md
+├── 02-python/                 main.py, test_main.py, historico.json, backup.json, relatorio.csv, prompts.md
 ├── 03-matematica-modelagem/   modelo_calculo.py, relatorio_matematica.py, PDF, gráfico, testes
 ├── 04-aplicacao-web/          React + Vite + Tailwind + Supabase (src/, supabase/, public/)
 ├── 05-software-tx-design/     VielaTech-SoftwareTX-Relatorio.pdf (único PDF, com timbrado), README com escopo e status
@@ -150,7 +224,7 @@ Viela-Tech/
 └── README.md                  este arquivo
 ```
 
-A pasta do Python se chama `python/` porque é o nome que a atividade da disciplina pede; as demais seguem a numeração por entrega.
+A numeração segue a ordem das disciplinas do bimestre: a pasta `02-python/` guarda a entrega 2; a entrega 7 (Web Development) fica dentro de `04-aplicacao-web/`.
 
 ## 9. O índice IVM
 
@@ -198,13 +272,13 @@ Como configurar o Supabase (schema, migração e usuários da equipe): [`04-apli
 
 ## 11. Testes
 
-Execução de 17/11/2026:
+Execução de 18/11/2026:
 
 | Módulo | Comando | Resultado |
 |---|---|---|
 | Python | `python -m unittest test_main.py` | 26 de 26 passaram |
 | Matemática | `python -m pytest test_modelo_calculo.py` | 16 de 16 passaram |
-| Aplicação web | `npm test` | 24 de 24 passaram |
+| Aplicação web | `npm test` | 36 de 36 passaram |
 | Aplicação web | `npm run build` | build sem erros |
 | Edge | `ast.parse` do `main.py` | sintaxe válida (a simulação roda no Wokwi) |
 
@@ -218,9 +292,9 @@ Execução de 17/11/2026:
 
 As demais evidências estão nas pastas de cada entrega:
 
-- a saída real do terminal Python está no [README do Python](python/README.md#evidência-de-execução);
+- a saída real do terminal Python está no [README do Python](02-python/README.md#evidência-de-execução);
 - o relatório de Matemática é o [`Relatorio_Matematica.pdf`](03-matematica-modelagem/Relatorio_Matematica.pdf);
-- a aplicação está publicada em [viela-tech.vercel.app](https://viela-tech.vercel.app).
+- a aplicação está publicada em [viela-tech-three.vercel.app](https://viela-tech-three.vercel.app).
 
 ## 13. Segurança e privacidade
 

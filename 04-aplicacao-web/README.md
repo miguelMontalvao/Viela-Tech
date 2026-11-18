@@ -10,7 +10,7 @@ Aplicação web do Viela Tech:
 - **Dashboard do Gestor:** microclima medido pelo sensor IoT (umidade, insolação, temperatura e IVM), indicadores, gráficos, o mapa das sub-áreas da Rocinha, o simulador didático de 24 h e o boletim comunitário para WhatsApp.
 - **Mapa da tuberculose (público):** o Rio por bairros com a Rocinha em destaque, comparação com a cidade e o Brasil e o que fazer. Só usa números com fonte citada.
 
-**Em produção:** [viela-tech.vercel.app](https://viela-tech.vercel.app), conectado ao Supabase. A publicação é manual, pela CLI da Vercel, a partir desta pasta (ver [Publicar na Vercel](#publicar-na-vercel)).
+**Em produção:** [viela-tech-three.vercel.app](https://viela-tech-three.vercel.app), conectado ao Supabase. O banco é o Supabase do projeto Viela Tech (ver [Publicar na Vercel](#publicar-na-vercel)).
 
 Stack: **React 18 + Vite 6 + Tailwind CSS 3 + Supabase + Lucide React**, com React Router e Vitest.
 
@@ -59,7 +59,7 @@ VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica
 
 ## Publicar na Vercel
 
-O site `viela-tech.vercel.app` pertence ao escopo `provadelli` na Vercel. O projeto **não está ligado ao GitHub** (o repositório é de outra conta e o app da Vercel só se liga a uma conta), então um merge na `main` **não atualiza o site sozinho**. A publicação é feita pela CLI.
+**O endereço oficial é `viela-tech-three.vercel.app`**, projeto na Vercel de Miguel (dono do repositório), usando o Supabase de Pedro. O projeto `viela-tech.vercel.app`, no escopo `provadelli`, usa o mesmo banco e fica como cópia de apoio. Ele **não está ligado ao GitHub** (o app da Vercel só se liga à conta dona do repositório), então um merge na `main` não o atualiza sozinho: a publicação dele é feita pela CLI, como descrito abaixo.
 
 **Pré-requisitos:** Node.js 18+, a CLI (`npm i -g vercel`) e login na conta dona do projeto (`vercel login`).
 
@@ -78,7 +78,7 @@ O site `viela-tech.vercel.app` pertence ao escopo `provadelli` na Vercel. O proj
    ```bash
    vercel deploy --prod --scope provadelli
    ```
-4. Verifique: o comando mostra o status e a URL. Abra `https://viela-tech.vercel.app`, atualize com `Ctrl+F5` e teste a Home, `/acs` e `/gestor`.
+4. Verifique: o comando mostra o status e a URL. Abra `https://viela-tech.vercel.app` (ou o endereço oficial, se o deploy foi no projeto de Miguel), atualize com `Ctrl+F5` e teste a Home, `/acs` e `/gestor`.
 
 **Regras importantes:**
 
@@ -87,7 +87,7 @@ O site `viela-tech.vercel.app` pertence ao escopo `provadelli` na Vercel. O proj
 - Use só a chave `anon` ou `publishable`. A `service_role` é secreta e nunca vai para o front-end.
 - Para voltar a uma versão anterior: *Deployments* → escolha o deploy bom → *Promote to Production*.
 
-**Como ficou o deploy automático:** só funciona se o projeto for importado por quem é dono do repositório, no Vercel dele, com *Root Directory* `04-aplicacao-web` e as duas variáveis acima. Foi o que se tentou no `viela-tech-three.vercel.app`, mas esse projeto ficou sem as variáveis no build e não é o endereço oficial da entrega.
+**Projeto oficial (`viela-tech-three`):** importado por Miguel no Vercel dele, com *Root Directory* `04-aplicacao-web`. As variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` apontam para o Supabase `ngapyociufewubyamrtm` (projeto Viela Tech). Em 18/11/2026 o bundle publicado foi conferido: usa esse banco e traz a versão atual da `main`. No Supabase, o *Site URL* de autenticação é `https://viela-tech-three.vercel.app`, e as *Redirect URLs* liberam os dois domínios e o `localhost:5173`.
 
 
 ---
@@ -187,7 +187,7 @@ O envio anônimo usa `insert()` **sem** `.select()`. Assim quem não tem conta n
 
 ### Regras de negócio
 
-- **IVM** = 0,6 × Umidade + 0,4 × (100 − Insolação), a mesma fórmula do [ESP32](../01-edge-computing-esp32/main.py), do [Python](../python/main.py) e da [Matemática](../03-matematica-modelagem/README.md).
+- **IVM** = 0,6 × Umidade + 0,4 × (100 − Insolação), a mesma fórmula do [ESP32](../01-edge-computing-esp32/main.py), do [Python](../02-python/main.py) e da [Matemática](../03-matematica-modelagem/README.md).
 - **Faixas:** Normal abaixo de 40% (`#16A34A`) · Atenção de 40% a menos de 70% (`#D97706`) · Perigo a partir de 70% (`#DC2626`).
 - **Tosse de 21 dias ou mais** é urgente: alerta vermelho para o morador, faixa "URGENTE — TOSSE +21 DIAS" e topo da fila para o ACS. O banco reforça a regra com um gatilho.
 - **Fila do ACS:** urgentes em aberto, depois os demais em aberto e por fim os concluídos. Dentro de cada grupo, quem espera há mais tempo vem antes.
@@ -262,7 +262,7 @@ Os acentos servem só de decoração. As cores de risco continuam reservadas par
 
 ## Testes realizados
 
-- **Unitários (Vitest, 24 testes):** testes de `domain/` cobrindo:
+- **Unitários (Vitest, 36 testes):** testes de `domain/` cobrindo:
   - a normalização dos setores da Rocinha;
   - os limiares 40/70, a fórmula do IVM e a regra dos 21 dias;
   - a ordenação da fila, os filtros e os indicadores;

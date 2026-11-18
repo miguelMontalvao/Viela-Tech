@@ -16,7 +16,7 @@ Legenda:
 | Item | Resultado |
 |---|---|
 | Repositório `github.com/miguelMontalvao/Viela-Tech` | público (a API do GitHub respondeu 200) |
-| Site `viela-tech.vercel.app` | no ar (HTTP 200); publica a versão da `main`, não esta branch |
+| Site `viela-tech-three.vercel.app` | no ar (HTTP 200); publica a versão da `main`, não esta branch |
 | Projeto do Wokwi `480218232420257793` | acessível (HTTP 200); **ainda com o código antigo**, que não tem a faixa ATENÇÃO e usa a chave antiga |
 | Canal ThingSpeak 3571901 | público, com **4 leituras** (`last_entry_id: 4`, de 09/11/2026) |
 
@@ -31,7 +31,7 @@ Legenda:
 | README com problema, funcionamento, links e evidências | APROVADO | [`README.md`](../01-edge-computing-esp32/README.md) |
 | Projeto online atualizado | PENDENTE | A equipe precisa colar o `main.py` e o `diagram.json` novos no Wokwi |
 
-## 2 · Computational Thinking with Python ([`python/`](../python/))
+## 2 · Computational Thinking with Python ([`02-python/`](../02-python/))
 
 | Requisito | Status | Evidência / observação |
 |---|---|---|
@@ -40,7 +40,7 @@ Legenda:
 | Normalização e validação de parâmetros | APROVADO | `normalizar()` (min-max) e `validar_configuracao()`, que lança `ValueError` |
 | Persistência (JSON e CSV) e fallback | APROVADO | `historico.json`, `backup.json` e `relatorio.csv`; usa o backup quando a API falha ou volta vazia |
 | Testes | APROVADO | `test_main.py`: 26 testes passando, sem rede |
-| Execução real documentada | APROVADO | Saída do terminal no [README](../python/README.md#evidência-de-execução) |
+| Execução real documentada | APROVADO | Saída do terminal no [README](../02-python/README.md#evidência-de-execução) |
 | Volume de dados (mínimo de 20 leituras) | PENDENTE | O canal tem 4 leituras. É preciso rodar o Wokwi atualizado por 5 minutos ou mais e executar de novo. |
 
 ## 3 · Differentiated Problem Solving: Matemática ([`03-matematica-modelagem/`](../03-matematica-modelagem/))
@@ -59,7 +59,7 @@ Legenda:
 
 | Requisito | Status | Evidência / observação |
 |---|---|---|
-| Aplicação React funcional e publicada | APROVADO | Vite + React 18; [viela-tech.vercel.app](https://viela-tech.vercel.app) |
+| Aplicação React funcional e publicada | APROVADO | Vite + React 18; [viela-tech-three.vercel.app](https://viela-tech-three.vercel.app) |
 | Componentes, props, estado e hooks | APROVADO | `components/`, 8 custom hooks em `hooks/` |
 | Separação de camadas | APROVADO | `domain/` → `services/` → `hooks/` → `components/`/`pages/` |
 | Integração com API e CRUD completo | APROVADO | `api.js`: insert, select, update e **delete** (`excluirTriagem`) |

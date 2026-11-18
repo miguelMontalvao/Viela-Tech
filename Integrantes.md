@@ -19,7 +19,7 @@
 
 | | |
 |---|---|
-| **Aplicação publicada (Vercel)** | [viela-tech.vercel.app](https://viela-tech.vercel.app) |
+| **Aplicação publicada (Vercel)** | [viela-tech-three.vercel.app](https://viela-tech-three.vercel.app) |
 | **Repositório GitHub** | [github.com/miguelMontalvao/Viela-Tech](https://github.com/miguelMontalvao/Viela-Tech) |
 | **Simulação Wokwi** | [wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793) |
 | **Canal ThingSpeak** | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |

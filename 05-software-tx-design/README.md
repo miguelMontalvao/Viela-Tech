@@ -89,7 +89,7 @@ O diagrama não tem ligação entre o ThingSpeak e a tabela `leituras_microclima
 
 | ID | Regra | Status | Evidência |
 |---|---|---|---|
-| RN-01 | IVM = 0,6·U + 0,4·(100 − I), com as faixas Normal < 40 ≤ Atenção < 70 ≤ Perigo. A falta de insolação foi fixada como `100 − I`, como o PDF recomendava. | Implementado | `01-edge-computing-esp32/main.py`, `python/main.py`, `03-matematica-modelagem/modelo_calculo.py`, `04-aplicacao-web/src/domain/risco.js` (mesma fórmula nos quatro) |
+| RN-01 | IVM = 0,6·U + 0,4·(100 − I), com as faixas Normal < 40 ≤ Atenção < 70 ≤ Perigo. A falta de insolação foi fixada como `100 − I`, como o PDF recomendava. | Implementado | `01-edge-computing-esp32/main.py`, `02-python/main.py`, `03-matematica-modelagem/modelo_calculo.py`, `04-aplicacao-web/src/domain/risco.js` (mesma fórmula nos quatro) |
 | RN-02 | Tosse por 21 dias ou mais gera prioridade alta | Implementado | `src/domain/risco.js`, gatilho em `supabase/schema.sql`, testes em `src/domain/domain.test.js` |
 | RN-03 | Privacidade (LGPD): só dados agregados no público, consentimento, exclusão | Implementado | RLS em `supabase/schema.sql`, consentimento em `TriagemForm.jsx`, exclusão em `MinhaAreaPage.jsx`, `/privacidade` |
 | RN-04 | Persistência local do ACS sem rede | Implementado | `src/services/api.js` (fila no `LocalStorage`), `src/services/sincronizacao.js` |
@@ -98,7 +98,7 @@ O diagrama não tem ligação entre o ThingSpeak e a tabela `leituras_microclima
 
 | ID | O sistema deve… | Status | Evidência / observação |
 |---|---|---|---|
-| RF-01 | Consumir umidade e insolação do ESP32/ThingSpeak | Parcial | O Python consome a API (`python/main.py`). O app lê `leituras_microclima`, mas a carga ThingSpeak → Supabase ainda é manual. |
+| RF-01 | Consumir umidade e insolação do ESP32/ThingSpeak | Parcial | O Python consome a API (`02-python/main.py`). O app lê `leituras_microclima`, mas a carga ThingSpeak → Supabase ainda é manual. |
 | RF-02 | Autotriagem em até 4 etapas | Implementado | `TriagemForm.jsx`: 3 perguntas e o consentimento, com indicador "x de 3 respostas" |
 | RF-03 | Indicar os pontos de coleta | Parcial | `src/domain/unidades.js` lista as 2 unidades de referência. Não há ordenação por distância. |
 | RF-04 | Chamados com status dinâmico | Implementado | `src/domain/chamados.js`: `PENDENTE → EM_ANDAMENTO → COLETADO → CONCLUÍDO` |
@@ -123,7 +123,7 @@ Priorização MoSCoW do PDF (15 histórias), mais duas histórias adicionadas du
 | História | Prioridade | Status | Evidência / observação |
 |---|---|---|---|
 | US-01 Coleta dos sensores ESP32 | MUST | Parcial | O ESP32 publica no ThingSpeak e o Python consome, com fallback. Não grava em `leituras_microclima` automaticamente. |
-| US-02 Cálculo automático do IVM | MUST | Implementado | Testes nas fronteiras 40/70 em `python/test_main.py` e `src/domain/domain.test.js`. Sentido de Iₙ documentado. |
+| US-02 Cálculo automático do IVM | MUST | Implementado | Testes nas fronteiras 40/70 em `02-python/test_main.py` e `src/domain/domain.test.js`. Sentido de Iₙ documentado. |
 | US-03 Histórico e backup | SHOULD | Implementado | `historico.json` e `backup.json`. Com a API fora do ar, usa o backup (testado com mock). |
 | US-04 Exportação CSV | COULD | Parcial | `relatorio.csv` com data, umidade, insolação, temperatura, IVM e risco. Não tem setor nem filtro por período. |
 
