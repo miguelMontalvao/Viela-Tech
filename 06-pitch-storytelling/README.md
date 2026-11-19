@@ -1,57 +1,80 @@
 # 06 · Storytelling & Inspiração Empreendedora (Pitch)
 
-> **Entrega:** vídeo de até 3 minutos, publicado no YouTube como **não listado**.
-> **Link do vídeo:** [youtu.be/txnj1lGB5_c](https://youtu.be/txnj1lGB5_c)
+> **Vídeo:** [youtu.be/txnj1lGB5_c](https://youtu.be/txnj1lGB5_c) · publicado no YouTube como **não listado**
+> **Duração:** 2:30 (limite de 3:00) · **Formato:** 1080p, 30 fps, áudio a -14 LUFS
 
 ## Mensagem central
 
-> **"Na Rocinha, a tuberculose mora onde o sol não chega. O Viela Tech mede o beco, escuta o morador e leva o agente de saúde primeiro a quem mais precisa."**
+> **"Viela Tech: transformando dados invisíveis em saúde viva dentro da favela."**
 
-## Roteiro cronometrado (3:00)
+O pitch conta a história como uma jornada em três atos: o problema que ninguém vê, a solução que nasce da própria comunidade e a tecnologia que torna o risco visível. Cada integrante narra um ato com a própria voz, sobre slides animados em tela cheia e gravações reais do sistema.
 
-A coluna **Quem fala** é uma sugestão; a equipe confirma antes de gravar. Todo número citado tem fonte no [`04-aplicacao-web/src/data/tuberculoseRio.js`](../04-aplicacao-web/src/data/tuberculoseRio.js).
+## Estrutura em três atos
 
-| Tempo | Bloco | O que mostrar na tela | Fala (resumo) | Quem fala |
+| Tempo | Ato | Quem fala | Tema | O que aparece na tela |
 |---|---|---|---|---|
-| **0:00–0:20** | Gancho | Foto da Home e o número 372 | "Em 2013, a Rocinha teve 372 casos de tuberculose por 100 mil habitantes, mais de 4 vezes a taxa da cidade do Rio. Nos becos onde o sol não chega, o ar fica parado e úmido." | a definir |
-| **0:20–0:50** | Problema e personas | Página 6 do PDF do backlog (personas) | "Três pessoas sofrem com isso: o morador que tosse há semanas e não sabe se deve procurar a clínica; o agente comunitário que fica sem sinal no fundo da viela; e o gestor que não cruza o clima do beco com os casos." | a definir |
-| **0:50–1:20** | A solução | Diagrama do README raiz | "O Viela Tech liga quatro peças: um sensor no beco calcula o IVM, um índice de risco ambiental; o morador faz a triagem no celular; o ACS recebe a fila priorizada, mesmo offline; e o gestor vê tudo agregado no painel." | a definir |
-| **1:20–2:20** | A prova (demo) | Sequência de telas abaixo | Narrar cada passo enquanto ele acontece | a definir |
-| **2:20–2:45** | Impacto | Selos ODS 3, 10 e 11; indicador de impacto | "Nosso indicador é o tempo entre a tosse e a entrega do exame na Clínica da Família. Menos tempo significa menos transmissão. Isso é ODS 3, 10 e 11." | a definir |
-| **2:45–3:00** | Fechamento | Logo, link do app e nomes | "Viela Tech: inteligência urbana que chega onde a cidade não enxerga." | todos |
+| 0:00–0:50 | **1 · O problema** | Miguel | A Rocinha, o "vilão invisível" das vielas sem sol e sem ar, a tuberculose e a saúde que chega tarde | Abertura com o logo, voo por uma viela até a Rocinha, calor + umidade → tuberculose, linha do tempo do atendimento tardio, "o CEP define quem tem direito à saúde" |
+| 0:50–1:36 | **2 · A solução** | Vitor | A comunidade como mentora, a autotriagem do morador e o alerta ao agente comunitário de saúde | Nascimento do Viela Tech, tela de acesso do morador, autotriagem com alerta prioritário, fila de visitas do ACS |
+| 1:36–2:30 | **3 · Tecnologia e impacto** | Pedro | Sensores no microclima, modelo matemático, painel do gestor, mapa de calor, simulador e boletim | Wokwi com ESP32 e DHT22, fórmula do IVM, painel do gestor, mapa de calor por sub-área, simulador de 24 h, boletim no WhatsApp, encerramento com os nomes |
 
-### Sequência da demo (1:20–2:20, cerca de 60 s)
+## Roteiro falado (versão final gravada)
 
-Mostre só o que funciona de verdade e foi gravado na hora:
+Transcrição das falas como foram gravadas, só com a pontuação ajustada.
 
-1. **Wokwi (10 s):** o ESP32 rodando, o OLED com IVM e faixa, e o LED mudando quando se arrasta o DHT22 ou o LDR para as faixas Atenção e Perigo.
-2. **ThingSpeak (5 s):** o gráfico do canal 3571901 recebendo o ponto novo.
-3. **Python (10 s):** o terminal com as opções 1 (buscar leituras), 2 (análise de risco e tendência) e 3 (exportar o `relatorio.csv`).
-4. **Matemática (5 s):** o gráfico com a derivada e a área de risco acumulado (`grafico_microclima.png`).
-5. **Morador (10 s):** a triagem com 3 semanas de tosse; o alerta vermelho e o selo de prioridade aparecem.
-6. **ACS (10 s):** a mesma triagem no topo da fila, em vermelho; a mudança de status com o modo avião ligado e o selo "Aguardando sincronização".
-7. **Gestor (10 s):** os indicadores, o mapa das sub-áreas e a troca para o tema escuro.
+### Ato 1 · Miguel: o problema
 
-> Se o canal do ThingSpeak ainda não tiver leituras recentes, rode o Wokwi alguns minutos antes de gravar. Não use dados inventados na tela.
+> Toda grande história começa em um lugar real, cheio de vida e movimento. Na Rocinha, milhares de famílias acordam todos os dias encarando uma rotina intensa. Mas existe um vilão invisível, escondido na arquitetura das vielas mais fechadas, onde o sol não entra e o ar não circula. O calor e a umidade criam um abrigo perfeito para a proliferação de bactérias respiratórias, como a tuberculose. Esse foi o nosso chamado. Percebemos que o sistema de saúde tradicional sempre chegava tarde demais: só depois que o morador já estava em estado grave e o contágio já tinha se espalhado. Ignorar esse problema seria aceitar que o CEP continue definindo quem tem direito à saúde.
 
-## O que **não** dizer
+### Ato 2 · Vitor: a solução
 
-- Não dizer que o app diagnostica tuberculose. A triagem orienta, e o IVM é ambiental.
-- Não dizer que o sensor está instalado na Rocinha. Ele é simulado no Wokwi.
-- Não apresentar o simulador de 24 h como previsão científica. Ele é um cenário didático.
-- Não citar números sem fonte.
+> Para cruzar essa barreira, precisávamos de um mentor, e a nossa mentora foi a própria realidade da comunidade, unida à tecnologia acessível. Assim nasceu o Viela Tech. Em vez de esperar o paciente bater na porta do posto, colocamos o protagonismo na mão de quem vive ali. Quando um morador sente febre ou tosse persistente, ele registra os sintomas em segundos pelo celular, mesmo se a internet falhar no meio da viela. Ao atravessar esse limiar digital, a informação ganha vida: o agente comunitário de saúde do setor recebe um alerta imediato, sabendo exatamente quem visitar primeiro. O morador deixa de ser uma estatística atrasada e se torna um herói da própria prevenção.
 
-## Checklist de gravação
+### Ato 3 · Pedro: tecnologia e impacto
 
-- [ ] Roteiro ensaiado e cronometrado em no máximo 3:00.
-- [ ] Projeto online do Wokwi atualizado com o `main.py` e o `diagram.json` de `01-edge-computing-esp32/`, usando a chave nova do ThingSpeak.
-- [ ] Contas de teste de ACS e gestor prontas no Supabase, sem dados reais de pessoas.
-- [ ] Navegador com zoom de 125% ou mais, abas extras fechadas e notificações desligadas.
-- [ ] Áudio sem eco (microfone de fone serve) e tela em 1080p.
-- [ ] Legenda ou texto na tela nos números principais (acessibilidade).
-- [x] Vídeo exportado em MP4 e publicado no YouTube como **não listado**.
-- [ ] Link testado em uma janela anônima.
-- [ ] Link preenchido neste README, no README raiz e no `Integrantes.md`.
+> Mas, para vencer essa provação, não bastava apenas remediar os sintomas. Precisávamos enxergar o invisível antes do surto acontecer. Na ponta, instalamos sensores ESP32 com DHT22, monitorando o microclima real das vielas. No coração do sistema, nossa modelagem matemática cruza a temperatura, a umidade e os relatos críticos em tempo real. A recompensa aparece diante dos olhos do gestor: esse mapa de calor exclusivo da Rocinha, onde as manchas vermelhas revelam com precisão cirúrgica as zonas de risco biológico. Com o simulador de 24 horas, prevemos o avanço bacteriano e entregamos o elixir de volta à comunidade: um boletim preventivo disparado direto no WhatsApp, com ações práticas para proteger cada família. Viela Tech: transformando dados invisíveis em saúde viva dentro da favela.
+
+## Sequência de telas
+
+| Tempo | Slide | Conteúdo |
+|---|---|---|
+| 0:00 | Abertura | Logo do Viela Tech sobre a Rocinha: "Saúde nas vielas · Rocinha, Rio de Janeiro" |
+| 0:05 | Rocinha | Transição pela viela até a vista da Rocinha: "Milhares de famílias. Uma rotina intensa." / "Um vilão invisível" |
+| 0:23 | Tuberculose | Calor + umidade formando a palavra TUBERCULOSE |
+| 0:32 | Atendimento tardio | Linha do tempo: sintomas → estado grave → contágio espalhado |
+| 0:43 | CEP | "Ignorar esse problema seria aceitar que o CEP continue definindo quem tem direito à saúde." |
+| 0:51 | Mentor | "Para cruzar essa barreira, precisávamos de um mentor." · A realidade da comunidade |
+| 1:00 | Nascimento | "Assim nasceu o Viela Tech." |
+| 1:02 | Acesso do morador | Gravação da tela de entrada do site |
+| 1:09 | Autotriagem | Celular com a triagem e o alerta prioritário de tosse há mais de 21 dias |
+| 1:23 | Fila do ACS | Gravação da fila de visitas, com urgentes primeiro |
+| 1:36 | Enxergar o invisível | "Não bastava apenas remediar sintomas." |
+| 1:44 | Monitoramento IoT | Wokwi: ESP32, DHT22, OLED e envio ao ThingSpeak (acelerado) |
+| 1:50 | Modelo matemático | IVM = 0,6·U + 0,4·(100 − I); IVM ≥ 70 aciona PERIGO |
+| 1:57 | Dashboard do gestor | Triagens, urgências e coletas em um só lugar |
+| 2:00 | Mapa de calor | Risco por sub-área; Curva do S em PERIGO, Via Ápia e Valão em atenção |
+| 2:07 | Simulador de 24 h | Projeção do microclima e da faixa de risco |
+| 2:13 | Boletim comunitário | Boletim preventivo e o botão "Compartilhar no WhatsApp" |
+| 2:20 | Encerramento | Logo, frase final, Miguel · Vitor · Pedro e o link do app |
+
+## Como o vídeo foi produzido
+
+- **Vozes:** cada integrante gravou o próprio ato. O áudio passou por redução de ruído, equalização para igualar o timbre das três vozes, de-esser, compressão leve e um expansor que corta o eco da sala entre as palavras. A mixagem final ficou em -14 LUFS, o padrão do YouTube.
+- **Gravações de tela:** o site publicado ([viela-tech-three.vercel.app](https://viela-tech-three.vercel.app)), o painel do gestor com o mapa de calor e o simulador, e a simulação do Wokwi. A barra do navegador foi recortada e o trecho longo do Wokwi foi acelerado em cerca de 2,25x.
+- **Slides animados:** texto revelado palavra por palavra no ritmo da fala (sincronizado pela transcrição com marcação de tempo de cada palavra), janelas de navegador para as telas do app com os tópicos entrando conforme o narrador fala, etiqueta do narrador com barras de voz animadas e barra de progresso dos três atos.
+- **Identidade visual:** as cores do site e do logo (azul `#0284C7`, verde `#059669`, fundo `#0F172A` e vermelho `#DC2626` para risco).
+- **Transições com a cara da Rocinha:**
+  - um voo em 3D por uma viela (casas de laje coloridas, caixas d'água azuis, fios, varal, valão no chão) que sai na cena seguinte, usado nas viradas de ato;
+  - uma cortina com a silhueta da favela que sobe revelando a próxima cena;
+  - uma passagem lateral com motion blur entre as telas do app;
+  - no fundo dos slides do app, um skyline com janelas acesas e pipas no céu.
+- **Ferramentas:** Python (Pillow e NumPy) para desenhar cada quadro, FFmpeg para áudio e codificação em H.264 e faster-whisper para a marcação de tempo das falas.
+
+## Notas para quem avalia
+
+- **Sensor:** o ESP32 com DHT22 roda na simulação do Wokwi ([wokwi.com/projects/480218232420257793](https://wokwi.com/projects/480218232420257793)); ainda não há um sensor físico instalado nas vielas.
+- **Simulador de 24 h:** é um cenário didático do modelo, não uma previsão científica do avanço da doença.
+- **IVM:** é um índice ambiental de vulnerabilidade, não um diagnóstico. A triagem orienta o morador e prioriza a visita do ACS.
+- **Autotriagem:** a tela da autotriagem no celular é uma ilustração animada com dados fictícios (Dona Tereza, setor Valão). As demais telas são gravações reais do sistema, com dados de demonstração.
 
 ## Referências usadas no pitch
 
