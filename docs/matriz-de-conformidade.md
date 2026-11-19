@@ -89,8 +89,8 @@ Legenda:
 | Requisito | Status | Evidência / observação |
 |---|---|---|
 | Roteiro de até 3 minutos | APROVADO | Roteiro cronometrado com a demonstração real |
-| Vídeo publicado (YouTube, não listado) | PENDENTE | Precisa ser gravado e publicado pela equipe |
-| Link no README | PENDENTE | Depende do vídeo |
+| Vídeo publicado (YouTube, não listado) | APROVADO | [youtu.be/txnj1lGB5_c](https://youtu.be/txnj1lGB5_c), 2:30 |
+| Link no README | APROVADO | [README raiz](../README.md), [`Integrantes.md`](../Integrantes.md) e [`06-pitch-storytelling/`](../06-pitch-storytelling/README.md) |
 
 ## 7 · Web Development ([`04-aplicacao-web/`](../04-aplicacao-web/))
 

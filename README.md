@@ -100,7 +100,7 @@ O Viela Tech liga **medição do ambiente** a **triagem e gestão**, em três pa
 | Canal público ThingSpeak | [thingspeak.mathworks.com/channels/3571901](https://thingspeak.mathworks.com/channels/3571901) |
 | Código Python (análise do IVM) | [`02-python/`](02-python/README.md) |
 | Relatório de Software & TX Design (PDF com timbrado) | [`05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf`](05-software-tx-design/VielaTech-SoftwareTX-Relatorio.pdf) |
-| Vídeo do pitch (YouTube) | pendente (ver [`06-pitch-storytelling/`](06-pitch-storytelling/README.md)) |
+| Vídeo do pitch (YouTube) | [youtu.be/txnj1lGB5_c](https://youtu.be/txnj1lGB5_c) |
 
 ## Sumário
 
