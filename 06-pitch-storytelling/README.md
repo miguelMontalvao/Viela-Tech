@@ -1,7 +1,7 @@
 # 06 · Storytelling & Inspiração Empreendedora (Pitch)
 
 > **Entrega:** vídeo de até 3 minutos, publicado no YouTube como **não listado**.
-> **Link do vídeo:** **pendente**. A equipe deve preencher depois de publicar, aqui, no [README raiz](../README.md) e no [`Integrantes.md`](../Integrantes.md).
+> **Link do vídeo:** [youtu.be/txnj1lGB5_c](https://youtu.be/txnj1lGB5_c)
 
 ## Mensagem central
 
@@ -49,7 +49,7 @@ Mostre só o que funciona de verdade e foi gravado na hora:
 - [ ] Navegador com zoom de 125% ou mais, abas extras fechadas e notificações desligadas.
 - [ ] Áudio sem eco (microfone de fone serve) e tela em 1080p.
 - [ ] Legenda ou texto na tela nos números principais (acessibilidade).
-- [ ] Vídeo exportado em MP4 e publicado no YouTube como **não listado**.
+- [x] Vídeo exportado em MP4 e publicado no YouTube como **não listado**.
 - [ ] Link testado em uma janela anônima.
 - [ ] Link preenchido neste README, no README raiz e no `Integrantes.md`.
 
