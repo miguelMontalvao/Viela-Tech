@@ -202,7 +202,7 @@ Detalhes, contrato de dados e camadas da aplicação: [`docs/arquitetura.md`](do
 | 3 | Differentiated Problem Solving | [`03-matematica-modelagem/`](03-matematica-modelagem/README.md) | Limites, derivadas e integrais do IVM; PDF de 6 páginas; 16 testes |
 | 4 | Front-end Design | [`04-aplicacao-web/`](04-aplicacao-web/README.md) | Aplicação React com 3 perfis, CRUD completo, acessibilidade e 36 testes |
 | 5 | Software & Total Experience Design | [`05-software-tx-design/`](05-software-tx-design/README.md) | Relatório único em PDF com timbrado (personas, RN, RF, RNF, MoSCoW, rastreabilidade), escopo, status e conclusão |
-| 6 | Storytelling & Inspiração Empreendedora | [`06-pitch-storytelling/`](06-pitch-storytelling/README.md) | Roteiro de 3 minutos com a demonstração real e checklist de gravação |
+| 6 | Storytelling & Inspiração Empreendedora | [`06-pitch-storytelling/`](06-pitch-storytelling/README.md) | Vídeo de 2:30 em três atos, com o roteiro falado, a sequência de telas e como foi produzido |
 | 7 | Web Development | [`04-aplicacao-web/`](04-aplicacao-web/README.md#interações-em-javascript-web-development) | Interações em JavaScript, persistência no navegador e integração com a API do Supabase |
 
 O status de cada requisito está em [`docs/matriz-de-conformidade.md`](docs/matriz-de-conformidade.md).
@@ -216,7 +216,7 @@ Viela-Tech/
 ├── 03-matematica-modelagem/   modelo_calculo.py, relatorio_matematica.py, PDF, gráfico, testes
 ├── 04-aplicacao-web/          React + Vite + Tailwind + Supabase (src/, supabase/, public/)
 ├── 05-software-tx-design/     VielaTech-SoftwareTX-Relatorio.pdf (único PDF, com timbrado), README com escopo e status
-├── 06-pitch-storytelling/     roteiro e checklist do vídeo
+├── 06-pitch-storytelling/     roteiro final e produção do vídeo
 ├── docs/                      arquitetura e matriz de conformidade
 ├── AI.md                      registro do uso de IA
 ├── Integrantes.md             equipe, RMs e responsabilidades
